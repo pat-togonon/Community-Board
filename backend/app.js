@@ -2,6 +2,9 @@ const express = require('express')
 require('dotenv').config()
 const mongoose = require('mongoose')
 const communityRouter = require('./controllers/communities')
+const usersRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
+const cors = require('cors')
 
 mongoose.set('strictQuery', false)
 
@@ -18,13 +21,14 @@ mongoose.connect(url)
   })
 
 const app = express()
-
+app.use(cors())
 app.use(express.json())
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello Pat!</h1')
 })
-
+app.use('/api/login', loginRouter)
 app.use('/api/communities', communityRouter)
+app.use('/api/users', usersRouter)
 
 module.exports = app

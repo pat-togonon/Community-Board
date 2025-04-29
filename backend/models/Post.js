@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-postSchema = mongoose.Schema({
+const postSchema = mongoose.Schema({
   community: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Community',
@@ -8,7 +8,7 @@ postSchema = mongoose.Schema({
   }, 
   mainCategory: {
     type: String,
-    enum: ['event', 'announcement', 'lost_and_found', 'business_promotion', 'garage_sale_and_giveaways'],
+    enum: ['upcoming_event', 'announcement', 'lost_and_found', 'business_promotion', 'garage_sale_and_giveaways'],
     required: true
   },
   subCategory: String,
@@ -31,6 +31,12 @@ postSchema = mongoose.Schema({
     ref: 'Comment'
     }
   ],
+  startDate: Date,
+  endDate: Date,
+  isFound: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true })
 
 postSchema.set('toJSON', {
