@@ -1,19 +1,60 @@
+import CommunityOption from "./CommunityOption"
+import { createAccountWith } from "../service/signup"
+import { useSelector, useDispatch } from "react-redux"
+import { setUser } from "../reducer/userReducer"
+import { setCommunityId } from "../reducer/communityIdReducer"
 
-const SignUp = ({handleLogin}) => {
+const SignUp = ({ showLogin }) => {
+
+  const dispatch = useDispatch()
+  const communityId = useSelector(state => state.communityId)
   
+  const handleSignUp = async (event) => {
+    event.preventDefault()
+    const username = event.target.username.value
+    const password = event.target.password.value
+    const email = event.target.email.value
 
+    const newUser = {
+      username,
+      password,
+      email,
+      communityId
+    }
+    try {
+      const createdUser = await createAccountWith(newUser)
+      dispatch(setUser(createdUser))
+      console.log('succesful', createdUser)
+      event.target.username.value = ''
+      event.target.password.value = ''
+      event.target.email.value = ''
+      dispatch(setCommunityId(''))
+
+      // navigate to login page to log in
+
+    } catch (error) {
+      console.log('error', error.response.data.error)
+      event.target.username.value = ''
+      event.target.password.value = ''
+      event.target.email.value = ''
+      dispatch(setCommunityId(''))
+    }
+
+  }
+  
   return (
     <div>
       <h2>Create your account to connect with your local community</h2>
-      <form>
-        local community: <select></select><br />
+      <CommunityOption />
+      <form onSubmit={handleSignUp}>
         username: <input name="username" type="text" autoComplete="new-username"/><br />
+        email: <input name="email" type="email" autoComplete="new-email" /><br />
         password: <input name="password" type="password" autoComplete="new-password" /><br />
         <button type="submit">sign up</button>
       </form>
         <div>
           <br />
-          Already have an account? <button onClick={handleLogin}>login</button>
+          Already have an account? <button onClick={showLogin}>login</button>
         </div>
     </div>
   )
