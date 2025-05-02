@@ -2,8 +2,9 @@ import SignUp from "./Signup"
 import { useState } from "react"
 import CommunityOption from "./CommunityOption"
 import { useSelector, useDispatch } from "react-redux"
-import { loginWith } from "../service/login"
+import { loginWith } from "../service/auth"
 import { setUser } from "../reducer/userReducer"
+
 
 const Login = () => {
   const [showSignUp, setShowSignUp] = useState(false)
@@ -34,15 +35,26 @@ const Login = () => {
     }
     dispatch(setUser(userLogin))
     console.log('user login', userLogin)
+    const userForLogin = {
+      ...userLogin,
+      communityId
+    }
    
     try {
-     const loggedUser = await loginWith(username, password, communityId)
+     const loggedUser = await loginWith(userForLogin)
      console.log('logged in user', loggedUser)
      dispatch(setUser(loggedUser))
-   } catch (error) {
-    console.log('invalid login', error.response.data.error)
+     reset(event)
 
+   } catch (error) {
+      console.log('invalid login', error.response.data.error)
+      reset(event)
    }
+  }
+
+  const reset = (event) => {
+    event.target.loginUsername.value = ''
+    event.target.loginPassword.value = ''
   }
 
   return (
@@ -66,3 +78,5 @@ const Login = () => {
 }
 
 export default Login
+
+// Add in a show pasword feature

@@ -6,6 +6,7 @@ const userSchema = mongoose.Schema({
     minLength: [5, 'username must have at least 5 characters'],
     trim: true,
     unique: [true, 'username unavailable'],
+    require: [true, 'please input username']
   },
   name: String,
   passwordHash: String,
@@ -20,10 +21,12 @@ const userSchema = mongoose.Schema({
     trim: true,
     match: [/^[a-zA-Z0-9._%+-]+@?(?:[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/, 'invalid email'] //recheck regex ah
   },
-  community: {
+  community: [
+    {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Community'
-    },
+    }
+  ],
   isAdmin: {
     type: Boolean,
     default: false
@@ -32,10 +35,10 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     default: false
   },
-  managedCommunity: {
+  managedCommunity: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Community'
-    },
+    }],
   createdPosts: [
     {
       type: mongoose.Schema.Types.ObjectId,

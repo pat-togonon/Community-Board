@@ -1,8 +1,7 @@
 import CommunityOption from "./CommunityOption"
-import { createAccountWith } from "../service/signup"
+import { createAccountWith } from "../service/auth"
 import { useSelector, useDispatch } from "react-redux"
 import { setUser } from "../reducer/userReducer"
-import { setCommunityId } from "../reducer/communityIdReducer"
 
 const SignUp = ({ showLogin }) => {
 
@@ -25,23 +24,22 @@ const SignUp = ({ showLogin }) => {
       const createdUser = await createAccountWith(newUser)
       dispatch(setUser(createdUser))
       console.log('succesful', createdUser)
-      event.target.username.value = ''
-      event.target.password.value = ''
-      event.target.email.value = ''
-      dispatch(setCommunityId(''))
-
+      reset(event)
+    
       // navigate to login page to log in
 
     } catch (error) {
       console.log('error', error.response.data.error)
-      event.target.username.value = ''
-      event.target.password.value = ''
-      event.target.email.value = ''
-      dispatch(setCommunityId(''))
+      reset(event)
     }
-
   }
   
+  const reset = (event) => {
+    event.target.username.value = ''
+    event.target.password.value = ''
+    event.target.email.value = ''
+  }
+
   return (
     <div>
       <h2>Create your account to connect with your local community</h2>

@@ -18,13 +18,15 @@ communityRouter.post('/', async (request, response) => {
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
 
+  // if from a non-existing user. If a user exists and registered a community, need to have a separate checker here. Example if (user) { await user.findOne({}) } -- need to push or concat community IDs and managedcommunity
+
   const user = new User({
     username,
     email,
     passwordHash,
     isAdmin: true,
     isCommunityAdmin: true,
-    managedCommunities: []
+    managedCommunity: []
   })
 
   const savedUser = await user.save()
@@ -39,11 +41,11 @@ communityRouter.post('/', async (request, response) => {
 
   const savedCommunity = await community.save()
 
-  savedUser.managedCommunity = savedCommunity._id
-  savedUser.community = savedCommunity._id
+  savedUser.managedCommunity = savedUser.managedCommunity.push(savedCommunity._id)
+  savedUser.community = savedUser.community.push(savedCommunity._id)
   await savedUser.save() //note: need to test - if the admin is tied to community upon registration
 
-  response.status(201).json({ user: savedUser.toJSON(), community: savedCommunity.toJSON(), message: 'Community and admin user created successfully' })
+  response.status(201).json({ user: savedUser, community: savedCommunity, message: 'Community and admin user created successfully' })
   
 })
 

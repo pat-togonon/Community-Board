@@ -5,10 +5,14 @@ const Post = require('../models/Post')
 const Community = require('../models/Community')
 const Comment = require('../models/Comment')
 
+/*
+// DO NOT SHOW cos contains list of users - privacy 
 usersRouter.get('/', async (request, response) => {
   const users = await User.find({})
-  return response.json(users)
+  return response.json(users.map(user => user.toJSON()))
 })
+*/
+
 //create new users
 usersRouter.post('/', async (request, response) => {
   const { username, password, email, communityId } = request.body
