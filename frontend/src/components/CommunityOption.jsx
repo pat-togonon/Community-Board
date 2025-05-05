@@ -15,8 +15,8 @@ const CommunityOption = () => {
 
   const fetchCommunities = async () => {
     const list = await getCommunities()
-    const approvedList = list.filter(c => c.isApproved)
-    setCommunityList(approvedList)
+    //const approvedList = list.filter(c => c.isApproved)
+    setCommunityList(list)
   }
     
   const handleSelected = (event) => {
@@ -26,7 +26,8 @@ const CommunityOption = () => {
 
   return (
     <div>
-      local community: <select value={communityId} onChange={handleSelected}>
+      local community: 
+      <select value={communityId} onChange={handleSelected} id="community" name="community">
         <option value="">Select a local community</option>
         {communityList.map((community) => (
           <option key={community.id} value={community.id}>

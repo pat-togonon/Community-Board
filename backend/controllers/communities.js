@@ -4,8 +4,8 @@ const Community = require('../models/Community')
 const bcrypt = require('bcrypt')
 
 communityRouter.get('/', async (request, response) => {
-  const communityList = await Community.find({})
-  return response.json(communityList)
+  const activeCommunityList = await Community.find({ isApproved: true })
+  return response.json(activeCommunityList)
 })
 
 communityRouter.post('/', async (request, response) => {

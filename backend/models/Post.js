@@ -8,7 +8,7 @@ const postSchema = mongoose.Schema({
   }, 
   mainCategory: {
     type: String,
-    enum: ['upcoming_event', 'announcement', 'lost_and_found', 'business_promotion', 'garage_sale_and_giveaways'],
+    enum: ['upcoming_event', 'announcement', 'lost_and_found', 'shops_promotion', 'garage_sale_and_giveaways'],
     required: true
   },
   subCategory: String,

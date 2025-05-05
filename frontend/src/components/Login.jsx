@@ -4,6 +4,7 @@ import CommunityOption from "./CommunityOption"
 import { useSelector, useDispatch } from "react-redux"
 import { loginWith } from "../service/auth"
 import { setUser } from "../reducer/userReducer"
+import { setCommunityId } from "../reducer/communityIdReducer"
 
 
 const Login = () => {
@@ -14,6 +15,7 @@ const Login = () => {
   const dispatch = useDispatch()
 
   const handleSignUp = (event) => {
+    dispatch(setCommunityId(''))
     setShowSignUp(!showSignUp)  
     setShowLogin(!showLogin)
   }
@@ -21,6 +23,7 @@ const Login = () => {
   const loginStyle = { display: showLogin ? '' : "none"}
   
   const showLoginForm = (event) => {
+    dispatch(setCommunityId(''))
     setShowSignUp(!showSignUp)  
     setShowLogin(!showLogin)
   }

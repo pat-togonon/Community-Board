@@ -2,12 +2,10 @@ const express = require('express')
 require('dotenv').config()
 const mongoose = require('mongoose')
 const communityRouter = require('./controllers/communities')
-const usersRouter = require('./controllers/users')
-const loginRouter = require('./controllers/login')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const middleware = require('./utils/middleware')
-const refreshRouter = require('./controllers/refresh')
+const authRouter = require('./routes/auth')
 
 mongoose.set('strictQuery', false)
 
@@ -24,7 +22,14 @@ mongoose.connect(url)
   })
 
 const app = express()
-app.use(cors())
+
+const corsOption = {
+  origin: true,
+  credentials: true
+}
+
+app.use(cors(corsOption))
+
 app.use(express.json())
 app.use(cookieParser())
 
@@ -32,11 +37,9 @@ app.use(cookieParser())
 app.get('/', (request, response) => {
   response.send('<h1>Hello Pat!</h1')
 })
-app.use('/api/login', loginRouter)
+app.use('/api/auth', authRouter)
 app.use('/api/communities', communityRouter)
-app.use(middleware.tokenExtractor)
-app.use('/api/users', middleware.userExtractor, usersRouter) // should not be accessible
-app.use('/api/refresh', middleware.userExtractor, refreshRouter)
+
 
 app.use(middleware.errorHandler)
 app.use(middleware.unknownEndpoint)

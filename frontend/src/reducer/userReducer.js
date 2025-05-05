@@ -5,8 +5,8 @@ const initialState = {
   username: null,
   name: null,
   id: null,
-  community: null,
-  communityName: null
+  community: [],
+  communityName: []
 }
 
 const userSlice = createSlice({
