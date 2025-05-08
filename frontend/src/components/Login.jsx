@@ -11,9 +11,15 @@ const Login = () => {
   const [showSignUp, setShowSignUp] = useState(false)
   const [showLogin, setShowLogin] = useState(true)
 
+  const userLoggedIn = useSelector(state => state.user.accessToken)
+
   const communityId = useSelector(state => state.communityId)
   const dispatch = useDispatch()
 
+  if (userLoggedIn) {
+    return null
+  }
+  
   const handleSignUp = (event) => {
     dispatch(setCommunityId(''))
     setShowSignUp(!showSignUp)  

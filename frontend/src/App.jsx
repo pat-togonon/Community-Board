@@ -4,6 +4,9 @@ import Dashboard from './components/dashboard'
 import { useEffect } from 'react'
 import { setUser, setNewAccessToken, logout } from './reducer/userReducer'
 import api from './service/api'
+import LogOut from './components/Logout'
+
+
 
 const App = () => {
   console.log('Good morning Pat!')
@@ -11,7 +14,8 @@ const App = () => {
   const dispatch = useDispatch()
 
   const userToken = useSelector(state => state.user.accessToken)
-  const isUserLoggedIn = userToken ? true : false
+
+  // brings in new access token so user stays logged in even when they refresh the browser
   
   useEffect(() => {
     const silentRefresh = async () => {
@@ -32,14 +36,16 @@ const App = () => {
     }
   }, [userToken])
 
+  const isUserLoggedIn = userToken ? true : false
+  console.log(isUserLoggedIn)
 
-
-
-
+  
   return (
     <div>
       <h1>KOMI logo</h1>
-      {isUserLoggedIn ? <Dashboard /> : <Login />}
+      <LogOut />
+      <Login />
+      <Dashboard />
     </div>
   )
 }

@@ -6,10 +6,13 @@ const communityIdSlice = createSlice({
   reducers: {
     setCommunityId(state, action) {
       return action.payload      
+    },
+    clearCommunityId(state, action) {
+      return ''
     }
   }
 })
 
-export const { setCommunityId } = communityIdSlice.actions
+export const { setCommunityId, clearCommunityId } = communityIdSlice.actions
 
 export default communityIdSlice.reducer

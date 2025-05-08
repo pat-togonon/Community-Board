@@ -15,8 +15,8 @@ const CommunityOption = () => {
 
   const fetchCommunities = async () => {
     const list = await getCommunities()
-    //const approvedList = list.filter(c => c.isApproved)
-    setCommunityList(list)
+    const approvedList = list.filter(c => c.isApproved)
+    setCommunityList(approvedList)
   }
     
   const handleSelected = (event) => {
