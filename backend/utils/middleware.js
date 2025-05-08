@@ -42,8 +42,16 @@ const errorHandler = (error, request, response, next) => {
     return response.status(401).json({ error: 'token invalid' })
   } else if (error.name === 'TokenExpiredError') {
     return response.status(401).json({ error: 'token expired' }) // for backend
+  } else if (error.name === 'CastError') {
+    return response.status(400).json({ 
+      error: `Invalid value for ${error.path}. Please check your input.`
+    })
+  } else if (error.name === 'TypeError') {
+    // this is for invalid url
+    return response.status(400).json({ 
+      error: 'Something went wrong with your request. Please check again.'
+    })
   }
-
   //typeerror casterror?
   
   next(error)

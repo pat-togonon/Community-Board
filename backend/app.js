@@ -6,6 +6,7 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const middleware = require('./utils/middleware')
 const authRouter = require('./routes/auth')
+const postRouter = require('./routes/posts')
 
 mongoose.set('strictQuery', false)
 
@@ -39,7 +40,7 @@ app.get('/', (request, response) => {
 })
 app.use('/api/auth', authRouter)
 app.use('/api/communities', communityRouter)
-
+app.use('/api/', middleware.tokenExtractor, middleware.userExtractor, postRouter)
 
 app.use(middleware.errorHandler)
 app.use(middleware.unknownEndpoint)

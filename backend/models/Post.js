@@ -1,24 +1,37 @@
 const mongoose = require('mongoose')
+const { validSubcategories } = require('../utils/helper')
 
 const postSchema = mongoose.Schema({
-  community: {
+  community: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Community',
     required: true  
   }, 
   mainCategory: {
     type: String,
-    enum: ['upcoming_event', 'announcement', 'lost_and_found', 'shops_promotion', 'garage_sale_and_giveaways'],
+    enum: ['upcoming-event', 'announcement', 'lost-and-found', 'shops-promotion', 'garage-sale-and-giveaways'],
     required: true
   },
   subCategory: String,
   title: {
     type: String,
-    required: true
+    required: true,
+    minlength: [15, 'Title is too short'],
+    maxlength: [60, 'Title is too long'],
+    validate: {
+      validator: function(v) {
+        const mainCategory = this.mainCategory
+        const validSubCategory = validSubcategories[mainCategory]
+        return validSubCategory ? validSubCategory.includes(v) : false
+      },
+      message: 'Please select from the given subcategories'
+    }    
   },
   description: {
     type: String,
-    required: true
+    required: true,
+    minlength: [60, 'Description is too short'],
+    maxlength: [200, 'Description is too long']
   },
   author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,11 +45,22 @@ const postSchema = mongoose.Schema({
     }
   ],
   startDate: Date,
-  endDate: Date,
+  endDate: {
+    type: Date,
+    validate: {
+      validator: function(v) {
+        if (!this.startDate || !v) {
+          return true // valid or the test passes if no start date given
+        }
+        return v >= this.startDate
+      },
+      message: 'End date must be later than start date'
+    }
+  },
   isFound: {
     type: Boolean,
     default: false
-  }
+  } // this is for lost and found - for PUT request (user updates the post when it's found)
 }, { timestamps: true })
 
 postSchema.set('toJSON', {

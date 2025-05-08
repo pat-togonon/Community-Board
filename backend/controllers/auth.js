@@ -144,7 +144,7 @@ const login = async (request, response) => {
       id: user._id
     }
   
-    const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '150m' })
+    const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '1d' })
   
     const refreshToken = jwt.sign(userForToken, process.env.REFRESH_SECRET, { expiresIn: '30d'})
   
@@ -214,7 +214,7 @@ const getRefreshToken = async (request, response) => {
 // User log out
 
 const logout = async (request, response) => {
-  response.clearCookie('refreshToken', {
+  response.clearCookie('jwt', {
     httpOnly: true,
     secure: false, //set to true on production /deployment
     sameSite: 'Lax'
