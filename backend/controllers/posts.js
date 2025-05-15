@@ -1,8 +1,8 @@
 // view all posts OKs
 // view one post Oks
 // view all post in a subcategory OK
-// edit or delete YOUR post ==> update need validators: true
-// create posts 
+// edit or delete YOUR post ==> update need validators: true OK except validators
+// create posts OK
 const Post = require('../models/Post')
 const User = require('../models/User')
 const Community = require('../models/Community')
@@ -140,13 +140,67 @@ const createPost = async (request, response) => {
     comments: []
   })
 
-  const user = await User.findById(request.user._id)
-  console.log('found user via request user', user)
   const savedPost = await post.save() 
-  user.createdPosts.concat(savedPost._id)
-  await user.save()
+  request.user.createdPosts = request.user.createdPosts.concat(savedPost._id)
+  await request.user.save()
+
+  console.log('saved user', request.user)
 
   return response.status(201).json(savedPost.toJSON())
 }
 
-module.exports = { viewAll, createPost, viewOnePost }
+const deletePost = async (request, response) => {
+  const { communityId, id } = request.params // should I validate via zod?
+
+  const communityValid = await Community.findById(communityId)
+  const postToDelete = await Post.findById(id)
+  const isPostInTheSameCommunity = postToDelete.community.toString() === communityValid._id.toString()
+  const isUserTheAuthor = postToDelete.author.toString() === request.user._id.toString()
+  
+  if (!communityValid) {
+    return response.status(404).json({ error: 'Invalid community' })
+  }
+
+  if (!postToDelete) {
+    return response.status(204).end()
+  }
+
+  if (!isPostInTheSameCommunity || !isUserTheAuthor) {
+    return response.status(400).json({ error: "Cannot delete post. Please check if you're the post author or in the correct community" })
+  }
+
+  await postToDelete.deleteOne()
+  request.user.createdPosts = request.user.createdPosts.filter(post => post.toString() !== postToDelete._id.toString())
+
+  await request.user.save()
+  response.status(204).end()
+
+}
+
+const editPost = async (request, response) => {
+  const { communityId, id } = request.params // should I validate via zod?
+  const editedPost = request.body // validate via zod
+
+  const communityValid = await Community.findById(communityId)
+  const postToEdit = await Post.findById(id)
+  const isPostInTheSameCommunity = postToEdit.community.toString() === communityValid._id.toString()
+  const isUserTheAuthor = postToEdit.author.toString() === request.user._id.toString()
+  
+  if (!communityValid) {
+    return response.status(404).json({ error: 'Invalid community' })
+  }
+
+  if (!postToEdit) {
+    return response.status(400).json({ error: 'Invalid post' })
+  }
+
+  if (!isPostInTheSameCommunity || !isUserTheAuthor) {
+    return response.status(400).json({ error: "Cannot edit post. Please check if you're the post author or in the correct community" })
+  }
+
+  const updatedPost = await Post.findByIdAndUpdate(id, { description: editedPost.description }, { new: true })
+
+  response.status(200).json(updatedPost)
+  
+}
+module.exports = { viewAll, createPost, viewOnePost, deletePost, editPost }

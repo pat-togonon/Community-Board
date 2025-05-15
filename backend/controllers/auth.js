@@ -137,7 +137,9 @@ const login = async (request, response) => {
   
   const communityExists = await Community.findById(communityId)
   
-  const user = await User.findOne({ username }).populate('community', { _id: 1, name: 1 })
+  const user = await User.findOne({ username })
+    .populate('community', { _id: 1, name: 1 })
+    .populate('managedCommunity', { _id: 1, name: 1 })
 
   const userIsInCommunity = communityExists.communityUsers.find(commUser => commUser.toString() === user._id.toString())
 
@@ -187,7 +189,8 @@ const login = async (request, response) => {
       name: user.name, 
       id: user._id.toString(), 
       community: user.community.map(comm => comm._id), 
-      communityName: user.community.map(comm => comm.name)
+      communityName: user.community.map(comm => comm.name),
+      managedCommunity: user.managedCommunity.map(m => m._id)
     })  
     
   }
@@ -215,13 +218,15 @@ const getRefreshToken = async (request, response) => {
 
    const decodedUser = await User.findById(userForToken.id)
     .populate('community', { name: 1, _id: 1 })
+    .populate('managedCommunity', { _id: 1, name: 1 })
 
   const userFrontend = {
     username: decodedUser.username,
     name: decodedUser.name,
     id: decodedUser._id.toString(),
     community: decodedUser.community.map(c => c._id.toString()),
-    communityName: decodedUser.community.map(c => c.name)
+    communityName: decodedUser.community.map(c => c.name),
+    managedCommunity: decodedUser.managedCommunity.map(m => m._id)
   }
 
   console.log('user frontend is', userFrontend)

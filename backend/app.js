@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const middleware = require('./utils/middleware')
 const authRouter = require('./routes/auth')
 const postRouter = require('./routes/posts')
+const commentRouter = require('./routes/comments')
 
 mongoose.set('strictQuery', false)
 
@@ -41,6 +42,7 @@ app.get('/', (request, response) => {
 app.use('/api/auth', authRouter)
 app.use('/api/communities', communityRouter)
 app.use('/api/posts/', middleware.tokenExtractor, middleware.userExtractor, postRouter)
+app.use('/api/posts/', middleware.tokenExtractor, middleware.userExtractor, commentRouter)
 
 app.use(middleware.errorHandler)
 app.use(middleware.unknownEndpoint)

@@ -1,12 +1,17 @@
 const mongoose = require('mongoose')
 
 const commentSchema = mongoose.Schema({
+  community: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Community',
+    required: true
+  },
   post: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Post',
     required: true
   },
-  content: {
+  comment: {
     type: String,
     required: true
   },
@@ -19,7 +24,7 @@ const commentSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment',
     default: null
-  },
+  }
 }, { timestamps: true })
 
 commentSchema.set('toJSON', {
