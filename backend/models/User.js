@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const emailValidator = require('validator')
 
 const userSchema = mongoose.Schema({
   username: {
@@ -19,7 +20,11 @@ const userSchema = mongoose.Schema({
     require: [true, 'Please enter your email'],
     unique: [true, 'email is already in use'],
     trim: true,
-    match: [/^[a-zA-Z0-9._%+-]+@?(?:[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/, 'invalid email'] //recheck regex ah
+   // match: [/^[a-zA-Z0-9._%+-]+@?(?:[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/, 'invalid email'] //recheck regex ah
+   validate: {
+    validator: emailValidator.isEmail,
+    message: 'Invalid email address'
+   }
   },
   community: [
     {

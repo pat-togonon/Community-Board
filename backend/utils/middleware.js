@@ -51,8 +51,13 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).json({ 
       error: 'Something went wrong with your request. Please check again.'
     })
+  } else if (error.name === 'ZodError') {
+    return response.status(400).json({ error: error.errors.map(e => {
+      return `${e.path} is ${e.message.toLowerCase()}`
+    }).join('. ') })
   }
-  //typeerror casterror?
+
+  //Add duplicate error 11000 thing 
   
   next(error)
 }

@@ -27,6 +27,12 @@ const communitySchema = mongoose.Schema({
     type: Boolean,
     default: false
   },
+  communityUsers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ]
 }, { timestamps: true })
 
 communitySchema.set('toJSON', {

@@ -2,14 +2,45 @@ const communityRouter = require('express').Router()
 const User = require('../models/User')
 const Community = require('../models/Community')
 const bcrypt = require('bcrypt')
+const { communityRegistrationSchema } = require('../validators/community')
+const { tokenExtractor, userExtractor } = require('../utils/middleware')
 
 communityRouter.get('/', async (request, response) => {
   const activeCommunityList = await Community.find({ isApproved: true })
   return response.json(activeCommunityList)
 })
 
+communityRouter.get('/:id', tokenExtractor, userExtractor, async (request, response) => {
+  const currentCommunity = await Community.findById(request.params.id)
+
+  const isUserValid = await User.findById(request.user._id)
+
+  if (!isUserValid) {
+    return response.status(401).json({ error: "Please log in to view communities" })
+  }
+
+  return response.json(currentCommunity)
+})
+
 communityRouter.post('/', async (request, response) => {
-  const { username, email, password, communityName, communityDescription } = request.body
+  
+  const parsedData = communityRegistrationSchema.parse(request.body)
+  const { username, email, password, communityName, communityDescription } = parsedData
+
+  const communityExists = await Community.findOne({ name: communityName })
+
+  if (communityExists) {
+    return response.status(400).json({ error: 'Community already exists' })
+  }
+ 
+/* REVISIT - flow for existing user creating a new community
+
+  const userExists = await User.findOne({ username })
+  const emailExists = await User.findOne({ email })
+
+  if (userExists || emailExists)
+
+  */
 
   if (!password || password.length < 5) {
     return response.status(400).json({ error: 'Password length should be at least 5 characters'})
@@ -26,7 +57,8 @@ communityRouter.post('/', async (request, response) => {
     passwordHash,
     isAdmin: true,
     isCommunityAdmin: true,
-    managedCommunity: []
+    managedCommunity: [],
+    community: []
   })
 
   const savedUser = await user.save()
@@ -35,15 +67,19 @@ communityRouter.post('/', async (request, response) => {
     name: communityName,
     description: communityDescription,
     admin: savedUser._id,
-    additionalAdmins: [savedUser._id]
+    additionalAdmins: [savedUser._id],
+    communityUsers: [savedUser._id],
+    isApproved: false
   })
   // isApproved - manual after interview. Can add in a PUT method here
 
   const savedCommunity = await community.save()
 
-  savedUser.managedCommunity = savedUser.managedCommunity.push(savedCommunity._id)
-  savedUser.community = savedUser.community.push(savedCommunity._id)
+  savedUser.managedCommunity = savedUser.managedCommunity.concat(savedCommunity._id)
+  savedUser.community = savedUser.community.concat(savedCommunity._id)
   await savedUser.save() //note: need to test - if the admin is tied to community upon registration
+
+  // need to email verification first to verify user - not the community ah
 
   response.status(201).json({ user: savedUser, community: savedCommunity, message: 'Community and admin user created successfully' })
   

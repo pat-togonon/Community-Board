@@ -12,12 +12,8 @@ const postSchema = mongoose.Schema({
     enum: ['upcoming-event', 'announcement', 'lost-and-found', 'shops-promotion', 'garage-sale-and-giveaways'],
     required: true
   },
-  subCategory: String,
-  title: {
+  subCategory: {
     type: String,
-    required: true,
-    minlength: [15, 'Title is too short'],
-    maxlength: [60, 'Title is too long'],
     validate: {
       validator: function(v) {
         const mainCategory = this.mainCategory
@@ -25,13 +21,20 @@ const postSchema = mongoose.Schema({
         return validSubCategory ? validSubCategory.includes(v) : false
       },
       message: 'Please select from the given subcategories'
-    }    
+    }
+  },  
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: [15, 'Title is too short'],
+    maxlength: [60, 'Title is too long']
   },
   description: {
     type: String,
     required: true,
-    minlength: [60, 'Description is too short'],
-    maxlength: [200, 'Description is too long']
+    trim: true,
+    minlength: [60, 'Description is too short']
   },
   author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -50,7 +53,7 @@ const postSchema = mongoose.Schema({
     validate: {
       validator: function(v) {
         if (!this.startDate || !v) {
-          return true // valid or the test passes if no start date given
+          return true // valid or the test passes if no start or end date given
         }
         return v >= this.startDate
       },
