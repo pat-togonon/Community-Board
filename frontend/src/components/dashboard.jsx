@@ -7,7 +7,6 @@ import Announcement from "./Announcement"
 import Events from "./Events"
 import GarageSaleGiveaways from "./GarageSaleGiveaway"
 import ShopsPromo from "./ShopsPromo"
-import PostForm from "./PostForm"
 import { useNavigate, Outlet } from "react-router-dom"
 
 
@@ -53,6 +52,7 @@ const Dashboard = () => {
   const communityId = useSelector(state => state.communityId)
   const mainCategory = useSelector(state => state.mainCategory)
   const user = useSelector(state => state.user.accessToken)
+  const loggedInUser = useSelector(state => state.user)
 
   if (!user) {
     return null
@@ -72,8 +72,24 @@ const Dashboard = () => {
   }
 
   const handleCreatePost = (event) => {
-    const path = `/posts/${communityId}/${mainCategory}/new-post`
-    navigate(path)
+
+    if (mainCategory === 'home') {
+      return null
+    }
+  
+    const isUserAnAdmin = loggedInUser.managedCommunity.includes(communityId)
+  
+    console.log('user an admin?', isUserAnAdmin)    
+
+    if (!isUserAnAdmin && mainCategory === 'announcement') {
+      return null
+    }
+    const handleNewPost = () => {
+      const path = `/posts/${communityId}/${mainCategory}/new-post`
+      navigate(path)
+    }
+
+    return <button onClick={handleNewPost}>Create a new post</button>
 
   }
 
@@ -88,7 +104,7 @@ const Dashboard = () => {
           </option>
         ))}
       </select><br />
-      {mainCategory !== 'home' ? <button onClick={handleCreatePost}>Create a new post</button> : '' }
+      {handleCreatePost()}
       </header>
       <main>
         <Outlet />

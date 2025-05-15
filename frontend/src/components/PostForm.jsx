@@ -116,6 +116,9 @@ const PostForm = () => {
     try {
       const createdPost = await createPost(newPost, communityId, mainCategoryStored, subCategory)
       dispatch(addPost(createdPost))
+      const path = `/posts/${communityId}/${mainCategoryStored}`
+      navigate(path)     
+
     } catch (error) {
       console.log('error posting is', error)
     }
