@@ -36,7 +36,7 @@ api.interceptors.response.use(
       originalRequest._retry = true
       
       try {
-      const response = await api.post('auth/refresh') // I shortened this. Originally, it's full url, with 2nd argument {} and 3rd withCredentials
+      const response = await api.post('/auth/refresh') // I shortened this. Originally, it's full url, with 2nd argument {} and 3rd withCredentials
       
       const user = response.data.userFrontend
       store.dispatch(setUser(user))

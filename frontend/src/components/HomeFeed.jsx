@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux"
+import ShowAllPosts from "./PostFeed"
 
 const HomeFeed = () => {
 
@@ -10,7 +11,7 @@ const HomeFeed = () => {
 
   return (
     <div>
-      yay! Home!!
+      <ShowAllPosts />
     </div>
   )
 

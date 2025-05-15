@@ -1,7 +1,8 @@
 import { useSelector, useDispatch } from "react-redux"
 import { setSubCategory } from '../reducer/subCategoryReducer'
+import { useNavigate } from "react-router"
 
-const validSubcategories = {
+export const validSubcategories = {
     'upcoming-event': [
         {
           name: 'Festivals and Celebrations',
@@ -99,7 +100,9 @@ const validSubcategories = {
 
   const SubCategoryOptions = () => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
+    const communityId = useSelector(state => state.communityId)
     const mainCategory = useSelector(state => state.mainCategory)
     const subCategory = useSelector(state => state.subCategory)
 
@@ -110,10 +113,22 @@ const validSubcategories = {
     const handleSubCategory = (event) => {
       const subCategorySelected = event.target.value
       dispatch(setSubCategory(subCategorySelected))
+      
+      if (subCategorySelected === 'All') {
+        const path = `/posts/${communityId}/${mainCategory}`
+        return navigate(path)
+      }
+
+      const path = `/posts/${communityId}/${mainCategory}/${subCategorySelected}`
+      return navigate(path)
+      
     }
+
+    
     
     return (
       <div>
+        Sub Category:
         <select value={subCategory} onChange={handleSubCategory} id="subCategory" name="subCategory">
           <option key='All' value='All'>All</option>
           {subCategoryOptions.map(subCategory => (

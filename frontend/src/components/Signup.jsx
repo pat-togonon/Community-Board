@@ -2,11 +2,13 @@ import CommunityOption from "./CommunityOption"
 import { createAccountWith } from "../service/auth"
 import { useSelector, useDispatch } from "react-redux"
 import { setUser } from "../reducer/userReducer"
+import { useNavigate } from "react-router-dom"
 
-const SignUp = ({ showLogin }) => {
+const SignUp = () => {
 
   const dispatch = useDispatch()
   const communityId = useSelector(state => state.communityId)
+  const navigate = useNavigate()
   
   const handleSignUp = async (event) => {
     event.preventDefault()
@@ -38,6 +40,10 @@ const SignUp = ({ showLogin }) => {
     event.target.username.value = ''
     event.target.password.value = ''
     event.target.email.value = ''
+  }
+
+  const showLogin = () => {
+    navigate('/login')
   }
 
   return (

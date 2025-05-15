@@ -4,17 +4,17 @@ import CommunityOption from "./CommunityOption"
 import { useSelector, useDispatch } from "react-redux"
 import { loginWith } from "../service/auth"
 import { setUser } from "../reducer/userReducer"
-import { setCommunityId } from "../reducer/communityIdReducer"
+import { setCommunityId, clearCommunityId } from "../reducer/communityIdReducer"
+import { useNavigate } from "react-router"
 
 
 const Login = () => {
-  const [showSignUp, setShowSignUp] = useState(false)
-  const [showLogin, setShowLogin] = useState(true)
-
+  
   const userLoggedIn = useSelector(state => state.user.accessToken)
 
   const communityId = useSelector(state => state.communityId)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   if (userLoggedIn) {
     return null
@@ -22,17 +22,9 @@ const Login = () => {
   
   const handleSignUp = (event) => {
     dispatch(setCommunityId(''))
-    setShowSignUp(!showSignUp)  
-    setShowLogin(!showLogin)
+    navigate('/signup')
   }
-
-  const loginStyle = { display: showLogin ? '' : "none"}
   
-  const showLoginForm = (event) => {
-    dispatch(setCommunityId(''))
-    setShowSignUp(!showSignUp)  
-    setShowLogin(!showLogin)
-  }
   const handleLogin = async (event) => {
     event.preventDefault()
     console.log('community id after submit login', communityId)
@@ -54,10 +46,13 @@ const Login = () => {
      console.log('logged in user', loggedUser)
      dispatch(setUser(loggedUser))
      reset(event)
+     navigate('/')
 
    } catch (error) {
       console.log('invalid login', error.response.data.error)
       reset(event)
+      dispatch(clearCommunityId())
+      navigate('/login')
    }
   }
 
@@ -67,8 +62,7 @@ const Login = () => {
   }
 
   return (
-    <div>
-      <div style={loginStyle}>
+      <div>
         <h2>Log in to connect with your local community</h2>
         <CommunityOption />
         <form onSubmit={handleLogin}>
@@ -79,10 +73,8 @@ const Login = () => {
         <p>Forgot password</p>
         <p>Don't have an account yet? <button onClick={handleSignUp}>Sign up</button></p>
       </div>
-      <div>
-        {showSignUp ? <SignUp showLogin={showLoginForm}/> : ''}
-      </div>
-    </div>
+    
+    
   )
 }
 

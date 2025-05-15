@@ -3,6 +3,7 @@ import communityIdReducer from './reducer/communityIdReducer'
 import userReducer from "./reducer/userReducer"
 import mainCategoryReducer from './reducer/mainCategoryReducer'
 import subCategoryReducer from './reducer/subCategoryReducer'
+import postReducer from './reducer/postReducer'
 
 
 const store = configureStore({
@@ -10,7 +11,8 @@ const store = configureStore({
     communityId: communityIdReducer,
     user: userReducer,
     mainCategory: mainCategoryReducer,
-    subCategory: subCategoryReducer
+    subCategory: subCategoryReducer,
+    posts: postReducer
   }
 })
 

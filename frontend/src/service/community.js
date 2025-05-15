@@ -1,11 +1,15 @@
-import axios from "axios"
-
-const baseUrl = 'http://localhost:3001/api/communities'
+import api from './api'
 
 // list of approved / active communities
 
 export const getCommunities = async () => {
-  const response = await axios.get(baseUrl)
+  const response = await api.get('/communities')
   return response.data
+}
+
+export const getCurrentCommunity = async (communityId) => {
+  const response = await api.get(`/communities/${communityId}`)
+  return response.data
+
 }
 

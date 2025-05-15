@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux"
 import SubCategoryOptions from "./SubCategory"
+import ShowAllPosts from "./PostFeed"
 
 
 const LostAndFound = () => {
@@ -12,6 +13,7 @@ const LostAndFound = () => {
   return (
     <div>
       <SubCategoryOptions />
+      <ShowAllPosts />
 
     </div>
   )

@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux"
 import SubCategoryOptions from "./SubCategory"
+import ShowAllPosts from "./PostFeed"
 
 const ShopsPromo = () => {
   const mainCategory = useSelector(state => state.mainCategory)
@@ -9,7 +10,10 @@ const ShopsPromo = () => {
   }
 
   return (
-    <SubCategoryOptions />
+    <div>
+      <SubCategoryOptions />
+      <ShowAllPosts />
+    </div>
   )
 
 
