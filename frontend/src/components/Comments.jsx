@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react"
 import { viewAllComments, postComment} from "../service/comments"
+import { useSelector, useDispatch } from "react-redux"
+import { setComments } from "../reducer/commentsReducer"
+
 
 const Comment = ({ id, communityId, mainCategory, subCategory }) => {
-  const [comments, setComments] = useState([])
+  //const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState('')
+
+  const comments = useSelector(state => state.comments)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     fetchComments()
@@ -16,7 +22,7 @@ const Comment = ({ id, communityId, mainCategory, subCategory }) => {
       const allCommentsContent = allComments.map(c => c.comment)
       //setComments(allCommentsContent)
       console.log(allCommentsContent)
-      setComments([...allComments])
+      dispatch(setComments([...allComments]))
     } catch (error) {
       console.log('error fetching comments', error)
     }

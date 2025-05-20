@@ -42,8 +42,7 @@ const Account = () => {
   }
 
   const selectionStyle = {
-    display: showAccount ? 'none' : '',
-    color: 'gray'
+    display: showAccount ? '' : 'none'
   }
 
   const handleProfile = () => {
@@ -51,21 +50,24 @@ const Account = () => {
     navigate('/user/profile')
     
   }
+
+  const handleClose = () => {
+    setShowAccount(!showAccount)
+    
+  }
   return (
-    <div>
-      <div style={accountStyle}>
-      <button onClick={() => setShowAccount(!showAccount)}>Account</button>
-      </div>
+    <div style={accountStyle}>
       <div style={selectionStyle}>
-        <ul>
+      <ul>
           <li><div role="button" onClick={handleProfile}>Profile</div></li>
           <li><div role="button" onClick={() => setShowAccount(!showAccount)}>Account Settings</div></li>
           <li><div onClick={handleLogout} role="button">Logout</div></li>
           <li><div role="button" onClick={() => setShowAccount(!showAccount)}>Theme: Dark Mode Light Mode</div></li>
         </ul>
-        <div onClick={() => setShowAccount(!showAccount)} role="button">Close</div>
       </div>
+      <div onClick={handleClose} role="button">Close</div>
     </div>
+    
   )
 }
 

@@ -4,6 +4,41 @@ import { useEffect } from "react"
 import { getAllPosts } from '../service/posts'
 import { setPosts } from '../reducer/postReducer'
 
+export const ShowStatus = ({ post }) => {
+   
+  if (!post.startDate && !post.endDate) {
+    return null
+  }
+
+  if (post.startDate && !post.endDate) {
+    return <div>Ongoing</div>
+  }
+
+  const startDate = new Date(post.startDate)
+  const endDate = new Date(post.endDate)
+  const today = new Date()
+
+  const daysToStart = (startDate - today) / (1000 * 60 * 60 * 24)
+  const daysRemaining = (endDate - today ) / (1000 * 60 * 60 * 24)
+
+  if (daysRemaining < 0) {
+    return <div>Ended</div>
+  }
+
+  if (daysRemaining > 1 && daysToStart <= 0) {
+    return <div>Ongoing</div>
+  }
+
+  if (daysRemaining < 1 && daysRemaining > 0 && daysToStart > 0) {
+    return <div>Starts tomorrow</div>
+  }
+
+  if (daysRemaining > 0 && daysToStart < 0) {
+    return <div>Ends tomorrow</div>
+  }
+
+}
+
 const ShowAllPosts = () => {
 
   const posts = useSelector(state => state.posts)
@@ -27,41 +62,6 @@ const ShowAllPosts = () => {
         }
       }
 
-  const showStatus = ({ post }) => {
-   
-    if (!post.startDate && !post.endDate) {
-      return null
-    }
-
-    if (post.startDate && !post.endDate) {
-      return <div>Ongoing</div>
-    }
-
-    const startDate = new Date(post.startDate)
-    const endDate = new Date(post.endDate)
-    const today = new Date()
-
-    const daysToStart = (startDate - today) / (1000 * 60 * 60 * 24)
-    const daysRemaining = (endDate - today ) / (1000 * 60 * 60 * 24)
-
-    if (daysRemaining < 0) {
-      return <div>Ended</div>
-    }
-
-    if (daysRemaining > 1 && daysToStart <= 0) {
-      return <div>Ongoing</div>
-    }
-
-    if (daysRemaining < 1 && daysRemaining > 0 && daysToStart > 0) {
-      return <div>Starts tomorrow</div>
-    }
-
-    if (daysRemaining > 0 && daysToStart < 0) {
-      return <div>Ends tomorrow</div>
-    }
-
-  }
-
   const allPostFeed = () => {
     return (
       <div>
@@ -70,7 +70,7 @@ const ShowAllPosts = () => {
           <Link to={`/posts/${post.community}/${post.mainCategory}/${post.subCategory}/${post.id}`}>
             <h3>{post.title.slice(0, 60)}</h3>
           </Link>
-          {showStatus({post})}
+          {ShowStatus({post})}
           <p>{post.description.slice(0, 200)}...</p>
           <p>Tags: {post.mainCategory} {post.subCategory}</p>
           </div>
@@ -86,7 +86,7 @@ const ShowAllPosts = () => {
           <Link to={`/posts/${post.community}/${post.mainCategory}/${post.subCategory}/${post.id}`}>
             <h3>{post.title.slice(0, 60)}</h3>
           </Link>
-          {showStatus({post})}
+          {ShowStatus({post})}
           <p>{post.description.slice(0, 200)}...</p>
           <p>Tags: {post.mainCategory} {post.subCategory}</p>
           </div>

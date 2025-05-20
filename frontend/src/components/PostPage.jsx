@@ -9,7 +9,7 @@ import { setPosts } from "../reducer/postReducer"
 import { useState } from "react"
 import Comment from "./Comments"
 import { setFavoritePosts } from "../reducer/favoriteReducer"
-
+import { ShowStatus } from "./PostFeed"
 
 
 const PostPage = () => {
@@ -58,7 +58,7 @@ useEffect(() => {
 
   useEffect(() => {
     fetchFavorites()
-  }, [favoritePosts])
+  }, [dispatch])
 
   const fetchFavorites = async () => {
       try {
@@ -214,6 +214,7 @@ useEffect(() => {
       <button onClick={handleReturn}>Go to posts</button>
       <h2>{post.title}</h2>
       {fave(post.id)}
+      <ShowStatus post={post} />
       <div style={descriptionStyle}>
       <p>{post.description}</p>
       </div>

@@ -80,7 +80,8 @@ const App = () => {
     <>
       <div onClick={handleReturnHome}><h1>KOMI logo</h1></div>
       {communityHeader()}
-      <div onClick={() => setHideHome(!hideHome)}><Account /></div>
+      {isUserLoggedIn ? <button style={homeStyle} onClick={() => setHideHome(!hideHome)}>Account</button> : '' }
+      {hideHome ? <div onClick={() => setHideHome(!hideHome)}><Account /></div> : ''}
       <div style={homeStyle}>
       <Routes>
         <Route path='/' element={userToken ? <Dashboard /> : <Homepage />} >
@@ -95,6 +96,7 @@ const App = () => {
         <Route path='/posts/:community/:mainCategory/new-post' element={<PostForm />} />
         <Route path='/posts/:community/:mainCategory/:subCategory/:id' element={<PostPage />} />
         <Route path='/user/profile/*' element={<Profile />} />
+        
         
       </Routes>
       </div>

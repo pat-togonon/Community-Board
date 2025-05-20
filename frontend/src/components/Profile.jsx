@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux"
-import { Link, NavLink, Routes, Route } from "react-router-dom"
+import { Link, NavLink, Routes, Route, useLocation } from "react-router-dom"
 import { clearMainCategory } from "../reducer/mainCategoryReducer"
 import { resetSubCategory } from "../reducer/subCategoryReducer"
 import { useEffect, useState } from "react"
@@ -11,7 +11,7 @@ import { setComments } from "../reducer/commentsReducer"
 
 
 const UserPosts = ({ postsByUser }) => {
-
+  
   return (
     <div>
       {postsByUser.map(post => 
@@ -31,8 +31,7 @@ const UserPosts = ({ postsByUser }) => {
 const UserComments = ({ comments, communityId }) => {
 // or upon clicking on the comment title, create own comment page? With view all comments feature too
 
-console.log('user comments', comments)
-
+console.log('comment', comments)
   return (
     <div>
       {comments.map(comment => 
@@ -40,7 +39,7 @@ console.log('user comments', comments)
       <Link to={`/posts/${communityId}/${comment.post.mainCategory}/${comment.post.subCategory}/${comment.post.id}`}>
       <h4>{comment.comment.slice(0, 60)}...</h4>
       </Link>
-      <p><strong>{comment.post.title}</strong> | {comment.post.description.slice(0,50)}</p>
+      <p><strong>{comment.post.title}</strong> | {comment.post.description?.slice(0, 50)}</p>
       </div>
       )}
     </div>
@@ -48,8 +47,7 @@ console.log('user comments', comments)
 }
 
 const UserFavorites = ({ favorites, communityId }) => {
- console.log('user favorites', favorites)
-
+ 
   return  (
     <div>
       {favorites.map(fave => 
@@ -67,11 +65,8 @@ const UserFavorites = ({ favorites, communityId }) => {
 
 const AdminSection = ({ communityId, user}) => {
 
-  console.log('user', user)
-  console.log('community id', communityId)
-
   const isUserAnAdmin = user.managedCommunity?.map(c => c.id).includes(communityId)
-  console.log('user is admin?', isUserAnAdmin)
+  
   if (!isUserAnAdmin) {
     return null
   }
@@ -79,17 +74,22 @@ const AdminSection = ({ communityId, user}) => {
   return (
     <div>
       {user.managedCommunity.map(community => 
-        <li key={community.id}>{community.name}</li>
+        <div key={community.id}> 
+          <h3>{community.name}</h3>
+          <p>{community.description}</p>
+          <p>Total users: {community.communityUsers.length}</p>
+          <p>Total community admins: {community.additionalAdmins.length}</p>        
+        </div>
+        
       )}
     </div>
   )
 }
 
 const Profile = () => {
-
-  const [resetDone, setResetDone] = useState(false)
-
+  
   const dispatch = useDispatch()
+  const location = useLocation()
   const user = useSelector(state => state.user)
   const userId = user.id
   const posts = useSelector(state => state.posts)  
@@ -99,45 +99,44 @@ const Profile = () => {
   const isUserAnAdmin = user.managedCommunity?.map(c => c.id).includes(communityId)
   const favoritePosts = useSelector(state => state.favorites)
   const comments = useSelector(state => state.comments)
-
-  useEffect(() => {
-    reset()
-    setResetDone(!resetDone)
-  }, [])
-
-  useEffect(() => {
-    if (!resetDone) {
-      return
-    }
-    fetchPosts()
-    fetchComments()
-  }, [communityId, mainCategory, dispatch])
-
-  useEffect(() => {
-    if (!resetDone) {
-      return
-    }
-
-    const fetchFavorites = async () => {
-      try {
-       const allfavorites = await viewFavorites(communityId)
-        const allfavoritesInString = allfavorites.map(fave => fave.toString())
-        const favoritePosts = posts.filter(post => allfavoritesInString.includes(post.id.toString()))
-        dispatch(setFavoritePosts(favoritePosts))
-              
-     } catch (error) {
-        console.log('error showing favorites', error)
-      }  
-   }
-    
-   fetchFavorites()
-   console.log('favorite posts', favoritePosts)
+  const subCategory = useSelector(state => state.subCategory)
   
-  }, [communityId, posts])
+  useEffect(() => {
+  
+    if (user && location.pathname === '/user/profile') {
+      reset()
+    }
+  }, [communityId, user, location.pathname, dispatch])
+
+
+  useEffect(() => {
+    
+    if (user && location.pathname === '/user/profile' && mainCategory === 'home') {
+        fetchPosts()      
+      }
+    if (user && location.pathname === '/user/profile/comments') {
+      fetchComments()
+    }
+  }, [communityId, user, mainCategory, subCategory, dispatch, location.pathname])
+
+  useEffect(() => {
+    console.log('user in fetchFavorites', user)
+    if (user && posts) {
+      if (location.pathname === '/user/profile' || location.pathname === '/user/profile/favorites') {
+        fetchFavorites()
+      }
+    }
+  
+  }, [communityId, user, mainCategory, dispatch, posts, location.pathname])
       
   const fetchPosts = async () => {
+
+    console.log('MAIN cate', mainCategory)
+    
     try {
       const allPosts = await getAllPosts(communityId, mainCategory)
+      console.log('all posts', allPosts)
+
       dispatch(setPosts(allPosts))
     } catch(error) {
         console.log('posts showing error', error)
@@ -155,8 +154,18 @@ const Profile = () => {
 
      console.log('user comments', comments)
   }
-
   
+  const fetchFavorites = async () => {
+    try {
+     const allfavorites = await viewFavorites(communityId)
+      const allfavoritesInString = allfavorites.map(fave => fave.toString())
+      const favoritePosts = posts.filter(post => allfavoritesInString.includes(post.id.toString()))
+      dispatch(setFavoritePosts(favoritePosts))
+            
+   } catch (error) {
+      console.log('error showing favorites', error)
+    }  
+ }
 
   const reset = () => {
     dispatch(clearMainCategory())
