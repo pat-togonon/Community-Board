@@ -11,7 +11,6 @@ const Announcement = () => {
 
   return (
     <div>
-      <SubCategoryOptions />
       <ShowAllPosts />
     </div>
   )

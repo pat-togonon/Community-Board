@@ -9,10 +9,13 @@ const postSlice = createSlice({
     },
     addPost(state, action) {
       return state.concat(action.payload)
+    },
+    clearPosts(state, action) {
+      return []
     }
   }
 })
 
-export const { setPosts, addPost } = postSlice.actions
+export const { setPosts, addPost, clearPosts } = postSlice.actions
 
 export default postSlice.reducer

@@ -12,7 +12,6 @@ const LostAndFound = () => {
 
   return (
     <div>
-      <SubCategoryOptions />
       <ShowAllPosts />
 
     </div>

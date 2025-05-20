@@ -11,7 +11,6 @@ const GarageSaleGiveaways = () => {
 
   return (
     <div>
-      <SubCategoryOptions />
       <ShowAllPosts />
     </div>
   )

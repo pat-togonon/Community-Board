@@ -108,8 +108,10 @@ export const validSubcategories = {
 
     const subCategoryOptions = validSubcategories[mainCategory]
 
-    console.log(subCategoryOptions) 
-
+    if (mainCategory === 'home') {
+      return null
+    }
+    
     const handleSubCategory = (event) => {
       const subCategorySelected = event.target.value
       dispatch(setSubCategory(subCategorySelected))
@@ -124,8 +126,6 @@ export const validSubcategories = {
       
     }
 
-    
-    
     return (
       <div>
         Sub Category:

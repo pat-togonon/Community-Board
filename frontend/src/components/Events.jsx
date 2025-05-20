@@ -11,7 +11,6 @@ const Events = () => {
 
   return (
     <div>
-      <SubCategoryOptions />
       <ShowAllPosts />
     </div>
   )

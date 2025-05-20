@@ -28,3 +28,20 @@ export const editPost = async (communityId, mainCategory, subCategory, postId, e
 
   return response.data
 }
+
+// favorite posts
+
+export const addToFavorites = async (postId) => {
+  const response = await api.put('/user/favorites', { postId })
+  return response.data
+}
+
+export const viewFavorites = async (communityId) => {
+  const response = await api.get(`/user/favorites/${communityId}`)
+  return response.data
+}
+
+export const removeFromFavorites = async (postId) => {
+  const response = await api.delete(`/user/favorites/${postId}`)
+  return response.data
+}

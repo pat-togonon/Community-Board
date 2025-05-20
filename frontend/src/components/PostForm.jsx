@@ -5,7 +5,7 @@ import { addPost } from "../reducer/postReducer"
 import { getCurrentCommunity } from "../service/community"
 import { useNavigate } from "react-router"
 import { validSubcategories } from "./SubCategory"
-import { setSubCategory } from "../reducer/subCategoryReducer"
+import { resetSubCategory, setSubCategory } from "../reducer/subCategoryReducer"
 import { useParams } from "react-router-dom"
 import { setCommunityId } from "../reducer/communityIdReducer"
 import { setMainCategory } from "../reducer/mainCategoryReducer"
@@ -133,6 +133,7 @@ const PostForm = () => {
     setEndDate('')
     setShowAddDate(!showAddDate)
     setShowEndDate(!showEndDate)
+    dispatch(resetSubCategory())
   }
 
   const handleCancel = () => {

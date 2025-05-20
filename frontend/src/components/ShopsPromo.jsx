@@ -11,7 +11,6 @@ const ShopsPromo = () => {
 
   return (
     <div>
-      <SubCategoryOptions />
       <ShowAllPosts />
     </div>
   )

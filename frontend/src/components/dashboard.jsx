@@ -8,15 +8,17 @@ import Events from "./Events"
 import GarageSaleGiveaways from "./GarageSaleGiveaway"
 import ShopsPromo from "./ShopsPromo"
 import { useNavigate, Outlet } from "react-router-dom"
+import SubCategoryOptions from "./SubCategory"
 
 
 // Just shows the first 10 posts in all categories and subcategories - sorted by date posted
 
+// Check all incompatible exports Pat
 export const mainCategories = [
   {
     name: 'Home',
     category: 'home',
-    renderComponent: <HomeFeed />
+    renderComponent: <HomeFeed /> 
   },
   { 
     name: 'Announcement',
@@ -71,13 +73,13 @@ const Dashboard = () => {
     navigate(path)
   }
 
-  const handleCreatePost = (event) => {
+  const handleCreatePost = () => {
 
     if (mainCategory === 'home') {
       return null
     }
   
-    const isUserAnAdmin = loggedInUser.managedCommunity.includes(communityId)
+    const isUserAnAdmin = loggedInUser.managedCommunity.map(c => c.id).includes(communityId)
   
     console.log('user an admin?', isUserAnAdmin)    
 
@@ -104,6 +106,7 @@ const Dashboard = () => {
           </option>
         ))}
       </select><br />
+      <SubCategoryOptions />
       {handleCreatePost()}
       </header>
       <main>
