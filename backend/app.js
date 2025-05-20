@@ -8,6 +8,7 @@ const middleware = require('./utils/middleware')
 const authRouter = require('./routes/auth')
 const postRouter = require('./routes/posts')
 const commentRouter = require('./routes/comments')
+const userRouter = require('./routes/user')
 
 mongoose.set('strictQuery', false)
 
@@ -43,6 +44,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/communities', communityRouter)
 app.use('/api/posts/', middleware.tokenExtractor, middleware.userExtractor, postRouter)
 app.use('/api/posts/', middleware.tokenExtractor, middleware.userExtractor, commentRouter)
+app.use('/api/user/',middleware.tokenExtractor, middleware.userExtractor, userRouter)
 
 app.use(middleware.errorHandler)
 app.use(middleware.unknownEndpoint)

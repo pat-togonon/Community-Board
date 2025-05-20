@@ -190,7 +190,7 @@ const login = async (request, response) => {
       id: user._id.toString(), 
       community: user.community.map(comm => comm._id), 
       communityName: user.community.map(comm => comm.name),
-      managedCommunity: user.managedCommunity.map(m => m._id)
+      managedCommunity: user.managedCommunity
     })  
     
   }
@@ -226,7 +226,7 @@ const getRefreshToken = async (request, response) => {
     id: decodedUser._id.toString(),
     community: decodedUser.community.map(c => c._id.toString()),
     communityName: decodedUser.community.map(c => c.name),
-    managedCommunity: decodedUser.managedCommunity.map(m => m._id)
+    managedCommunity: decodedUser.managedCommunity
   }
 
   console.log('user frontend is', userFrontend)

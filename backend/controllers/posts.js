@@ -14,7 +14,7 @@ const viewAll = async (request, response) => {
 
   const isCommunityIdValid = await Community.findById(communityId)
 
-  console.log('request user is', request.user)
+  //console.log('request user is', request.user)
 
   const isCommunityUser = isCommunityIdValid.communityUsers.find(user => user.toString() === request.user._id.toString())
 
@@ -135,8 +135,8 @@ const createPost = async (request, response) => {
     title,
     description,
     author,
-    startDate: startDate ? new Date(startDate) : undefined,
-    endDate: endDate ? new Date(endDate) : undefined,
+    startDate: startDate ? new Date(startDate) : null,
+    endDate: endDate ? new Date(endDate) : null,
     comments: []
   })
 
@@ -198,7 +198,11 @@ const editPost = async (request, response) => {
     return response.status(400).json({ error: "Cannot edit post. Please check if you're the post author or in the correct community" })
   }
 
-  const updatedPost = await Post.findByIdAndUpdate(id, { description: editedPost.description }, { new: true })
+  const postForUpdate = {
+    isFound: editedPost.isFound ? editedPost.isFound : false,
+    description: editedPost.description ? editedPost.description : postToEdit.description
+  }
+  const updatedPost = await Post.findByIdAndUpdate(id, postForUpdate, { new: true })
 
   response.status(200).json(updatedPost)
   
