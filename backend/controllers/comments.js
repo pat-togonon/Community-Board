@@ -2,7 +2,6 @@ const Post = require('../models/Post')
 const Community = require('../models/Community')
 const Comment = require('../models/Comment')
 const User = require('../models/User')
-const { request } = require('express')
 
 /*
 POST comment

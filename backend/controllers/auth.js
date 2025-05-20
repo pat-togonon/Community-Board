@@ -139,7 +139,7 @@ const login = async (request, response) => {
   
   const user = await User.findOne({ username })
     .populate('community', { _id: 1, name: 1 })
-    .populate('managedCommunity', { _id: 1, name: 1 })
+    .populate('managedCommunity', { _id: 1, name: 1, communityUsers: 1, description: 1, additionalAdmins: 1 })
 
   const userIsInCommunity = communityExists.communityUsers.find(commUser => commUser.toString() === user._id.toString())
 
@@ -170,7 +170,7 @@ const login = async (request, response) => {
     id: user._id
   }
   
-  const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '150m' })
+  const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '15m' })
   
   const refreshToken = jwt.sign(userForToken, process.env.REFRESH_SECRET, { expiresIn: '30d'})
   
@@ -218,7 +218,7 @@ const getRefreshToken = async (request, response) => {
 
    const decodedUser = await User.findById(userForToken.id)
     .populate('community', { name: 1, _id: 1 })
-    .populate('managedCommunity', { _id: 1, name: 1 })
+    .populate('managedCommunity', { _id: 1, name: 1, communityUsers: 1, description: 1, additionalAdmins: 1 })
 
   const userFrontend = {
     username: decodedUser.username,

@@ -10,7 +10,7 @@ const addToFavorites = async (request, response) => {
   if (!post) {
     return response.status(400).json({ error: 'Invalid post' })
   }
-  
+
   const isPostInsideUserCommunity = request.user.community.includes(post.community)
 
   if (!isPostInsideUserCommunity) {

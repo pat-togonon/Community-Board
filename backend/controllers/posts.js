@@ -169,6 +169,8 @@ const deletePost = async (request, response) => {
     return response.status(400).json({ error: "Cannot delete post. Please check if you're the post author or in the correct community" })
   }
 
+  await Comment.deleteMany({ post: postToDelete._id })
+
   await postToDelete.deleteOne()
   request.user.createdPosts = request.user.createdPosts.filter(post => post.toString() !== postToDelete._id.toString())
 
