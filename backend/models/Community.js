@@ -15,12 +15,13 @@ const communitySchema = mongoose.Schema({
   admin: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      //required: true
+      required: true
   },
   additionalAdmins: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
+      required: true
     }
   ],
   isApproved: {

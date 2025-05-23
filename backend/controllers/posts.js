@@ -39,7 +39,7 @@ const viewAll = async (request, response) => {
   const allPosts = await Post.find({ 
     community: communityId,
     mainCategory
-  })
+  }).populate('author', { id: 1, username: 1 })
 
   return response.json(allPosts.map(post => post.toJSON()))
 

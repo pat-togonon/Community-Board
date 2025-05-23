@@ -6,8 +6,9 @@ const Community = require('../models/Community')
 const Comment = require('../models/Comment')
 require('dotenv').config()
 const cookieParser = require('cookie-parser')
-const { userRegistrationSchema, loginSchema } = require('../validators/auth')
-const { compose } = require('redux')
+const { userRegistrationSchema, loginSchema, updatePasswordSchema, passwordResetSchema } = require('../validators/auth')
+const RefreshToken = require('../models/RefreshToken')
+const PasswordResetAttempt = require('../models/PasswordResetAttempt')
 
 // User registration
 
@@ -23,8 +24,25 @@ const usersList = async (request, response) => {
 //create new users
 const createAccount = async (request, response) => {
 
-  const parsedData = userRegistrationSchema.parse(request.body)
-  const { username, password, email, communityId } = parsedData
+  const receivedData = request.body
+
+  const dataToParse = {
+    username: receivedData.username,
+    password: receivedData.password,
+    email: receivedData.email,
+    communityId: receivedData.communityId,
+    birthYear: Number(receivedData.birthYear.trim()),
+    chosenSecurityQuestion: receivedData.chosenSecurityQuestion,
+    securityAnswer: receivedData.securityAnswer.toLowerCase()  
+  }
+
+  console.log('data to parse', dataToParse)
+
+  const parsedData = userRegistrationSchema.parse(dataToParse)
+  const { username, password, email, communityId, birthYear, chosenSecurityQuestion, securityAnswer } = parsedData
+
+  console.log('parsed', parsedData)
+  console.log('birth year type', typeof birthYear)
 
   if (!password || password.length < 5) {
     return response.status(400).json({ error: 'Password should have at least 5 characters' })
@@ -52,15 +70,28 @@ const createAccount = async (request, response) => {
     })
   }
 
+  //birthYear, chosenSecurityQuestion, securityAnswer
+
+  const isSecurityQuestionValid = User.schema.path('securityQuestion').enumValues.includes(chosenSecurityQuestion)
+
+  if (!isSecurityQuestionValid) {
+    return response.status(403).json({ error: 'Invalid security question. Please choose from valid ones' })
+  }
+
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
+  const securityAnswerHash = await bcrypt.hash(securityAnswer, saltRounds)
 
   const user = new User({
     username,
     password,
     email,
     passwordHash,
-    community: [communityExists._id]
+    community: [communityExists._id],
+    isAdmin: false,
+    birthYear,
+    securityAnswerHash,
+    securityQuestion: chosenSecurityQuestion
   })
 
   //the way to link each other is through ID
@@ -167,10 +198,11 @@ const login = async (request, response) => {
   
   const userForToken = {
     username: user.username,
-    id: user._id
+    id: user._id,
+    community: communityExists._id
   }
   
-  const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '15m' })
+  const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '1d' })
   
   const refreshToken = jwt.sign(userForToken, process.env.REFRESH_SECRET, { expiresIn: '30d'})
   
@@ -181,6 +213,18 @@ const login = async (request, response) => {
     maxAge: 30 * 24 * 60 * 60 * 1000
   })
   
+  //save refreshToken on database
+
+  const saltRounds = 10
+  const refreshTokenHash = await bcrypt.hash(refreshToken, saltRounds)
+
+  const newRefreshToken = new RefreshToken({
+    user: user._id,
+    tokenHash: refreshTokenHash
+  })
+
+  await newRefreshToken.save()
+
   response
     .status(200)
     .send({ 
@@ -188,44 +232,95 @@ const login = async (request, response) => {
       username: user.username, 
       name: user.name, 
       id: user._id.toString(), 
-      community: user.community.map(comm => comm._id), 
-      communityName: user.community.map(comm => comm.name),
+      communityList: user.community.map(comm => comm._id), 
+      community: communityExists._id,
+      communityName: communityExists.name,
       managedCommunity: user.managedCommunity
     })  
     
   }
 
 
-// Refresh token
+// REFRESH token
 
 const getRefreshToken = async (request, response) => {
-  const refreshToken = request.cookies.jwt
-
-  if (!refreshToken) {
-    return response.status(406).json({ error: 'Unauthorized' })
+  const existingRefreshToken = request.cookies.jwt
+  
+  if (!existingRefreshToken) {
+    return response.status(401).json({ error: 'Unauthorized' })
   }
 
-  try {
-  const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET)
-  
+  const decoded = jwt.verify(existingRefreshToken, process.env.REFRESH_SECRET)
+
+  const storedRefreshToken = await RefreshToken.find({ user: decoded.id })
+
+  if (!storedRefreshToken || storedRefreshToken.length === 0) {
+    return response.status(403).json({ error: `No refresh token found in database for user ${decoded.id}` })
+  }
+
+  // iterate through storedRefreshToken array 
+  let foundMatch = false
+  let matchedRefreshToken = null
+
+  for (const tokendoc of storedRefreshToken) {
+    const isMatch = await bcrypt.compare(existingRefreshToken, tokendoc.tokenHash)
+
+    if (isMatch) {
+      foundMatch = true
+      matchedRefreshToken = tokendoc
+      break
+    }
+  }
+
+  if (!foundMatch) {
+    return response.status(403).json({ error: "Forbidden: Refresh token did not match any stored hashes. Try logging in again" })
+  }
+  // delete existing and generate new one for better security
+  await matchedRefreshToken.deleteOne()
+    
   const userForToken = {
     username: decoded.username,
-    id: decoded.id
+    id: decoded.id,
+    community: decoded.community
   }
 
-   const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '1m' })
-   
+  const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '5m' })
+  
+  const refreshToken = jwt.sign(userForToken, process.env.REFRESH_SECRET, { expiresIn: '30d' })
 
-   const decodedUser = await User.findById(userForToken.id)
+  // save to database as hash
+  const saltRounds = 10
+  const tokenHash = await bcrypt.hash(refreshToken, saltRounds)
+
+  const newRefreshToken = new RefreshToken({
+    user: decoded.id,
+    tokenHash
+  })
+
+  await newRefreshToken.save()
+
+  // then save to cookie
+
+  response.cookie('jwt', refreshToken, {
+    httpOnly: true,
+    sameSite: 'Lax', // set to none upon deployment/production
+    secure: false, // set to true upon deployment / production
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  })
+
+  const decodedUser = await User.findById(userForToken.id)
     .populate('community', { name: 1, _id: 1 })
     .populate('managedCommunity', { _id: 1, name: 1, communityUsers: 1, description: 1, additionalAdmins: 1 })
+
+  const decodedCommunity = await Community.findById(decoded.community)
 
   const userFrontend = {
     username: decodedUser.username,
     name: decodedUser.name,
     id: decodedUser._id.toString(),
-    community: decodedUser.community.map(c => c._id.toString()),
-    communityName: decodedUser.community.map(c => c.name),
+    community: decodedCommunity._id.toString(),
+    communityList: decodedUser.community.map(c => c._id.toString()),
+    communityName: decodedCommunity.name,
     managedCommunity: decodedUser.managedCommunity
   }
 
@@ -233,10 +328,6 @@ const getRefreshToken = async (request, response) => {
 
   return response.json({ accessToken, userFrontend })
 
-  } catch (error) {
-    console.log('Refresh token verification failed:', error.message) // for debugging
-    return response.status(406).json({ error: 'Unauthorized' })
-  }
 }
 
 // remove error handler (but include in middleware)
@@ -253,6 +344,113 @@ const logout = async (request, response) => {
 
   return response.status(204).end()
 }
+// while logged in - need extractor middlewares
+
+
+const updatePassword = async (request, response) => {
+
+  const { userId } = request.params
+  
+  const parsedData = updatePasswordSchema.parse(request.body)
+  const { oldPassword, newPassword } = parsedData
+
+  const isRequesterTheUser = request.user._id.toString() === userId
+
+  if (!isRequesterTheUser) {
+    return response.status(403).json({ error: "Forbidden: Can't update account password you don't own" })
+  }
+
+  // identification verification
+  const isOldPasswordCorrect = await bcrypt.compare(oldPassword, request.user.passwordHash)
+
+  if (!isOldPasswordCorrect) {
+    return response.status(401).json({ error: "Forbidden: Wrong password" })
+  }
+  
+  const saltRounds = 10
+  const newPasswordHash = await bcrypt.hash(newPassword, saltRounds)
+
+  await User.findByIdAndUpdate(request.user._id, { passwordHash: newPasswordHash }, {new: true, runValidators: true })
+
+  // delete the refresh cookie
+  response.clearCookie('jwt', {
+    httpOnly: true,
+    secure: false, //set to true on production /deployment
+    sameSite: 'Lax'
+  })
+
+  // delete the refreshTokenHash on database
+
+  await RefreshToken.deleteMany({ user: request.user._id })
+
+  return response.status(204).end()
+
+}
+
+const passwordReset = async (request, response) => {
+  console.log('request body', request.body)
+  
+  const parsedData = passwordResetSchema.parse(request.body)
+
+  const { username, newPassword, securityQuestion, securityAnswer } = parsedData
+  // check number of attempts
+
+  const maxAttemptsPerDay = 3
+  const attemptWindow = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  const recentAttempts = await PasswordResetAttempt.countDocuments({ 
+    user: username,
+    timestamp: { $gte: new Date(Date.now() - attemptWindow)}
+  })
+
+  if (recentAttempts >= maxAttemptsPerDay) {
+    return response.status(429).json({ error: 'Too many password reset requests. Please try again later' })
+  }
+
+  // check if username is valid and existing
+
+  const validUser = await User.findOne({ username })
+
+  if (!validUser) {
+
+    const newAttempt = new PasswordResetAttempt({
+      user: username,
+      timestamp: new Date()
+    })
+  
+    await newAttempt.save()
+
+    return response.status(401).json({ error: 'Invalid username or security questions or answer. Please try again later' })
+  }
+
+  const newAttempt = new PasswordResetAttempt({
+    user: validUser.username,
+    timestamp: new Date()
+  })
+
+  await newAttempt.save()
+
+  const isSecurityQuestionCorrect = validUser.securityQuestion === securityQuestion
+
+  const isSecurityAnswerCorrect = await bcrypt.compare(securityAnswer.toLowerCase(), validUser.securityAnswerHash)
+
+  if (!(isSecurityQuestionCorrect && isSecurityAnswerCorrect)) {
+    return response.status(403).json({ error: 'Invalid username or security questions or answer. Please try again later' })
+  }
+
+  const saltRounds = 10
+  const newPasswordHash = await bcrypt.hash(newPassword, saltRounds)
+
+  await User.findByIdAndUpdate(validUser._id, { passwordHash: newPasswordHash }, { new: true, runValidators: true })
+
+  await RefreshToken.deleteMany({ user: validUser._id })
+
+  await PasswordResetAttempt.deleteMany({ user: username })
+
+  return response.status(200).json({ message: 'Password reset successfully. Please log in again with your new password' })
+
+}
+
 
 module.exports = {
     createAccount,
@@ -260,5 +458,7 @@ module.exports = {
     login,
     viewOneUser,
     getRefreshToken,
-    logout
+    logout,
+    updatePassword,
+    passwordReset
 }

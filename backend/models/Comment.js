@@ -24,7 +24,11 @@ const commentSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment',
     default: null
-  }
+  },
+  childrenComments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comment'
+  }]
 }, { timestamps: true })
 
 commentSchema.set('toJSON', {

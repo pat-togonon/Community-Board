@@ -33,6 +33,7 @@ const unknownEndpoint = (request, response) => {
 
 const errorHandler = (error, request, response, next) => {
   console.log('error is', error.name, ' and message is ', error.message)
+  console.log('error path', error.path)
 
   if (error.name === 'ValidationError') {
     return response.status(400).send({ error: error.message })
@@ -53,7 +54,7 @@ const errorHandler = (error, request, response, next) => {
     })
   } else if (error.name === 'ZodError') {
     return response.status(400).json({ error: error.errors.map(e => {
-      return `${e.path} is ${e.message.toLowerCase()}`
+      return `${e.path}: ${e.message.toLowerCase()}`
     }).join('. ') })
   }
 

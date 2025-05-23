@@ -1,6 +1,8 @@
 const User = require('../models/User')
 const Post = require('../models/Post')
 const Community = require('../models/Community')
+const bcrypt = require('bcrypt')
+
 
 const addToFavorites = async (request, response) => {
   const { postId } = request.body //validate via zod
@@ -89,8 +91,73 @@ const removeFromFavorites = async (request, response) => {
 
 }
 
+const updateName = async (request, response) => {
+  const { name } = request.body // validate via zod
+  const { userId } = request.params
+
+  console.log('name', name)
+
+  const isUserTheRequester = request.user._id.toString() === userId
+
+  if (!isUserTheRequester) {
+    return request.status(403).json({ error: "Forbidden: Can't update account you don't own" })
+  }
+
+  const updatedUser = await User.findOneAndUpdate(request.user._id, { name }, { new: true }, { runValidators: true })
+
+  return response.status(200).json(updatedUser.name)
+
+}
+
+const deleteAccount = async (request, response) => {
+  const { userId } = request.params
+
+  console.log('user id', userId)
+  const isUserTheRequester = request.user._id.toString() === userId
+  console.log('is user the requester', isUserTheRequester)
+  
+  if (!isUserTheRequester) {
+    return response.status(403).json({ error: "Forbidden: Can't delete account you don't own" })
+  }
+
+  const isRequesterAnAdmin = request.user.isAdmin
+  console.log('an admin?', isRequesterAnAdmin)
+  
+  if (isRequesterAnAdmin) {
+    return response.status(403).json({ error: "We see you're an admin. Please contact the webmaster to request deletion of your account" })
+  }
+
+  await Community.updateMany(
+    { communityUsers: request.user._id },
+    { $pull: {
+      communityUsers: request.user._id
+    }}
+  )
+
+  await Post.updateMany(
+    { author: request.user._id },
+    { $pull: {}}
+  )
+  const deletedAccount = await User.findByIdAndDelete(request.user._id)
+
+  if (!deletedAccount) {
+    return response.status(404).json({ error: 'User not found or already deleted' })
+  }
+  return response.status(204).end()
+
+}
+
+const updatePassword = async (request, response) => {
+  const { password } = request.body // validate via zod
+
+  const saltRounds = 10
+
+}
+
 module.exports = {
   addToFavorites,
   viewAllFavoritePosts,
-  removeFromFavorites
+  removeFromFavorites,
+  updateName,
+  deleteAccount
 }

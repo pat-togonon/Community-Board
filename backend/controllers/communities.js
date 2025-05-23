@@ -56,7 +56,7 @@ communityRouter.post('/', async (request, response) => {
     email,
     passwordHash,
     isAdmin: true,
-    isCommunityAdmin: true,
+    //isCommunityAdmin: true,
     managedCommunity: [],
     community: []
   })

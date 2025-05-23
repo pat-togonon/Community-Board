@@ -1,5 +1,5 @@
 const authRouter = require('express').Router()
-const { createAccount, viewOneUser, login, getRefreshToken, usersList, logout } = require('../controllers/auth')
+const { createAccount, viewOneUser, login, getRefreshToken, usersList, logout, updatePassword, passwordReset } = require('../controllers/auth')
 const middleware = require('../utils/middleware')
 
 // user registration and details
@@ -16,4 +16,10 @@ authRouter.post('/refresh', getRefreshToken)
 //log out
 authRouter.post('/logout', logout)
 
+//update password
+authRouter.put('/password-update/:userId', middleware.tokenExtractor, middleware.userExtractor, updatePassword)
+
+//forgot password
+
+authRouter.put('/password-reset', passwordReset)
 module.exports = authRouter

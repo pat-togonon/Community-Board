@@ -9,11 +9,32 @@ const userSchema = mongoose.Schema({
     unique: [true, 'username unavailable'],
     require: [true, 'please input username']
   },
-  name: String,
+  name: {
+    type: String,
+    trim: true
+  },
   passwordHash: String,
   birthYear: {
-    type: Number, //check if I can design year drop down on frontend. Update here if can
-    trim: true
+    type: Number,
+    require: [true, 'Birth year is required'],
+    validate: {
+      validator: function (v) {
+      console.log('birth year', v, "Type:", typeof v)
+      const currentYear = new Date().getFullYear()
+      console.log('current year', currentYear)
+      const minAge = 13
+      const earliestAllowedYear = currentYear - minAge
+      const maxAge = 120
+      const userAge = currentYear - v
+      console.log('user age', userAge)
+      const meetsAgeLimit = v <= earliestAllowedYear && userAge <= maxAge
+      const notFutureYear = v <= currentYear
+      console.log('meets age limit', meetsAgeLimit, 'Year is okay', notFutureYear)
+
+      return meetsAgeLimit && notFutureYear
+    },
+    message: 'You must be at least 13 years old or birth year is invalid'
+    }
   },
   email: {
     type: String,
@@ -32,14 +53,25 @@ const userSchema = mongoose.Schema({
       ref: 'Community'
     }
   ],
+  securityQuestion: {
+    type: String,
+    enum: ['in-what-city-were-you-born', 'what-is-the-name-of-your-favorite-pet', 'what-is-your-mother-maiden-name', 'what-high-school-did-you-attend', 'what-was-the-name-of-your-elementary-school', 'what-was-your-favorite-food-as-a-child', 'what-year-was-your-father-or-mother-born'],
+    required: true,
+    trim: true
+  },
+  securityAnswerHash: {
+    type: String,
+    trim: true,
+    required: true
+  },
   isAdmin: {
     type: Boolean,
     default: false
   },
-  isCommunityAdmin: {
+  /*isCommunityAdmin: {
     type: Boolean,
     default: false
-  },
+  },*/
   managedCommunity: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Community'
@@ -70,6 +102,7 @@ userSchema.set('toJSON', {
     delete returnedObject._id
     delete returnedObject.__v
     delete returnedObject.passwordHash
+    delete returnedObject.securityAnswerHash
   }
 })
 
