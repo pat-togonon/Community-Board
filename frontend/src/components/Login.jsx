@@ -1,11 +1,9 @@
-import SignUp from "./Signup"
-import { useState } from "react"
 import CommunityOption from "./CommunityOption"
 import { useSelector, useDispatch } from "react-redux"
 import { loginWith } from "../service/auth"
 import { setUser } from "../reducer/userReducer"
 import { setCommunityId, clearCommunityId } from "../reducer/communityIdReducer"
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 
 
 const Login = () => {
@@ -70,7 +68,7 @@ const Login = () => {
           password: <input name="loginPassword" type="password" autoComplete="currentLoginPassword"/><br />
           <button type="submit">log in</button>
         </form>
-        <p>Forgot password</p>
+        <Link to='/password-reset'><p>Forgot password</p></Link>
         <p>Don't have an account yet? <button onClick={handleSignUp}>Sign up</button></p>
       </div>
     

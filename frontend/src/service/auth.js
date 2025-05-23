@@ -22,3 +22,17 @@ export const logoutUser = async () => {
   const response = await api.post('/auth/logout', {})
   return response.data
 }
+
+// for updating password
+
+export const updatePassword = async (userId, passwords) => {
+  const response = await api.put(`/auth/password-update/${userId}`, passwords)
+  return response.data
+}
+
+// forgot password
+
+export const resetPassword = async (resetInfo) => {
+  const response = await api.put('/auth/password-reset', resetInfo)
+  return response.data
+}

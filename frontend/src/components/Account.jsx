@@ -1,7 +1,7 @@
 import { clearMainCategory } from "../reducer/mainCategoryReducer";
 import { logoutUser } from "../service/auth"
 import { useSelector, useDispatch } from "react-redux"
-import { logout } from "../reducer/userReducer"
+import { logout, isLoggedIn } from "../reducer/userReducer"
 import { clearCommunityId } from "../reducer/communityIdReducer"
 import { useNavigate } from "react-router";
 import { useState } from "react";
@@ -15,7 +15,9 @@ const Account = () => {
   const [showAccount, setShowAccount] = useState(true)
 
   const dispatch = useDispatch()
-  const user = useSelector(state => state.user.accessToken)
+  const userLoggedIn = useSelector(state => state.user)
+  const user = userLoggedIn.accessToken
+  const isLoggedOut = userLoggedIn.isLoggedOut
   const navigate = useNavigate()
   
   if (!user) {
@@ -27,6 +29,7 @@ const Account = () => {
     await logoutUser()
     // clear the redux store
     dispatch(logout())
+    dispatch(isLoggedIn(false))
     dispatch(clearCommunityId())
     dispatch(clearMainCategory())
     dispatch(resetSubCategory())
@@ -55,12 +58,17 @@ const Account = () => {
     setShowAccount(!showAccount)
     
   }
+
+  const handleSettings = () => {
+    setShowAccount(!showAccount)
+    navigate('/user/settings')
+  }
   return (
     <div style={accountStyle}>
       <div style={selectionStyle}>
       <ul>
           <li><div role="button" onClick={handleProfile}>Profile</div></li>
-          <li><div role="button" onClick={() => setShowAccount(!showAccount)}>Account Settings</div></li>
+          <li><div role="button" onClick={handleSettings}>Account Settings</div></li>
           <li><div onClick={handleLogout} role="button">Logout</div></li>
           <li><div role="button" onClick={() => setShowAccount(!showAccount)}>Theme: Dark Mode Light Mode</div></li>
         </ul>

@@ -51,7 +51,7 @@ const Comment = ({ id, communityId, mainCategory, subCategory }) => {
       <textarea value={newComment} onChange={({ target }) => setNewComment(target.value)}></textarea>
       <button onClick={handlePostComment}>add comment</button>
       <h3>Comments</h3>
-      {comments.map(c => <li key={c.id}>{c.comment} -{c.commenter.username}</li>)}
+      {comments.map(c => <li key={c.id}>{c.comment} -{c.commenter? c.commenter.username : 'deletedAccount'}</li>)}
     </div>
   )
 }

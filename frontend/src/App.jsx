@@ -16,6 +16,8 @@ import Account from './components/Account'
 import { clearMainCategory } from './reducer/mainCategoryReducer'
 import { resetSubCategory } from './reducer/subCategoryReducer'
 import Profile from './components/Profile'
+import Settings from './components/Settings'
+import PasswordReset from './components/PasswordReset'
 
 const App = () => {
   console.log('Good morning Pat!')
@@ -26,6 +28,8 @@ const App = () => {
 
   const userToken = useSelector(state => state.user.accessToken)
   const loggedInUser = useSelector(state => state.user)
+  const isLoggedIn = loggedInUser.isLoggedIn
+  console.log('is logged in?', isLoggedIn)
 
   // brings in new access token so user stays logged in even when they refresh the browser
   
@@ -38,17 +42,17 @@ const App = () => {
           console.log('refresh user is', response.data.userFrontend)
           dispatch(setUser(response.data.userFrontend))
           dispatch(setNewAccessToken(response.data.accessToken))
-          dispatch(setCommunityId(response.data.userFrontend.community[0]))
+          dispatch(setCommunityId(response.data.userFrontend.community))
         } 
       } catch (error) {
         console.log('error refreshing token', error)
         dispatch(logout())
       }
     }
-    if (!userToken) {
+    if (!userToken && !isLoggedIn) {
       silentRefresh()
     }
-  }, [userToken])
+  }, [userToken, isLoggedIn])
 
   const isUserLoggedIn = userToken ? true : false
   console.log(isUserLoggedIn)
@@ -61,7 +65,7 @@ const App = () => {
       return null
     }
 
-    return <h3>The {loggedInUser.communityName[0]} Community</h3>
+    return <h3>The {loggedInUser.communityName} Community</h3>
   }
   
   const homeStyle = {
@@ -96,6 +100,8 @@ const App = () => {
         <Route path='/posts/:community/:mainCategory/new-post' element={<PostForm />} />
         <Route path='/posts/:community/:mainCategory/:subCategory/:id' element={<PostPage />} />
         <Route path='/user/profile/*' element={<Profile />} />
+        <Route path='/user/settings' element={<Settings />} />
+        <Route path='/password-reset' element={<PasswordReset />} />
         
         
       </Routes>

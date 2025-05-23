@@ -5,9 +5,11 @@ const initialState = {
   username: null,
   name: null,
   id: null,
-  community: [],
+  community: null,
+  communityList: [],
   communityName: [],
-  managedCommunity: []
+  managedCommunity: [],
+  isLoggedIn: false
 }
 
 const userSlice = createSlice({
@@ -15,17 +17,23 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action) {
-      return action.payload
+      return { ...action.payload, isLoggedIn: true }
     },
     logout(state, action) {
       return {}
     },
     setNewAccessToken(state, action) {
       return { ...state, accessToken: action.payload }
+    }, 
+    setName(state, action) {
+      return { ... state, name: action.payload}
+    },
+    isLoggedIn(state, action) {
+      return action.payload
     }
   }
 })
 
-export const { setUser, logout, setNewAccessToken } = userSlice.actions
+export const { setUser, logout, setNewAccessToken, setName, isLoggedIn } = userSlice.actions
 
 export default userSlice.reducer

@@ -111,7 +111,7 @@ const Profile = () => {
 
   useEffect(() => {
     
-    if (user && location.pathname === '/user/profile' && mainCategory === 'home') {
+    if (user && (location.pathname === '/user/profile' || location.pathname === '/user/profile/favorites') && mainCategory === 'home') {
         fetchPosts()      
       }
     if (user && location.pathname === '/user/profile/comments') {
@@ -179,6 +179,9 @@ const Profile = () => {
 
   return (
     <div>
+      <div>
+        <h3>Hi {user.name ? user.name : user.username}!</h3>
+      </div>
       <nav>
         <NavLink style={menuStyle} to="/user/profile">Your Posts</NavLink>
         <NavLink style={menuStyle} to="/user/profile/comments">Your Comments</NavLink>

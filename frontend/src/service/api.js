@@ -13,7 +13,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = store.getState().user.accessToken
 
-  const isPublicUrl = ['/login', '/users', '/communities', '/refresh'].some(path => config.url.includes(path))
+  const isPublicUrl = ['/login', '/users', '/communities', '/refresh', '/password-reset'].some(path => config.url.includes(path))
 
   if (token && !isPublicUrl) {
     config.headers.Authorization = `Bearer ${token}`
@@ -26,10 +26,17 @@ api.interceptors.response.use(
   (response) => { 
     return response
   },
-  
+
 
   async (error) => {
     
+    const storeApp = store.getState()
+    const isLoggedIn = storeApp.isLoggedIn
+
+    if (!isLoggedIn) {
+      return Promise.reject(error)
+    }
+
     const originalRequest = error.config
 
     if (error.response && error.response.status === 401 && !originalRequest._retry) {

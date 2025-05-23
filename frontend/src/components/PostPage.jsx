@@ -212,6 +212,7 @@ useEffect(() => {
   return (
     <div>
       <button onClick={handleReturn}>Go to posts</button>
+      <p>Posted by: {post.author ? post.author.username : 'deletedAccount'}</p>
       <h2>{post.title}</h2>
       {fave(post.id)}
       <ShowStatus post={post} />
@@ -226,7 +227,9 @@ useEffect(() => {
       </div>
         tags: {post.mainCategory} {post.subCategory}
       <div style={descriptionStyle}>
-        {post.author === user.id ? editDelete() : ''}
+        {post.author ? 
+        (post.author.id === user.id ? editDelete() : '')
+        : '' }
       </div>
       <Comment communityId={community} mainCategory={mainCategory} subCategory={subCategory} id={id} />
     </div>
