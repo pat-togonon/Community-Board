@@ -6,10 +6,14 @@ import { useNavigate } from "react-router-dom"
 import { securityQuestions } from "../helper/helpers"
 import { useState } from "react"
 import { clearCommunityId } from "../reducer/communityIdReducer"
+import { notifyError } from "../reducer/errorReducer"
+import Error from './Notifications/Error'
+import { notifyConfirmation } from "../reducer/confirmationReducer"
 
 const SignUp = () => {
 
   const [securityQ, setSecurityQ] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const dispatch = useDispatch()
   const communityId = useSelector(state => state.communityId)
@@ -38,6 +42,7 @@ const SignUp = () => {
       const createdUser = await createAccountWith(newUser)
       dispatch(setUser(createdUser))
       console.log('succesful', createdUser)
+      dispatch(notifyConfirmation("You've signed up successfully. Log in to continue.", 7))
       reset(event)
       navigate('/login')
     
@@ -45,6 +50,7 @@ const SignUp = () => {
 
     } catch (error) {
       console.log('error', error.response.data.error)
+      dispatch(notifyError('Please fill out all fields.', 5))
       reset(event)
     }
   }
@@ -72,11 +78,12 @@ const SignUp = () => {
   return (
     <div>
       <h2>Create your account to connect with your local community</h2>
+      <Error />
       <CommunityOption />
       <form onSubmit={handleSignUp}>
         username: <input name="username" type="text" autoComplete="new-username"/><br />
         email: <input name="email" type="email" autoComplete="new-email" /><br />
-        password: <input name="password" type="password" autoComplete="new-password" /><br />
+        password: <input name="password" type={showPassword ? "text" : "password" } autoComplete="new-password" /><button type="button" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Hide password" : "Show password"}</button><br />
         Year of birth: <input type="number" name="birthYear" placeholder="YYYY" /><br />
         Choose one security question: 
         <select value={securityQ} name="securityQuestion" onChange={handleSecurityQuestion}>

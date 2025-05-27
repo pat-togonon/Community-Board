@@ -10,6 +10,10 @@ import { useState } from "react"
 import Comment from "./Comments"
 import { setFavoritePosts } from "../reducer/favoriteReducer"
 import { ShowStatus } from "./PostFeed"
+import { notifyError } from "../reducer/errorReducer"
+import { notifyConfirmation } from "../reducer/confirmationReducer"
+import Confirmation from "./Notifications/Confirmation"
+import Error from "./Notifications/Error"
 
 
 const PostPage = () => {
@@ -17,9 +21,11 @@ const PostPage = () => {
   const [showEditor, setShowEditor] = useState(false)
   const [updateDescription, setUpdateDescription] = useState('')
   const [favorited, setFavorited] = useState(false)
+  const [clickDelete, setClickDelete] = useState(false)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  
 
   const posts = useSelector(state => state.posts)
   const user = useSelector(state => state.user)
@@ -29,23 +35,32 @@ const PostPage = () => {
     //hydrate redux so it persists upon browser refresh
 
   useEffect(() =>{
-    if (community) {
-      dispatch(setCommunityId(community))
-    }
+   
+    if (user) {
+      if (community) {
+        dispatch(setCommunityId(community))
+      }
 
-    if (mainCategory) {
-      dispatch(setMainCategory(mainCategory))
-    }
+      if (mainCategory) {
+        dispatch(setMainCategory(mainCategory))
+      }
 
-    if (subCategory) {
-      dispatch(setSubCategory(subCategory))
-    }
+      if (subCategory) {
+        dispatch(setSubCategory(subCategory))
+      }
+
+  }
+  
 
 }, [community, mainCategory, subCategory])
 
 useEffect(() => {
+  
+  if (user && community && mainCategory && subCategory && id) {
     fetchPosts()
-  }, [mainCategory])
+  }
+  
+  }, [user, community, mainCategory, subCategory, id])
 
   const fetchPosts = async () => {
     try {
@@ -94,35 +109,41 @@ useEffect(() => {
 
   const editDelete = (event) => {
 
-    const handleDelete = async (event) => {
-
-      // need confirmation first if push through deletion
-
-      try {
-        await deletePost(community, mainCategory, subCategory, id)
-        fetchPosts()
-        fetchFavorites()
-        dispatch(resetSubCategory())
-        navigate(`/posts/${community}/${mainCategory}`)
-      } catch(error) {
-        console.log('error deleting post', error)
-      }
-    }
-
     const handleEditPost = async (event) => {
       setUpdateDescription(post.description)
       setHide(!hide)
       setShowEditor(!showEditor)
     }
 
+    const handleDeleteConfirmation = (event) => {
+      setClickDelete(!clickDelete)
+      
+    }
+
     return (
       <div>
         <button onClick={handleEditPost}>Edit description</button>
-        <button onClick={handleDelete}>Delete</button>
+        <button onClick={handleDeleteConfirmation}>Delete</button>
       </div>
     )
 
   }
+
+  const handleDelete = async (event) => {
+
+      try {
+        await deletePost(community, mainCategory, subCategory, id)
+        fetchPosts()
+        fetchFavorites()
+        dispatch(resetSubCategory())
+        dispatch(notifyConfirmation('Post is successfully deleted!', 5))
+        navigate(`/posts/${community}/${mainCategory}`)
+      } catch(error) {
+        console.log('error deleting post', error.response.data.error)
+        dispatch(notifyError(`Oops! Trouble deleting post. Please try again.`, 5))
+      }
+  }
+
 
   const descriptionStyle = {
     display: hide ? 'none' : ''
@@ -131,6 +152,7 @@ useEffect(() => {
   const editorStyle = {
     display: showEditor ? '' : 'none'
   }
+  console.log('show editor', showEditor, 'clicked delete', clickDelete)
 
   const handleCancelEdit = (event) => {
     const path = `/posts/${community}/${mainCategory}/${subCategory}/${id}`
@@ -160,30 +182,32 @@ useEffect(() => {
       console.log('error editing post', error)
     }
   }
-
-  // for add to favorites, maybe can be dynamic. If not favorited yet, can be favorited. If already favorited, then clicking one more time will remove the post from favoritePosts array. Add to Favorites or Remove from Favorites for button? 
   
   const handleAddToFavorites = async (id) => {
 
     console.log('favorited id', id)
     try {
       await addToFavorites(id)
-//      fetchPosts()
       setFavorited(!favorited)
       fetchFavorites()
-      // add notification telling user successfully added into favorites
+      dispatch(notifyConfirmation('Added to your favorites!', 3))
     } catch (error) {
-      console.log('error adding to favorites', error)
+      console.log('error adding to favorites', error.response.data.error)
+      dispatch(notifyError("Oops! Can't add to your favorites right now. Try again later.", 6))
     }
   }
 
   const handleRemoveFavorites = async (id) => {
     try {
       await removeFromFavorites(id)
+      dispatch(notifyConfirmation('Removed from your favorites!', 3))
+      setFavorited(false)
       fetchFavorites()
+      dispatch(notifyConfirmation('Removed from your favorites!', 3))
       
     } catch (error) {
-      console.log('error removing from favorites', error)
+      console.log('error removing from favorites', error.response.data.error)
+      dispatch(notifyError("Oops! Can't remove from your favorites right now. Try again later.", 6))
     }
   }
 
@@ -209,28 +233,44 @@ useEffect(() => {
     )
   }
 
+  const contentStyle = {
+    display: clickDelete ? 'none' : ''
+  }
+
+  const deleteConfirmStyle = {
+    display: clickDelete ? '' : 'none'
+  }
+
   return (
     <div>
       <button onClick={handleReturn}>Go to posts</button>
       <p>Posted by: {post.author ? post.author.username : 'deletedAccount'}</p>
       <h2>{post.title}</h2>
+      <Error />
+      <Confirmation />
       {fave(post.id)}
       <ShowStatus post={post} />
       <div style={descriptionStyle}>
       <p>{post.description}</p>
       </div>
-      <div style={editorStyle}>
-        <textarea value={updateDescription} name='updatedDescription' onChange={({ target }) => setUpdateDescription(target.value)}></textarea>
-        <button onClick={handlePostUpdate}>update description</button>
-        <button onClick={handleCancelEdit}>cancel</button>
       
-      </div>
+        <div style={editorStyle}>
+          <textarea value={updateDescription} name='updatedDescription' onChange={({ target }) => setUpdateDescription(target.value)}></textarea>
+          <button onClick={handlePostUpdate}>update description</button>
+          <button onClick={handleCancelEdit}>cancel</button>
+      
+        </div>      
         tags: {post.mainCategory} {post.subCategory}
-      <div style={descriptionStyle}>
+        <div style={deleteConfirmStyle}>
+          <h3>Are you sure you want to delete this post?</h3>
+          <button onClick={() => handleDelete()}>Yes</button>
+          <button onClick={() => setClickDelete(!clickDelete)}>Cancel</button>
+        </div>
+      {clickDelete ? '' : <div style={descriptionStyle}>
         {post.author ? 
         (post.author.id === user.id ? editDelete() : '')
         : '' }
-      </div>
+      </div>}
       <Comment communityId={community} mainCategory={mainCategory} subCategory={subCategory} id={id} />
     </div>
   )

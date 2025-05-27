@@ -9,6 +9,7 @@ import GarageSaleGiveaways from "./GarageSaleGiveaway"
 import ShopsPromo from "./ShopsPromo"
 import { useNavigate, Outlet } from "react-router-dom"
 import SubCategoryOptions from "./SubCategory"
+import Confirmation from "./Notifications/Confirmation"
 
 
 // Just shows the first 10 posts in all categories and subcategories - sorted by date posted
@@ -98,6 +99,7 @@ const Dashboard = () => {
   return (
     <div>
       <header>
+        <Confirmation />
       Navigate to: 
       <select value={mainCategory} onChange={handleCategory} id='mainCategory' name='mainCategory'>
         {mainCategories.map((mainCategory) => (

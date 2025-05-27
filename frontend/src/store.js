@@ -6,6 +6,9 @@ import subCategoryReducer from './reducer/subCategoryReducer'
 import postReducer from './reducer/postReducer'
 import favoriteReducer from './reducer/favoriteReducer'
 import commentReducer from './reducer/commentsReducer'
+import errorReducer from './reducer/errorReducer'
+import confirmationReducer from './reducer/confirmationReducer'
+
 
 const store = configureStore({
   reducer: {
@@ -15,7 +18,9 @@ const store = configureStore({
     subCategory: subCategoryReducer,
     posts: postReducer,
     favorites: favoriteReducer,
-    comments: commentReducer
+    comments: commentReducer,
+    error: errorReducer,
+    confirmation: confirmationReducer
   }
 })
 

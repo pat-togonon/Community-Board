@@ -26,6 +26,7 @@ const Account = () => {
 
   const handleLogout = async (event) => {   
     setShowAccount(!showAccount)
+    try {
     await logoutUser()
     // clear the redux store
     dispatch(logout())
@@ -38,6 +39,9 @@ const Account = () => {
     dispatch(clearPosts())
     navigate('/')
     setShowAccount(!showAccount)
+    } catch (error) {
+      console.log('error log out', error.response.data.error)
+    }
   }
 
   const accountStyle = {

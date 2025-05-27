@@ -2,11 +2,18 @@ import CommunityOption from "./CommunityOption"
 import { useSelector, useDispatch } from "react-redux"
 import { loginWith } from "../service/auth"
 import { setUser } from "../reducer/userReducer"
-import { setCommunityId, clearCommunityId } from "../reducer/communityIdReducer"
+import { clearCommunityId } from "../reducer/communityIdReducer"
 import { Link, useNavigate } from "react-router"
+import { useState } from "react"
+import { notifyError } from "../reducer/errorReducer"
+import Error from "./Notifications/Error"
+import { notifyConfirmation } from "../reducer/confirmationReducer"
+import Confirmation from './Notifications/Confirmation'
 
 
 const Login = () => {
+
+  const [showPassword, setShowPassword] = useState(false)
   
   const userLoggedIn = useSelector(state => state.user.accessToken)
 
@@ -19,7 +26,7 @@ const Login = () => {
   }
   
   const handleSignUp = (event) => {
-    dispatch(setCommunityId(''))
+    dispatch(clearCommunityId())
     navigate('/signup')
   }
   
@@ -32,7 +39,6 @@ const Login = () => {
       username,
       password
     }
-    dispatch(setUser(userLogin))
     console.log('user login', userLogin)
     const userForLogin = {
       ...userLogin,
@@ -43,11 +49,13 @@ const Login = () => {
      const loggedUser = await loginWith(userForLogin)
      console.log('logged in user', loggedUser)
      dispatch(setUser(loggedUser))
+     dispatch(notifyConfirmation(`Welcome back ${loggedUser.name ? loggedUser.name : loggedUser.username}!`, 5))
      reset(event)
      navigate('/')
 
    } catch (error) {
       console.log('invalid login', error.response.data.error)
+      dispatch(notifyError(error.response.data.error, 5))
       reset(event)
       dispatch(clearCommunityId())
       navigate('/login')
@@ -62,10 +70,12 @@ const Login = () => {
   return (
       <div>
         <h2>Log in to connect with your local community</h2>
+        <Error />
+        <Confirmation />        
         <CommunityOption />
         <form onSubmit={handleLogin}>
           username: <input name="loginUsername" type="text" autoComplete="currentLoginUsername" /><br />
-          password: <input name="loginPassword" type="password" autoComplete="currentLoginPassword"/><br />
+          password: <input name="loginPassword" type={showPassword ? "text" : "password"} autoComplete="currentLoginPassword"/><button type="button" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Hide password" : "Show password"}</button><br />
           <button type="submit">log in</button>
         </form>
         <Link to='/password-reset'><p>Forgot password</p></Link>

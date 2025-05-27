@@ -40,17 +40,18 @@ const App = () => {
 
         if (response.status === 200 && response.data.accessToken) {
           console.log('refresh user is', response.data.userFrontend)
-          dispatch(setUser(response.data.userFrontend))
+          dispatch(setUser({ ...response.data.userFrontend, isLoggedIn: true }))
           dispatch(setNewAccessToken(response.data.accessToken))
           dispatch(setCommunityId(response.data.userFrontend.community))
         } 
       } catch (error) {
-        console.log('error refreshing token', error)
+        console.log('error refreshing token', error.response.data.error)
         dispatch(logout())
       }
     }
-    if (!userToken && !isLoggedIn) {
-      silentRefresh()
+    console.log('is logged in?', isLoggedIn)
+    if (!userToken || !isLoggedIn) {
+        silentRefresh()
     }
   }, [userToken, isLoggedIn])
 

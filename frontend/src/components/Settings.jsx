@@ -10,6 +10,10 @@ import { clearFavoritePosts } from "../reducer/favoriteReducer"
 import { clearComments } from "../reducer/commentsReducer"
 import { useNavigate } from "react-router-dom"
 import { updatePassword } from "../service/auth"
+import Error from './Notifications/Error'
+import Confirmation from './Notifications/Confirmation'
+import { notifyConfirmation } from "../reducer/confirmationReducer"
+import { notifyError } from "../reducer/errorReducer"
 
 const Settings = () => {
 
@@ -25,8 +29,6 @@ const Settings = () => {
   const user = useSelector(state => state.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  console.log('settings user', user)
-  console.log('settings user name', user.name)
   
   useEffect(() => {
     if (user && user.name) {
@@ -68,8 +70,10 @@ const Settings = () => {
       try {
         const savedName = await updateSavedName(user.id, name)
         dispatch(setName(savedName))
+        dispatch(notifyConfirmation('Updated your name successfully!', 5))
       } catch (error) {
         console.log('error saving name', error)
+        dispatch(notifyError("Oops! Can't update your name right now. Please try again later.", 7))
       }
     }
 
@@ -108,7 +112,7 @@ const Settings = () => {
     console.log('username', user.username, 'user input', deleteUsername)
 
     if (user.username !== deleteUsername) {
-      console.log('Wrong username. Please try again.') // add a notification for this
+      dispatch(notifyError('Wrong username. Please try again.', 5)) // add a notification for this
       setDeleteUsername('')
       return
     }
@@ -119,8 +123,7 @@ const Settings = () => {
       navigate('/')
 
     } catch (error) {
-      console.log('error deleting account', error)
-      // Notif error here please
+      dispatch(notifyError(`Oops! Can't delete your account right now: ${error.response.data.error}.`, 7))
       
     }    
     setDeleteUsername('')
@@ -145,8 +148,10 @@ const Settings = () => {
   const handleUpdatePassword = async (event) => {
     event.preventDefault()
 
-    console.log('old PW', oldPassword)
-    console.log('new PW', newPassword)
+    if (!oldPassword || !newPassword) {
+      dispatch(notifyError('Please enter your passwords.', 5))
+      return
+    }
 
     const passwords = {
       oldPassword,
@@ -156,12 +161,12 @@ const Settings = () => {
     try {
       await updatePassword(user.id, passwords)
       reset()
-      navigate('/login')
       setShowPasswordForm(!showPasswordForm)
-      //notification - log in again with your new password
+      navigate('/login')
 
     } catch (error) {
-      console.log('error updating your password', error)
+      dispatch(notifyError(`Oops! Can't update your password right now. ${error.response.data.error}.`, 6))
+
     
     }
 
@@ -173,14 +178,17 @@ const Settings = () => {
   return (
     <div>
       <h2>Your information</h2>
+      <Error />
+      <Confirmation />
       {updateName()}
       <p>Username: {user.username}</p>
       <div style={passwordUpdateStyle}>Update password <button onClick={() => setShowPasswordForm(!showPasswordForm)}>🖋️</button></div>
       <div style={passwordFormStyle}>
         <form onSubmit={handleUpdatePassword}>
           <h3>Enter your old password and new password to proceed: </h3>
-          Enter your old password: <input value={oldPassword} type="password" name="oldPassword" onChange={({ target }) => setOldPassword(target.value)} /><br />
-          Enter your new password: <input value={newPassword} type="password" name="newPassword" onChange={({ target }) => setNewPassword(target.value)} /><br />
+          <p>Take note: You'll be logged out right after updating your password. Please log in again.</p>
+          Enter your old password: <input value={oldPassword} type="password" name="oldPassword" autoComplete="oldPassword" onChange={({ target }) => setOldPassword(target.value)} /><br />
+          Enter your new password: <input value={newPassword} type="password" autoComplete="newPassword" name="newPassword" onChange={({ target }) => setNewPassword(target.value)} /><br />
           <button type="submit">update password</button>
         </form>
         <button onClick={() => setShowPasswordForm(!showPasswordForm)}>cancel</button>
@@ -188,9 +196,11 @@ const Settings = () => {
       <div style={deleteStyle} onClick={() => setShowDelete(!showDelete)}>Delete account</div>
       <div>
         <div style={deleteFormStyle}>
-          <p>Type in your username to confirm and delete your account:</p>
+          <h3>Type in your username to confirm and delete your account:</h3>
+          <p>Take note: You'll be logged out automatically upon deleting your account.</p>
           <input type="text" value={deleteUsername} onChange={({ target }) => setDeleteUsername(target.value)} />
           <button onClick={handleDeleteAccount}>Delete account</button>
+          <button onClick={() => setShowDelete(!showDelete)}>Cancel</button>
 
         </div>
       </div>

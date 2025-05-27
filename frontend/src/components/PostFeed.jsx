@@ -3,6 +3,9 @@ import { Link } from "react-router-dom"
 import { useEffect } from "react"
 import { getAllPosts } from '../service/posts'
 import { setPosts } from '../reducer/postReducer'
+import { notifyError } from "../reducer/errorReducer"
+import Error from "./Notifications/Error"
+import Confirmation from "./Notifications/Confirmation"
 
 export const ShowStatus = ({ post }) => {
    
@@ -26,7 +29,7 @@ export const ShowStatus = ({ post }) => {
   }
 
   if (daysRemaining > 1 && daysToStart <= 0) {
-    return <div>Ongoing</div>
+    return <div>Ongoing until {endDate.toDateString()}</div>
   }
 
   if (daysRemaining < 1 && daysRemaining > 0 && daysToStart > 0) {
@@ -35,6 +38,10 @@ export const ShowStatus = ({ post }) => {
 
   if (daysRemaining > 0 && daysToStart < 0) {
     return <div>Ends tomorrow</div>
+  }
+
+  if (startDate > today) {
+    return <div>Starts in {Math.floor(daysToStart)} days</div>
   }
 
 }
@@ -54,15 +61,18 @@ const ShowAllPosts = () => {
       const fetchPosts = async () => {
         try {
           const allPosts = await getAllPosts(communityId, mainCategory)
-          console.log('all posts', allPosts)
-          console.log('comm Id is', communityId)
           dispatch(setPosts(allPosts))
         } catch(error) {
-          console.log('posts showing error', error)
+          dispatch(notifyError(`Trouble loading posts. ${error.response.data.error}.`))
         }
       }
 
   const allPostFeed = () => {
+
+    if (mainCategory !== 'home' && subCategory !== 'All') {
+      return null
+    }
+
     return (
       <div>
         {posts.map(post => (
@@ -78,10 +88,16 @@ const ShowAllPosts = () => {
       </div>
     )
   }
+
   const allSubCategoryPosts = () => {
+
+    if (mainCategory === 'home') {
+      return null
+    }
+
     return (
       <div>
-        {posts.filter(post => post.subCategory === subCategory).map(post => (
+        {posts.filter(post => post.mainCategory === mainCategory).filter(post => post.subCategory === subCategory).map(post => (
           <div key={post.id}>
           <Link to={`/posts/${post.community}/${post.mainCategory}/${post.subCategory}/${post.id}`}>
             <h3>{post.title.slice(0, 60)}</h3>
@@ -97,7 +113,9 @@ const ShowAllPosts = () => {
 
   return (
     <div>
-      {subCategory === 'All' ? allPostFeed(): allSubCategoryPosts()}
+      <Error />
+      {allPostFeed()}      
+      {allSubCategoryPosts()}
     </div>
   )
 }
@@ -106,3 +124,4 @@ const ShowAllPosts = () => {
 export default ShowAllPosts
 
 // show first 10 posts and auto load next 10 when reached the 10th?
+//{subCategory === 'All' ? allPostFeed(): allSubCategoryPosts()}

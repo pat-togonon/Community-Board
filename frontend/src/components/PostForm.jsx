@@ -10,8 +10,10 @@ import { useParams } from "react-router-dom"
 import { setCommunityId } from "../reducer/communityIdReducer"
 import { setMainCategory } from "../reducer/mainCategoryReducer"
 import { mainCategories } from "./dashboard"
+import { notifyError } from "../reducer/errorReducer"
+import Error from "./Notifications/Error"
+import { notifyConfirmation } from "../reducer/confirmationReducer"
 
-// when create a post button is clicked, browser navigates to post form. So not toggle anymore because the subcategory gets pushed down
 
 const SubCategoryDropDown = ({ subCategoryOptions, subCategory }) => {
   
@@ -52,40 +54,41 @@ const PostForm = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  useEffect(() => {
-      if (community) {
-        dispatch(setCommunityId(community))
-      }
-      if (mainCategory) {
-        dispatch(setMainCategory(mainCategory))
-      }
-    }, [community, mainCategory])
-
   const communityId = useSelector(state => state.communityId)  
-
   const mainCategoryStored = useSelector(state => state.mainCategory)
   const subCategory = useSelector(state => state.subCategory)
   const user = useSelector(state => state.user)
   console.log('user id is', user.id)
 
   useEffect(() => {
-    fetchCurrentCommunity()
-  }, [user.id])
+    if (user) {
+      if (community) {
+        dispatch(setCommunityId(community))
+      }
+      if (mainCategory) {
+        dispatch(setMainCategory(mainCategory))
+      }
+    }
+  }, [user, community, mainCategory])
+
+  useEffect(() => {
+    if (user) {
+      fetchCurrentCommunity()
+    }
+  }, [user])
 
   const fetchCurrentCommunity = async () => {
     try {
       const currentCommunity = await getCurrentCommunity(communityId)
       const role = currentCommunity.additionalAdmins.find(id => id === user.id)
-      console.log('current community is', currentCommunity, 'role is', role)
+  
       if (!role) {
         return setUserRole(null)
       }
       setUserRole('admin')
     } catch(error) {
-      console.log('error is', error)
+      dispatch(notifyError('Loading...'), 5)
     }
-
-    console.log('user role is', userRole)
   }
 
   if (mainCategoryStored === 'home') {
@@ -116,11 +119,13 @@ const PostForm = () => {
     try {
       const createdPost = await createPost(newPost, communityId, mainCategoryStored, subCategory)
       dispatch(addPost(createdPost))
+      dispatch(notifyConfirmation('Posted successfully!', 3))
+
       const path = `/posts/${communityId}/${mainCategoryStored}`
       navigate(path)     
 
     } catch (error) {
-      console.log('error posting is', error)
+      dispatch(notifyError(`Oops! Error posting. ${error.response.data.error}. Try again.`, 6))
     }
     
     reset()
@@ -148,6 +153,7 @@ const PostForm = () => {
   const categoryName = mainCategories.find(cat => cat.category === mainCategoryStored).name
   return (
     <div>
+      <Error />
         <h2>Create a new {categoryName} post</h2>
         <form onSubmit={handlePostCreation}>
           <SubCategoryDropDown subCategoryOptions={subCategoryOptions} subCategory={subCategory} />

@@ -2,12 +2,13 @@ import { useDispatch, useSelector } from "react-redux"
 import { Link, NavLink, Routes, Route, useLocation } from "react-router-dom"
 import { clearMainCategory } from "../reducer/mainCategoryReducer"
 import { resetSubCategory } from "../reducer/subCategoryReducer"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { getAllPosts, viewFavorites } from "../service/posts"
 import { setPosts } from "../reducer/postReducer"
 import { viewAllCommunityComments } from "../service/comments"
 import { setFavoritePosts } from "../reducer/favoriteReducer"
 import { setComments } from "../reducer/commentsReducer"
+import { notifyError } from "../reducer/errorReducer"
 
 
 const UserPosts = ({ postsByUser }) => {
@@ -28,13 +29,19 @@ const UserPosts = ({ postsByUser }) => {
 
 }
 
-const UserComments = ({ comments, communityId }) => {
-// or upon clicking on the comment title, create own comment page? With view all comments feature too
+const UserComments = ({ comments, communityId, accessToken }) => {
 
-console.log('comment', comments)
+  if (!accessToken) {
+    return null
+  }
+
+  const commentsInExistingPosts = comments.filter(comment => comment.post)
+  
+  console.log('comment', comments)
+  
   return (
     <div>
-      {comments.map(comment => 
+      {commentsInExistingPosts.map(comment => 
       <div key={comment.id}>
       <Link to={`/posts/${communityId}/${comment.post.mainCategory}/${comment.post.subCategory}/${comment.post.id}`}>
       <h4>{comment.comment.slice(0, 60)}...</h4>
@@ -92,6 +99,7 @@ const Profile = () => {
   const location = useLocation()
   const user = useSelector(state => state.user)
   const userId = user.id
+  const accessToken = user.accessToken
   const posts = useSelector(state => state.posts)  
   const postsByUser = posts.filter(post => post.author === userId)
   const communityId = useSelector(state => state.communityId)
@@ -103,7 +111,7 @@ const Profile = () => {
   
   useEffect(() => {
   
-    if (user && location.pathname === '/user/profile') {
+    if (user && (location.pathname === '/user/profile' || location.pathname === '/user/profile/comments' || location.pathname === '/user/profile/favorites' || location.pathname === '/user/profile/communities')) {
       reset()
     }
   }, [communityId, user, location.pathname, dispatch])
@@ -114,7 +122,7 @@ const Profile = () => {
     if (user && (location.pathname === '/user/profile' || location.pathname === '/user/profile/favorites') && mainCategory === 'home') {
         fetchPosts()      
       }
-    if (user && location.pathname === '/user/profile/comments') {
+    if (user && (location.pathname === '/user/profile/comments' || '/user/profile')) {
       fetchComments()
     }
   }, [communityId, user, mainCategory, subCategory, dispatch, location.pathname])
@@ -139,20 +147,26 @@ const Profile = () => {
 
       dispatch(setPosts(allPosts))
     } catch(error) {
-        console.log('posts showing error', error)
+        console.log('posts showing error', error.response.data.error)
+        dispatch(notifyError('Loading...'))
       }
     }
 
   const fetchComments = async () => {
     try {
       const allComments = await viewAllCommunityComments(communityId)
-      const comments = allComments.filter(comment => comment.commenter === userId)
+          
+      const comments = allComments.filter(c => c.commenter?.id?.toString() === userId.toString())
+
+      console.log('all comments', allComments)
+      
       dispatch(setComments(comments))
+      
     } catch (error) {
-        console.log('error comments', error)
+        console.log('error comments', error.response.data.error)
+        dispatch(notifyError('Loading...'))
      }
 
-     console.log('user comments', comments)
   }
   
   const fetchFavorites = async () => {
@@ -161,9 +175,10 @@ const Profile = () => {
       const allfavoritesInString = allfavorites.map(fave => fave.toString())
       const favoritePosts = posts.filter(post => allfavoritesInString.includes(post.id.toString()))
       dispatch(setFavoritePosts(favoritePosts))
+      dispatch(notifyError('Loading...'))
             
    } catch (error) {
-      console.log('error showing favorites', error)
+      console.log('error showing favorites', error.response.data.error)
     }  
  }
 
@@ -190,7 +205,7 @@ const Profile = () => {
       </nav>
       <Routes>
         <Route index element={<UserPosts postsByUser={postsByUser} />} />     
-        <Route path="/comments" element={<UserComments comments={comments} communityId={communityId} />} />
+        <Route path="/comments" element={<UserComments comments={comments} communityId={communityId} accessToken={accessToken} />} />
         <Route path="/favorites" element={<UserFavorites favorites={favoritePosts} communityId={communityId} />} />
         <Route path="/communities" element={<AdminSection communityId={communityId} user={user} />} />
       </Routes>
