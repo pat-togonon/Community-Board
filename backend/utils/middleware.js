@@ -54,7 +54,7 @@ const errorHandler = (error, request, response, next) => {
     })
   } else if (error.name === 'ZodError') {
     return response.status(400).json({ error: error.errors.map(e => {
-      return `${e.path}: ${e.message.toLowerCase()}`
+      return `${e.message}`
     }).join('. ') })
   }
 

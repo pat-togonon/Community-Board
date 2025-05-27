@@ -14,7 +14,7 @@ authRouter.post('/login', login)
 authRouter.post('/refresh', getRefreshToken)
 
 //log out
-authRouter.post('/logout', logout)
+authRouter.post('/logout', middleware.tokenExtractor, middleware.userExtractor, logout)
 
 //update password
 authRouter.put('/password-update/:userId', middleware.tokenExtractor, middleware.userExtractor, updatePassword)

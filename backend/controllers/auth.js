@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const mongoose = require('mongoose')
 const User = require('../models/User')
 const Post = require('../models/Post')
 const Community = require('../models/Community')
@@ -202,7 +203,7 @@ const login = async (request, response) => {
     community: communityExists._id
   }
   
-  const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '1d' })
+  const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '5m' })
   
   const refreshToken = jwt.sign(userForToken, process.env.REFRESH_SECRET, { expiresIn: '30d'})
   
@@ -276,7 +277,16 @@ const getRefreshToken = async (request, response) => {
     return response.status(403).json({ error: "Forbidden: Refresh token did not match any stored hashes. Try logging in again" })
   }
   // delete existing and generate new one for better security
-  await matchedRefreshToken.deleteOne()
+
+  console.log('matchedRefreshToken instanceof mongoose.Document:', matchedRefreshToken instanceof mongoose.Document)
+
+  console.log('matched refreshed token', matchedRefreshToken)
+
+  try {
+    await matchedRefreshToken.deleteOne()
+  } catch (error) {
+    console.log('error deleting old refresh tokens', error)
+  }
     
   const userForToken = {
     username: decoded.username,
@@ -341,6 +351,10 @@ const logout = async (request, response) => {
     secure: false, //set to true on production /deployment
     sameSite: 'Lax'
   })
+
+  console.log('log out request user', request.user)
+
+  await RefreshToken.deleteMany({ user: request.user._id })
 
   return response.status(204).end()
 }

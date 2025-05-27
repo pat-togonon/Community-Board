@@ -5,6 +5,7 @@
 // create posts OK
 const Post = require('../models/Post')
 const User = require('../models/User')
+const Comment = require('../models/Comment')
 const Community = require('../models/Community')
 const { validSubcategories } = require('../utils/helper')
 const { newPostSchema } = require('../validators/content')

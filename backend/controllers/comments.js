@@ -33,6 +33,7 @@ const viewAll = async (request, response) => {
   const comments = await Comment.find({
     community: communityValid._id
   }).populate('post', { mainCategory: 1, subCategory: 1, id: 1, title: 1, description: 1, community: 1 })
+    .populate('commenter', { id: 1, username: 1 })
 
   return response.json(comments)
   
@@ -116,8 +117,51 @@ const viewAllPostComments = async (request, response) => {
   return response.json(comments)
 }
 
+const editComment = async (request, response) => {
+  const { commentId } = request.params
+  console.log('request body', request.body)
+  const { comment } = request.body // zod validation
+
+  //REFACTOR all routes applicable so just a single or less checks like this:
+  const commentToUpdate = await Comment.findOne({
+    _id: commentId,
+    commenter: request.user._id, // is user the commenter
+    community: { $in: request.user.community } // is it inside user's community
+  })  
+
+  if (!commentToUpdate) {
+    return response.status(404).json({ error: "Comment not found or you don't have permission to edit it" })
+  }
+
+  const updatedComment = await Comment.findByIdAndUpdate(commentToUpdate._id, { comment }, { new: true, runValidators: true })
+
+  return response.status(200).json(updatedComment)
+
+}
+
+const deleteComment = async (request, response) => {
+  const { commentId } = request.params
+
+  const commentToDelete = await Comment.findOne({
+    _id: commentId,
+    commenter: request.user._id,
+    community: { $in: request.user.community }
+  })
+
+  if (!commentToDelete) {
+    return response.status(204).end()
+  }
+
+  await Comment.findByIdAndDelete(commentToDelete._id)
+
+  return response.status(204).end()
+
+}
+
 module.exports = {
   viewAll,
   postComment,
-  viewAllPostComments
+  viewAllPostComments, 
+  editComment,
+  deleteComment
 }

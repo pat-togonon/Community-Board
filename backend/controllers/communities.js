@@ -11,21 +11,44 @@ communityRouter.get('/', async (request, response) => {
 })
 
 communityRouter.get('/:id', tokenExtractor, userExtractor, async (request, response) => {
-  const currentCommunity = await Community.findById(request.params.id)
+  //const currentCommunity = await Community.findById(request.params.id)
 
+  const currentCommunity = await Community.findOne({
+    _id: request.params.id,
+    communityUsers: { $in: [request.user._id] }
+  })
+/*
   const isUserValid = await User.findById(request.user._id)
 
   if (!isUserValid) {
     return response.status(401).json({ error: "Please log in to view communities" })
+  }
+    */
+
+  if (!currentCommunity) {
+    return response.status(404).json({ error: "Community not found or you are not a member of this community." })
   }
 
   return response.json(currentCommunity)
 })
 
 communityRouter.post('/', async (request, response) => {
+
+  const receivedData = request.body
+
+  const dataToParse = {
+    username: receivedData.username,
+    password: receivedData.password,
+    email: receivedData.email,
+    communityName: receivedData.communityName,
+    communityDescription: receivedData.communityDescription,
+    birthYear: Number(receivedData.birthYear.trim()),
+    chosenSecurityQuestion: receivedData.chosenSecurityQuestion,
+    securityAnswer: receivedData.securityAnswer.toLowerCase()  
+  }
   
-  const parsedData = communityRegistrationSchema.parse(request.body)
-  const { username, email, password, communityName, communityDescription } = parsedData
+  const parsedData = communityRegistrationSchema.parse(dataToParse)
+  const { username, email, password, communityName, communityDescription, chosenSecurityQuestion, securityAnswer } = parsedData
 
   const communityExists = await Community.findOne({ name: communityName })
 
@@ -48,6 +71,7 @@ communityRouter.post('/', async (request, response) => {
 
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
+  const securityAnswerHash = await bcrypt.hash(securityAnswer, saltRounds)
 
   // if from a non-existing user. If a user exists and registered a community, need to have a separate checker here. Example if (user) { await user.findOne({}) } -- need to push or concat community IDs and managedcommunity
 
@@ -56,9 +80,10 @@ communityRouter.post('/', async (request, response) => {
     email,
     passwordHash,
     isAdmin: true,
-    //isCommunityAdmin: true,
     managedCommunity: [],
-    community: []
+    community: [],
+    securityQuestion: chosenSecurityQuestion,
+    securityAnswerHash
   })
 
   const savedUser = await user.save()

@@ -147,12 +147,6 @@ const deleteAccount = async (request, response) => {
 
 }
 
-const updatePassword = async (request, response) => {
-  const { password } = request.body // validate via zod
-
-  const saltRounds = 10
-
-}
 
 module.exports = {
   addToFavorites,
