@@ -163,6 +163,12 @@ usersRouter.put('/:id', async (request, response) => {
 // User log in
 
 const login = async (request, response) => {
+
+  if (!request.body.community && !request.body.username && !request.body.password) {
+    return response.status(401).json({
+      error: 'Please enter your login details.'
+    })
+  }
   
   const parsedData = loginSchema.parse(request.body)
   const { username, password, communityId } = parsedData
@@ -172,6 +178,12 @@ const login = async (request, response) => {
   const user = await User.findOne({ username })
     .populate('community', { _id: 1, name: 1 })
     .populate('managedCommunity', { _id: 1, name: 1, communityUsers: 1, description: 1, additionalAdmins: 1 })
+
+  if (!user) {
+    return response.status(401).json({
+      error: 'User not found. Please sign up.'
+      })
+  }
 
   const userIsInCommunity = communityExists.communityUsers.find(commUser => commUser.toString() === user._id.toString())
 
@@ -336,7 +348,7 @@ const getRefreshToken = async (request, response) => {
 
   console.log('user frontend is', userFrontend)
 
-  return response.json({ accessToken, userFrontend })
+  return response.status(200).json({ accessToken, userFrontend })
 
 }
 
@@ -402,7 +414,12 @@ const updatePassword = async (request, response) => {
 }
 
 const passwordReset = async (request, response) => {
-  console.log('request body', request.body)
+  
+  if (!request.body.username && !request.body.newPassword && !request.body.securityAnswer && !request.body.securityQuestion) {
+    return response.status(401).json({
+      error: 'Please fill in all details'
+    })
+  }
   
   const parsedData = passwordResetSchema.parse(request.body)
 

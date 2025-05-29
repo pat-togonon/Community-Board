@@ -41,7 +41,7 @@ app.get('/', (request, response) => {
   response.send('<h1>Hello Pat!</h1')
 })
 app.use('/api/auth', authRouter)
-app.use('/api/communities', communityRouter)
+app.use('/api/communities/', communityRouter)
 app.use('/api/posts/', middleware.tokenExtractor, middleware.userExtractor, postRouter)
 app.use('/api/posts/', middleware.tokenExtractor, middleware.userExtractor, commentRouter)
 app.use('/api/user/',middleware.tokenExtractor, middleware.userExtractor, userRouter)

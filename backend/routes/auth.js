@@ -5,7 +5,7 @@ const middleware = require('../utils/middleware')
 // user registration and details
 authRouter.get('/users', usersList) // need to remove later on
 authRouter.post('/users', createAccount)
-authRouter.get('/users/:id', middleware.tokenExtractor, middleware.userExtractor, viewOneUser)
+//authRouter.get('/users/:id', middleware.tokenExtractor, middleware.userExtractor, viewOneUser) in public url list on frontend
 
 //user login
 authRouter.post('/login', login)

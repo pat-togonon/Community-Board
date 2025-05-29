@@ -17,6 +17,7 @@ communityRouter.get('/:id', tokenExtractor, userExtractor, async (request, respo
     _id: request.params.id,
     communityUsers: { $in: [request.user._id] }
   })
+
 /*
   const isUserValid = await User.findById(request.user._id)
 
