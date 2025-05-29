@@ -1,0 +1,354 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --header-height: 100px;
+  --header-large-height: 110px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  
+  background-color: #203333;
+  color: white;
+  position: relative;
+  z-index: 1000;
+  height: var(--header-height);
+}
+
+.logo {
+  height: var(--header-height);
+  cursor: pointer;
+}
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 300;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'DM Serif Text', serif;
+  font-weight: 600;
+  margin: 30px 10px 30px 10px;
+}
+
+.login {
+  background-color: #F0A078;
+  color: white;
+  padding: 5px 10px;
+}
+
+.hamburger-button {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  z-index: 1100;
+  width: 50px;
+  height: 25px;
+  padding: 0 20px 0 0px;
+  justify-content: space-around;
+  border: none;
+  cursor: pointer;
+}
+.hamburger-line {
+  width: 100%;
+  height: 3px;
+  background-color: #F0F0F0;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+}
+
+.main-nav {
+  position: absolute;
+  top: var(--header-height);
+  left: 0;
+  width: 100%;
+  height: 0;
+  background-color: #203333;
+  overflow: hidden;
+  transition: height 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none; 
+}
+
+.main-nav.open {
+  height: calc(100vh - var(--header-height));
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav-list {
+  list-style: none;
+  width: 100%;
+  gap: 30px;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-item {
+  font-size: 22px;
+  display: block;
+  transition: color 0.3s ease;
+  cursor: pointer;
+
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 22px;
+  display: block;
+  transition: color 0.3s ease;
+
+}
+
+.nav-link:hover, .nav-link:focus {
+  color: #97BB47
+}
+
+.loginContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  background-color: aliceblue;
+  margin: 20px auto;
+  padding: 20px auto;
+  border-radius: 25px;
+  width: 90%;
+}
+
+.loginContainerChild {
+  display: block;
+  width: 90%;
+  margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  
+}
+
+.loginContainerChild input, .loginContainerChild select{
+  padding: 5px 2px;
+  color: grey;
+}
+.localCommHeader {
+  margin-top: 5px;
+}
+
+.loginHeader {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.forSignUp {
+  text-align: center;
+}
+
+.required {
+  color: red;
+}
+
+.password {
+  display: flex;
+  position: relative;
+}
+
+.eye {
+  position: absolute;
+  right: 5px;
+  max-width: 8%;
+  align-self: center;
+  top: 24%;
+}
+
+.passwordLabel {
+  margin-top: 5px;
+  margin-bottom: -5px; /* May additional 5px from somewhere */
+}
+
+.passwordField {
+  display: block;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.loginButton {
+  background-color: black;
+  border: none;
+  color: white;
+  padding: 7px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  
+}
+
+.button {
+  padding: 7px;
+}
+
+.textLink {
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  color: #4F7942;
+  text-decoration: underline;
+}
+
+.ageNote {
+  text-align: center;
+  margin-top: -15px;
+  font-weight: 200;
+}
+
+.loginHomepage {
+  background-color: #332920;
+  color: white;
+  position: relative;
+  left: 10px;
+  
+
+}
+/*
+#332920 - CTA hero section
+*/
+
+.postCard {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 10px;
+  padding: 1px 20px;
+  background-color: #F8F8F8;  
+  border-radius: 10px;
+
+}
+
+.postCardContent {
+  margin-left: 10px;
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+
+.ongoing {
+  color: green;
+  font-weight: 500;
+}
+
+.starts {
+  color: #E97451;
+  font-weight: 500;
+}
+
+.ended {
+  color: red;
+  font-weight: 500;
+}
+
+.tagContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.tags {
+  background-color: pink;
+  padding: 1px 2px;
+  border-radius: 3px;
+}
+
+/* Media Queries for responsiveness */
+
+/* for desktop and larger screens */
+@media (min-width: 992px) {
+
+  .hamburger-button {
+    display: none;
+  }
+  .hamburger-line {
+    display: none;
+  }
+
+  .main-nav {
+    position: static;
+    height: auto;
+    width: auto;
+    background-color: transparent;
+    overflow: visible;
+    opacity: 1;
+    pointer-events: auto;
+    
+  }
+
+  .nav-list {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+
+  }
+  
+  .nav-item {
+    font-size: 18px;
+    padding: 12px;
+    margin: 0;
+    
+  
+  }
+
+  .header {
+    height: var(--header-large-height);
+  }
+
+  .logo {
+    height: var(--header-large-height);
+  }
+
+  .loginContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    background-color: aliceblue;
+    margin: 20px auto;
+    padding: 20px auto;
+    border-radius: 25px;
+    max-width: 50%;
+  }
+  
+  .loginContainerChild {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    
+  }
+
+  .eye {
+    position: absolute;
+    right: 7px;
+    top: 10%;
+    max-width: 8%;
+    align-self: center;
+    color: red;
+  
+  }
+
+  .passwordLabel {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  .postCard {
+    max-width: 50%;
+  }
+
+
+}

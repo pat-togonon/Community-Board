@@ -49,6 +49,7 @@ const Login = () => {
      const loggedUser = await loginWith(userForLogin)
      console.log('logged in user', loggedUser)
      dispatch(setUser(loggedUser))
+     localStorage.setItem('isLoggedIn', 'true')
      dispatch(notifyConfirmation(`Welcome back ${loggedUser.name ? loggedUser.name : loggedUser.username}!`, 5))
      reset(event)
      navigate('/')
@@ -68,18 +69,29 @@ const Login = () => {
   }
 
   return (
-      <div>
-        <h2>Log in to connect with your local community</h2>
+      <div className="loginContainer">
+        <h2 className="loginContainerChild loginHeader">Log in to connect with your local community</h2>
         <Error />
         <Confirmation />        
         <CommunityOption />
-        <form onSubmit={handleLogin}>
-          username: <input name="loginUsername" type="text" autoComplete="currentLoginUsername" /><br />
-          password: <input name="loginPassword" type={showPassword ? "text" : "password"} autoComplete="currentLoginPassword"/><button type="button" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Hide password" : "Show password"}</button><br />
-          <button type="submit">log in</button>
+        <form onSubmit={handleLogin} className="loginContainerChild">
+          <label htmlFor="loginUsername" className="loginContainerChild">
+          username:<span className='required'>*</span></label>
+
+          <input name="loginUsername" type="text" autoComplete="username" className="loginContainerChild" id="loginUsername" placeholder="enter your username"/>
+          
+          <label htmlFor="loginPassword" className="loginContainerChild passwordLabel">
+          password:<span className='required'>*</span></label>
+
+          <div className="loginContainerChild password">
+            <input name="loginPassword" type={showPassword ? "text" : "password"} autoComplete="current-password" id="loginPassword" className="loginContainerChild passwordField" placeholder="enter your password" />
+            <img role="show and hide password button" src={showPassword ? './eye.svg' : './eye-off.svg'} onClick={() => setShowPassword(!showPassword)} className="eye"/>
+          </div>
+          <button type="submit" className="loginContainerChild loginButton">log in</button>
         </form>
-        <Link to='/password-reset'><p>Forgot password</p></Link>
-        <p>Don't have an account yet? <button onClick={handleSignUp}>Sign up</button></p>
+        <Link to='/password-reset' className="textLink forgotPassword"><p>Forgot password</p></Link>
+
+        <p className="loginContainerChild forSignUp">Don't have an account yet? <span onClick={handleSignUp} className="textLink">Sign up</span></p>
       </div>
     
     

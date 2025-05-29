@@ -1,34 +1,32 @@
 import Login from './components/Login'
 import { useDispatch, useSelector } from 'react-redux'
 import Dashboard from './components/dashboard'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { setUser, setNewAccessToken, logout } from './reducer/userReducer'
 import api from './service/api'
 import { setCommunityId } from './reducer/communityIdReducer'
-import { Route, Routes, useNavigate } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import Homepage from './components/Homepage'
 import SignUp from './components/Signup'
 import MainCategoryRouter from './components/MainCategoryRouter'
 import HomeFeed from './components/HomeFeed'
 import PostPage from './components/PostPage'
 import PostForm from './components/PostForm'
-import Account from './components/Account'
-import { clearMainCategory } from './reducer/mainCategoryReducer'
-import { resetSubCategory } from './reducer/subCategoryReducer'
 import Profile from './components/Profile'
 import Settings from './components/Settings'
 import PasswordReset from './components/PasswordReset'
+import Header from './components/Header'
+import ErrorRoutes from './components/ErrorRoutes'
 
 const App = () => {
   console.log('Good morning Pat!')
-  const [hideHome, setHideHome] = useState(false)
+
   
-  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const userToken = useSelector(state => state.user.accessToken)
   const loggedInUser = useSelector(state => state.user)
-  const isLoggedIn = loggedInUser.isLoggedIn
+  const isLoggedIn = localStorage.getItem('isLoggedIn')
   console.log('is logged in?', isLoggedIn)
 
   // brings in new access token so user stays logged in even when they refresh the browser
@@ -36,25 +34,27 @@ const App = () => {
   useEffect(() => {
     const silentRefresh = async () => {
       try {
-        const response = await api.post('auth/refresh')
+        const response = await api.post('/auth/refresh')
 
         if (response.status === 200 && response.data.accessToken) {
           console.log('refresh user is', response.data.userFrontend)
-          dispatch(setUser({ ...response.data.userFrontend, isLoggedIn: true }))
+          dispatch(setUser({ ...response.data.userFrontend }))
           dispatch(setNewAccessToken(response.data.accessToken))
           dispatch(setCommunityId(response.data.userFrontend.community))
         } 
       } catch (error) {
         console.log('error refreshing token', error.response.data.error)
         dispatch(logout())
+
       }
     }
     console.log('is logged in?', isLoggedIn)
-    if (!userToken || !isLoggedIn) {
+    if (!userToken && isLoggedIn) {
         silentRefresh()
-    }
+    } 
   }, [userToken, isLoggedIn])
 
+  // !userToken || !isLoggedIn
   const isUserLoggedIn = userToken ? true : false
   console.log(isUserLoggedIn)
 
@@ -69,25 +69,11 @@ const App = () => {
     return <h3>The {loggedInUser.communityName} Community</h3>
   }
   
-  const homeStyle = {
-    display: hideHome ? 'none' : ''
-  }
-
-  const handleReturnHome = () => {
-    dispatch(clearMainCategory())
-    dispatch(resetSubCategory())
-    navigate('/')
-  }
-
-  console.log('loggedInUser', loggedInUser, 'id', loggedInUser.id)
-
   return (
     <>
-      <div onClick={handleReturnHome}><h1>KOMI logo</h1></div>
+      <Header />
       {communityHeader()}
-      {isUserLoggedIn ? <button style={homeStyle} onClick={() => setHideHome(!hideHome)}>Account</button> : '' }
-      {hideHome ? <div onClick={() => setHideHome(!hideHome)}><Account /></div> : ''}
-      <div style={homeStyle}>
+      <div>
       <Routes>
         <Route path='/' element={userToken ? <Dashboard /> : <Homepage />} >
           <Route index element={<HomeFeed />} />
@@ -103,6 +89,7 @@ const App = () => {
         <Route path='/user/profile/*' element={<Profile />} />
         <Route path='/user/settings' element={<Settings />} />
         <Route path='/password-reset' element={<PasswordReset />} />
+        <Route path='*' element={<ErrorRoutes />} />       
         
         
       </Routes>

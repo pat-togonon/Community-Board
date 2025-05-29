@@ -5,7 +5,6 @@ import { getAllPosts } from '../service/posts'
 import { setPosts } from '../reducer/postReducer'
 import { notifyError } from "../reducer/errorReducer"
 import Error from "./Notifications/Error"
-import Confirmation from "./Notifications/Confirmation"
 
 export const ShowStatus = ({ post }) => {
    
@@ -14,7 +13,7 @@ export const ShowStatus = ({ post }) => {
   }
 
   if (post.startDate && !post.endDate) {
-    return <div>Ongoing</div>
+    return <div className="postCardContent ongoing">Ongoing</div>
   }
 
   const startDate = new Date(post.startDate)
@@ -25,23 +24,23 @@ export const ShowStatus = ({ post }) => {
   const daysRemaining = (endDate - today ) / (1000 * 60 * 60 * 24)
 
   if (daysRemaining < 0) {
-    return <div>Ended</div>
+    return <div className="postCardContent ended">Ended</div>
   }
 
   if (daysRemaining > 1 && daysToStart <= 0) {
-    return <div>Ongoing until {endDate.toDateString()}</div>
+    return <div className="postCardContent ongoing">Ongoing until {endDate.toDateString()}</div>
   }
 
   if (daysRemaining < 1 && daysRemaining > 0 && daysToStart > 0) {
-    return <div>Starts tomorrow</div>
+    return <div className="postCardContent starts">Starts tomorrow</div>
   }
 
   if (daysRemaining > 0 && daysToStart < 0) {
-    return <div>Ends tomorrow</div>
+    return <div className="postCardContent ongoing">Ends tomorrow</div>
   }
 
   if (startDate > today) {
-    return <div>Starts in {Math.floor(daysToStart)} days</div>
+    return <div className="postCardContent starts">Starts in {Math.floor(daysToStart)} day/s</div>
   }
 
 }
@@ -53,19 +52,23 @@ const ShowAllPosts = () => {
   const mainCategory = useSelector(state => state.mainCategory) 
   const subCategory = useSelector(state => state.subCategory)
   const dispatch = useDispatch()
+  const accessToken = useSelector(state => state.user).accessToken
   
   useEffect(() => {
-        fetchPosts()
-      }, [communityId])
+    if (!accessToken) {
+      return
+    }
+    fetchPosts()
+  }, [accessToken, communityId])
     
-      const fetchPosts = async () => {
-        try {
-          const allPosts = await getAllPosts(communityId, mainCategory)
-          dispatch(setPosts(allPosts))
-        } catch(error) {
-          dispatch(notifyError(`Trouble loading posts. ${error.response.data.error}.`))
-        }
+  const fetchPosts = async () => {
+    try {
+      const allPosts = await getAllPosts(communityId, mainCategory)
+      dispatch(setPosts(allPosts))
+    } catch(error) {
+      dispatch(notifyError(`Trouble loading posts. ${error.response.data.error}.`))
       }
+    }
 
   const allPostFeed = () => {
 
@@ -76,13 +79,13 @@ const ShowAllPosts = () => {
     return (
       <div>
         {posts.map(post => (
-          <div key={post.id}>
+          <div key={post.id} className="postCard">
           <Link to={`/posts/${post.community}/${post.mainCategory}/${post.subCategory}/${post.id}`}>
             <h3>{post.title.slice(0, 60)}</h3>
           </Link>
           {ShowStatus({post})}
-          <p>{post.description.slice(0, 200)}...</p>
-          <p>Tags: {post.mainCategory} {post.subCategory}</p>
+          <p className="postCardContent">{post.description.slice(0, 200)}...</p>
+          <div className="postCardContent tagContainer">Tags: <div className="tags">{post.mainCategory}</div> <div className="tags">{post.subCategory}</div></div>
           </div>
         ))}
       </div>
@@ -98,13 +101,13 @@ const ShowAllPosts = () => {
     return (
       <div>
         {posts.filter(post => post.mainCategory === mainCategory).filter(post => post.subCategory === subCategory).map(post => (
-          <div key={post.id}>
+          <div key={post.id} className="postCard">
           <Link to={`/posts/${post.community}/${post.mainCategory}/${post.subCategory}/${post.id}`}>
             <h3>{post.title.slice(0, 60)}</h3>
           </Link>
           {ShowStatus({post})}
-          <p>{post.description.slice(0, 200)}...</p>
-          <p>Tags: {post.mainCategory} {post.subCategory}</p>
+          <p className="postCardContent">{post.description.slice(0, 200)}...</p>
+          <p className="postCardContent">Tags: {post.mainCategory} {post.subCategory}</p>
           </div>
         ))}
       </div>

@@ -76,30 +76,50 @@ const SignUp = () => {
   }
 
   return (
-    <div>
-      <h2>Create your account to connect with your local community</h2>
+    <div className="loginContainer">
+      <h2 className="loginContainerChild loginHeader">Create your account to connect with your local community</h2>
+      <p className="loginContainerChild ageNote">You should be at least 13 years old to join in.</p>
       <Error />
       <CommunityOption />
-      <form onSubmit={handleSignUp}>
-        username: <input name="username" type="text" autoComplete="new-username"/><br />
-        email: <input name="email" type="email" autoComplete="new-email" /><br />
-        password: <input name="password" type={showPassword ? "text" : "password" } autoComplete="new-password" /><button type="button" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Hide password" : "Show password"}</button><br />
-        Year of birth: <input type="number" name="birthYear" placeholder="YYYY" /><br />
-        Choose one security question: 
-        <select value={securityQ} name="securityQuestion" onChange={handleSecurityQuestion}>
+      <form onSubmit={handleSignUp} className="loginContainerChild">
+
+        <label htmlFor="username" className="loginContainerChild">
+        username:<span className='required'>*</span></label>
+        <input name="username" type="text" autoComplete="new-username" className="loginContainerChild" id="username" placeholder="enter your username" />
+
+        <label htmlFor="email" className="loginContainerChild">
+        email:<span className='required'>*</span></label>
+        <input name="email" type="email" autoComplete="email" className="loginContainerChild" id="email" placeholder="enter your email address"/>
+
+        <label htmlFor="password" className="loginContainerChild passwordLabel">
+        password: <span className='required'>*</span></label>
+
+        <div className="loginContainerChild password">
+            <input name="password" type={showPassword ? "text" : "password"} autoComplete="new-password" className="loginContainerChild passwordField" placeholder="enter your password" id="password" />
+            <img role="show and hide password button" src={showPassword ? './eye.svg' : './eye-off.svg'} onClick={() => setShowPassword(!showPassword)} className="eye"/>
+        </div>
+        
+        <label htmlFor="birthYear" className="loginContainerChild">
+        Year of birth:<span className='required'>*</span></label>
+        <input type="number" name="birthYear" placeholder="YYYY" autoComplete="bday-year" className="loginContainerChild" id="birthYear"/>
+
+        <label htmlFor="security-question" className="loginContainerChild">
+        Choose one security question:<span className='required'>*</span></label>
+        <select value={securityQ} name="securityQuestion" onChange={handleSecurityQuestion} className="loginContainerChild" id="security-question">
           <option value=''>Select a security question</option>
           {securityQuestions.map(q => 
           <option key={q.question} value={q.question}>{q.name}</option>
           )}
-        </select><br />
-        Your answer to security question: <input type="text" name="securityAnswer" />
-        <br />
+        </select>
 
-        <button type="submit">sign up</button>
+        <label htmlFor="security-answer" className="loginContainerChild">
+        Your answer to security question:<span className='required'>*</span></label>
+        <input type="text" name="securityAnswer" className="loginContainerChild" id="security-answer" placeholder="enter your answer" />    
+
+        <button type="submit" className="loginContainerChild loginButton">Sign up</button>
       </form>
-        <div>
-          <br />
-          Already have an account? <button onClick={showLogin}>login</button>
+        <div className="loginContainerChild">
+          <p className="loginContainerChild forSignUp">Already have an account? <span onClick={showLogin} className="textLink">Log in</span></p>          
         </div>
     </div>
   )

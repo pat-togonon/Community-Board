@@ -33,8 +33,6 @@ const PasswordReset = () => {
       securityQuestion: securityQ
     }
 
-    console.log('reset info', forPasswordReset)
-
     try {
       const response = await resetPassword(forPasswordReset)
       console.log('PW reset response', response)
@@ -61,24 +59,38 @@ const PasswordReset = () => {
   }
 
   return (
-    <div>
-      <h2>Password reset</h2>
+    <div className="loginContainer">
+      <h2 className="loginContainerChild loginHeader">Password reset</h2>
       <Error />
-      <form onSubmit={handlePasswordReset}>
-        username: <input type="text" name="username" autoComplete="current-username" value={username} onChange={({ target }) => setUsername(target.value)} /><br/>
-        new password: <input type={showPassword ? "text" : "password"} name="password" autoComplete="current-password" value={password} onChange={({ target }) => setPassword(target.value)} /><button type="button" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Hide password" : "Show password"}</button><br />
-        account security question: <select name="securityQuestion" value={securityQ} onChange={handleSecurityQuestion}>
+      <form onSubmit={handlePasswordReset} className="loginContainerChild">
+      <label htmlFor="username" className="loginContainerChild">
+        username: <span className='required'>*</span></label>
+        <input type="text" name="username" autoComplete="username" value={username} onChange={({ target }) => setUsername(target.value)} className="loginContainerChild" id="username" placeholder="enter your username" />
+
+        <label htmlFor="password" className="loginContainerChild passwordLabel">
+        new password: <span className='required'>*</span></label>        
+        <div className="loginContainerChild password">
+          <input name="password" type={showPassword ? "text" : "password"} autoComplete="new-password" id="password" className="loginContainerChild passwordField" placeholder="enter your password" value={password} onChange={({ target }) => setPassword(target.value)} />
+          <img role="show and hide password button" src={showPassword ? './eye.svg' : './eye-off.svg'} onClick={() => setShowPassword(!showPassword)} className="eye"/>
+        </div>
+
+        <label htmlFor="securityQuestion" className="loginContainerChild">
+          account security question:<span className='required'>*</span></label>
+          <select name="securityQuestion" value={securityQ} onChange={handleSecurityQuestion} className="loginContainerChild" id="securityQuestion">
           <option value=''>Select a security question</option>
           {securityQuestions.map(q => 
           <option key={q.question} value={q.question}>{q.name}</option>
           )}
-        </select><br />
-        Your answer to security question: <input type="text" name="securityAnswer" value={securityAnswer} onChange={({ target }) => setSecurityAnswer(target.value)} />
-        <br />
+        </select>
 
-        <button type="submit">reset password</button>
+        <label htmlFor="securityAnswer" className="loginContainerChild">
+        Your answer to security question:<span className='required'>*</span></label>
+        <input type="text" name="securityAnswer" value={securityAnswer} onChange={({ target }) => setSecurityAnswer(target.value)} className="loginContainerChild" id="securityAnswer" placeholder="enter your answer" />
+
+        <button type="submit" className="loginContainerChild loginButton">reset password</button>
+        <p role="button" onClick={handleCancel} className="loginContainerChild forSignUp textLink">cancel</p>
       </form>     
-      <button onClick={handleCancel}>cancel</button>
+      
       
     </div>
   )

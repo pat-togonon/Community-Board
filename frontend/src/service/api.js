@@ -13,7 +13,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = store.getState().user.accessToken
 
-  const isPublicUrl = ['/login', '/users', '/communities', '/refresh', '/password-reset'].some(path => config.url.includes(path))
+  const isPublicUrl = ['/login', '/users', '/refresh', '/password-reset'].some(path => config.url.includes(path))
 
   if (token && !isPublicUrl) {
     config.headers.Authorization = `Bearer ${token}`
@@ -30,8 +30,9 @@ api.interceptors.response.use(
 
   async (error) => {
     
-    const storeApp = store.getState()
-    const isLoggedIn = storeApp.isLoggedIn
+    
+    const isLoggedIn = localStorage.getItem('isLoggedIn')
+    console.log('api logged in?', isLoggedIn)
 
     if (!isLoggedIn) {
       return Promise.reject(error)

@@ -10,7 +10,7 @@ const Homepage = () => {
   return (
     <div>
       <h1>Connect with your local community</h1>
-      <button onClick={handleLogin}>Login or sign up today</button>
+      <button onClick={handleLogin} className="loginHomepage button">Login or sign up today</button>
   
     </div>
   )

@@ -1,11 +1,123 @@
+import { useDispatch } from "react-redux"
+import { useNavigate, Link } from "react-router-dom"
+import { clearMainCategory } from "../reducer/mainCategoryReducer"
+import { resetSubCategory } from "../reducer/subCategoryReducer"
+import { useState } from "react"
+import { logoutUser } from "../service/auth"
+import { logout } from "../reducer/userReducer"
+import { clearCommunityId } from "../reducer/communityIdReducer"
+import { clearComments } from "../reducer/commentsReducer";
+import { clearFavoritePosts } from "../reducer/favoriteReducer";
+import { clearPosts } from "../reducer/postReducer";
 
 
 const Header = () => {
 
-  return (
-    <div>
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const isLoggedIn = localStorage.getItem('isLoggedIn')
+
+  const handleReturnHome = () => {
+      setIsMenuOpen(false)
+      dispatch(clearMainCategory())
+      dispatch(resetSubCategory())
+      navigate('/')
+    }
+
+  const handleLogin = () => {
+    setIsMenuOpen(!isMenuOpen)
+    navigate('/login')
+  }
+
+  const menuBar = () => {
+    if (isLoggedIn) {
+      return null
+    }
+
+    return (
+      <>
+        <ul className="nav-list">
+        <Link to='/' className="nav-link">
+          <li className="nav-item" onClick={() => setIsMenuOpen(!isMenuOpen)}>Home</li>
+        </Link>
+          <li className="nav-item">About</li>
+          <li className="nav-item">Features</li>
+          <li className="nav-item nav-link" onClick={handleLogin}>Login/Sign up</li>
+        </ul>
+      </>
+
+    )
+  }
+
+  const handleProfile = () => {
+    setIsMenuOpen(!isMenuOpen)
+    navigate('/user/profile')    
+  }
+  
+  const handleSettings = () => {
+    setIsMenuOpen(!isMenuOpen)
+    navigate('/user/settings')
+  }
+
+  const handleLogout = async (event) => {   
+      setIsMenuOpen(!isMenuOpen)
+      try {
+      await logoutUser()
+      // clear the redux store
+      localStorage.removeItem('isLoggedIn')
+      dispatch(logout())
+      dispatch(clearCommunityId())
+      dispatch(clearMainCategory())
+      dispatch(resetSubCategory())
+      dispatch(clearComments())
+      dispatch(clearFavoritePosts())
+      dispatch(clearPosts())
+      navigate('/')
       
-    </div>
+      } catch (error) {
+        console.log('error log out', error.response.data.error)
+      }
+    }
+
+  const accountMenu = () => {
+    if (!isLoggedIn) {
+      return null
+    }
+
+    return (
+      <>
+        <ul className="nav-list">
+        <Link to='/' className="nav-link">
+          <li className="nav-item" onClick={() => setIsMenuOpen(!isMenuOpen)}>Home</li>
+        </Link>
+          <li className="nav-item" onClick={handleProfile}>Profile</li>
+          <li className="nav-item" onClick={handleSettings}>Account Settings</li>
+          <li className="nav-item nav-link" onClick={handleLogout}>Logout</li>
+        </ul>
+      </>
+
+    )
+
+  }
+  return (
+    <header className="header">
+      <div className="logo-container" onClick={handleReturnHome}>
+        <img src="../logo1.png" alt="Komi website logo" className="logo"/>
+        </div>
+
+      <button className="hamburger-button" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle navigation menu">
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
+      </button>
+        
+      <nav className={`main-nav ${isMenuOpen ? 'open' : ''}`}>
+        {menuBar()}
+        {accountMenu()}
+      </nav>
+    </header>
   )
 }
 

@@ -57,11 +57,12 @@ const PostForm = () => {
   const communityId = useSelector(state => state.communityId)  
   const mainCategoryStored = useSelector(state => state.mainCategory)
   const subCategory = useSelector(state => state.subCategory)
+  const isLoggedIn = localStorage.getItem('isLoggedIn')
   const user = useSelector(state => state.user)
   console.log('user id is', user.id)
 
   useEffect(() => {
-    if (user) {
+    if (isLoggedIn) {
       if (community) {
         dispatch(setCommunityId(community))
       }
@@ -87,6 +88,7 @@ const PostForm = () => {
       }
       setUserRole('admin')
     } catch(error) {
+      console.log('community error', error.response.data.error)
       dispatch(notifyError('Loading...'), 5)
     }
   }

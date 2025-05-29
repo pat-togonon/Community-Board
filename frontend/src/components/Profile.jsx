@@ -111,31 +111,31 @@ const Profile = () => {
   
   useEffect(() => {
   
-    if (user && (location.pathname === '/user/profile' || location.pathname === '/user/profile/comments' || location.pathname === '/user/profile/favorites' || location.pathname === '/user/profile/communities')) {
+    if (accessToken && (location.pathname === '/user/profile' || location.pathname === '/user/profile/comments' || location.pathname === '/user/profile/favorites' || location.pathname === '/user/profile/communities')) {
       reset()
     }
-  }, [communityId, user, location.pathname, dispatch])
+  }, [communityId, accessToken, location.pathname, dispatch])
 
 
   useEffect(() => {
     
-    if (user && (location.pathname === '/user/profile' || location.pathname === '/user/profile/favorites') && mainCategory === 'home') {
+    if (accessToken && (location.pathname === '/user/profile' || location.pathname === '/user/profile/favorites') && mainCategory === 'home') {
         fetchPosts()      
       }
-    if (user && (location.pathname === '/user/profile/comments' || '/user/profile')) {
+    if (accessToken && (location.pathname === '/user/profile/comments' || '/user/profile')) {
       fetchComments()
     }
-  }, [communityId, user, mainCategory, subCategory, dispatch, location.pathname])
+  }, [communityId, accessToken, mainCategory, subCategory, dispatch, location.pathname])
 
   useEffect(() => {
     console.log('user in fetchFavorites', user)
-    if (user && posts) {
+    if (accessToken && posts) {
       if (location.pathname === '/user/profile' || location.pathname === '/user/profile/favorites') {
         fetchFavorites()
       }
     }
   
-  }, [communityId, user, mainCategory, dispatch, posts, location.pathname])
+  }, [communityId, accessToken, mainCategory, dispatch, posts, location.pathname])
       
   const fetchPosts = async () => {
 

@@ -29,6 +29,7 @@ const PostPage = () => {
 
   const posts = useSelector(state => state.posts)
   const user = useSelector(state => state.user)
+  const accessToken = user.accessToken
   const favoritePosts = useSelector(state => state.favorites)
 
   const { community, mainCategory, subCategory, id } = useParams()
@@ -36,7 +37,11 @@ const PostPage = () => {
 
   useEffect(() =>{
    
-    if (user) {
+    if (!accessToken) {
+      return
+    }
+
+    
       if (community) {
         dispatch(setCommunityId(community))
       }
@@ -49,31 +54,36 @@ const PostPage = () => {
         dispatch(setSubCategory(subCategory))
       }
 
-  }
-  
-
-}, [community, mainCategory, subCategory])
+}, [accessToken, community, mainCategory, subCategory])
 
 useEffect(() => {
   
+  if (!accessToken) {
+    return
+  }
+
   if (user && community && mainCategory && subCategory && id) {
     fetchPosts()
   }
   
-  }, [user, community, mainCategory, subCategory, id])
+  }, [accessToken, community, mainCategory, subCategory, id])
 
   const fetchPosts = async () => {
     try {
       const allPosts = await getAllPosts(community, mainCategory)
       dispatch(setPosts(allPosts))
     } catch(error) {
-      console.log('posts showing error', error)
-    }
+      console.log('posts showing error', error.response.data.error)
+    } // ADD notifyErrors!!
   }
 
   useEffect(() => {
+    if (!accessToken) {
+      return
+    }
+
     fetchFavorites()
-  }, [dispatch])
+  }, [dispatch, accessToken])
 
   const fetchFavorites = async () => {
       try {
@@ -82,8 +92,8 @@ useEffect(() => {
         const favoritePosts = posts.filter(post => allfavoritesInString.includes(post.id.toString()))
         dispatch(setFavoritePosts(favoritePosts))
       } catch (error) {
-        console.log('error showing favorites', error)
-      }
+        console.log('error showing favorites', error.response.data.error)
+      } // ADD notifyErrors!!
     }
 
   const post = posts.find(post => 

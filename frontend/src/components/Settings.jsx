@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { deleteAccount, updateSavedName } from "../service/user"
-import { logout, setName, isLoggedIn } from "../reducer/userReducer"
+import { logout, setName } from "../reducer/userReducer"
 import { clearMainCategory } from "../reducer/mainCategoryReducer"
 import { resetSubCategory } from "../reducer/subCategoryReducer"
 import { clearCommunityId } from "../reducer/communityIdReducer"
@@ -38,7 +38,7 @@ const Settings = () => {
 
   const reset = ()  => {
     dispatch(logout())
-    dispatch(isLoggedIn(false))
+    localStorage.removeItem('isLoggedIn')
     dispatch(clearMainCategory)
     dispatch(resetSubCategory())
     dispatch(clearCommunityId())
@@ -70,7 +70,7 @@ const Settings = () => {
       try {
         const savedName = await updateSavedName(user.id, name)
         dispatch(setName(savedName))
-        dispatch(notifyConfirmation('Updated your name successfully!', 5))
+        dispatch(notifyConfirmation('Updated your name successfully!', 3))
       } catch (error) {
         console.log('error saving name', error)
         dispatch(notifyError("Oops! Can't update your name right now. Please try again later.", 7))
@@ -90,7 +90,7 @@ const Settings = () => {
             <p>Name: {user.name} <button onClick={handleForm}>🖋️</button></p> 
           </div>
           <div style={userNameStyle}>
-            Name: <input value={userName} type="text" onChange={({ target }) => setUserName(target.value)} /><br />
+            Name: <input value={userName} autoComplete="name" type="text" onChange={({ target }) => setUserName(target.value)} /><br />
             <button onClick={handleUpdateName}>save</button>
             <button onClick={handleForm}>cancel</button>
           </div>
@@ -101,7 +101,7 @@ const Settings = () => {
 
     return (
       <div>
-        Add your name: <input value={userName} type="text" onChange={({ target }) => setUserName(target.value)} />
+        Add your name: <input value={userName} autoComplete="name" type="text" onChange={({ target }) => setUserName(target.value)} />
         <button onClick={handleUpdateName}>Save</button>
       </div>
     )
@@ -187,8 +187,8 @@ const Settings = () => {
         <form onSubmit={handleUpdatePassword}>
           <h3>Enter your old password and new password to proceed: </h3>
           <p>Take note: You'll be logged out right after updating your password. Please log in again.</p>
-          Enter your old password: <input value={oldPassword} type="password" name="oldPassword" autoComplete="oldPassword" onChange={({ target }) => setOldPassword(target.value)} /><br />
-          Enter your new password: <input value={newPassword} type="password" autoComplete="newPassword" name="newPassword" onChange={({ target }) => setNewPassword(target.value)} /><br />
+          Enter your old password: <input value={oldPassword} type="password" name="oldPassword" autoComplete="current-password" onChange={({ target }) => setOldPassword(target.value)} /><br />
+          Enter your new password: <input value={newPassword} type="password" autoComplete="newPassword" name="new-password" onChange={({ target }) => setNewPassword(target.value)} /><br />
           <button type="submit">update password</button>
         </form>
         <button onClick={() => setShowPasswordForm(!showPasswordForm)}>cancel</button>
@@ -198,7 +198,7 @@ const Settings = () => {
         <div style={deleteFormStyle}>
           <h3>Type in your username to confirm and delete your account:</h3>
           <p>Take note: You'll be logged out automatically upon deleting your account.</p>
-          <input type="text" value={deleteUsername} onChange={({ target }) => setDeleteUsername(target.value)} />
+          <input type="text" value={deleteUsername} autoComplete="username" onChange={({ target }) => setDeleteUsername(target.value)} />
           <button onClick={handleDeleteAccount}>Delete account</button>
           <button onClick={() => setShowDelete(!showDelete)}>Cancel</button>
 
