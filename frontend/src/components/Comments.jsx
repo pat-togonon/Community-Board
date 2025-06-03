@@ -3,13 +3,18 @@ import { viewAllComments, postComment, updateComment, deleteComment} from "../se
 import { useSelector, useDispatch } from "react-redux"
 import { setComments } from "../reducer/commentsReducer"
 
+
 const CommentList = ({ comment, user, fetchComments }) => {
   const [hideComment, setHideComment] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
   const [editComment, setEditComment] = useState('')  
+  const [hideButtons, setHideButtons] = useState(false)
+  const [notDeleted, setNotDeleted] = useState(false)
+  const [notEdited, setNotEdited] = useState(false)
 
   const isUserTheCommenter = comment.commenter?.id === user.id
 
+  // Add notifications and errors too please 
 
   const commentStyle = {
     display: hideComment ? 'none' : ''
@@ -43,7 +48,10 @@ const CommentList = ({ comment, user, fetchComments }) => {
       setHideComment(!hideComment)
       setShowEdit(!showEdit)
     } catch (error) {
-      console.log('error updating comment', error.response.data.error)
+      setNotEdited(true)
+      setTimeout(() => {
+        setNotEdited(false)
+      }, 3500)
     }
   }
 
@@ -55,28 +63,61 @@ const CommentList = ({ comment, user, fetchComments }) => {
       await deleteComment(comment.id)
       fetchComments()
     } catch (error) {
-      console.log('error deleting comment', error.response.data.error)
+      setNotDeleted(true)
+      setHideButtons(!hideButtons)
+      setTimeout(() => {
+        setNotDeleted(false)
+      }, 3000)
     }
   }
 
+  const editDeleteStyle = {
+    display: hideButtons ? 'none' : ''
+  }
+
+  const deleteConfirmationStyle = {
+    display: hideButtons ? '' : 'none'
+  }
+
+  const deletedCommentNotifStyle = {
+    display: notDeleted ? '' : 'none'
+  }
+
+  const editCommentErrorStyle = {
+    display: notEdited ? '' : 'none'
+  }
   console.log('comment', comment)
   return (
     <div>
       <div style={commentStyle}>
-        {comment.comment} - {comment.commenter ? comment.commenter.username : 'deletedAccount'}
+        <span className="commentContent">{comment.comment} - {comment.commenter ? comment.commenter.username : 'deletedAccount'}</span>
         {isUserTheCommenter
-          ? <div>
-              <button onClick={() => handleEdit(comment)}>Edit</button>
-              <button onClick={() => handleDelete(comment)}>Delete</button>
+          ? <div className="editDeleteCommentButtons" style={editDeleteStyle}>
+              <div role="button" onClick={() => handleEdit(comment)}>Edit</div>
+              <div role="button" onClick={() => setHideButtons(!hideButtons)}>Delete</div>
             </div>
           : ''}
       </div>
-      <div style={editStyle}>
-          <input value={editComment} onChange={({ target }) => setEditComment(target.value)} />
-          <button onClick={() => handleSaveUpdate(comment)}>save</button>
-          <button onClick={handleCancel}>cancel</button>
+      <div style={editStyle} className="editCommentDiv">
+          <textarea value={editComment} onChange={({ target }) => setEditComment(target.value)} />
+          <div>
+            <button onClick={() => handleSaveUpdate(comment)} className="loginButton button">save</button>
+            <button onClick={handleCancel} className="secondaryButton button">cancel</button>
+          </div>
+      </div>     
+        <div className="deletePostDiv" style={deleteConfirmationStyle}>
+          <h3>Are you sure you want to delete this comment?</h3>
+          <div className="deletePostButtons">
+            <button className="loginButton button" onClick={() => handleDelete(comment)}>Yes</button>
+            <button className="secondaryButton button" onClick={() => setHideButtons(!hideButtons)}>cancel</button>
+          </div>
       </div>
-
+      <div style={deletedCommentNotifStyle} className="commentErrorDiv deleteCommentError">
+        <p>Can't delete comment right now. Please try again later.</p>
+      </div>
+      <div style={editCommentErrorStyle} className="commentErrorDiv deleteCommentError">
+        <p>Can't update your comment right now. Please try again later.</p>
+      </div>
     </div>
   )
 }
@@ -85,6 +126,7 @@ const CommentList = ({ comment, user, fetchComments }) => {
 const Comment = ({ id, communityId, mainCategory, subCategory }) => {
   
   const [newComment, setNewComment] = useState('')
+  const [showCommentError, setShowCommentError] = useState(false)
 
   const user = useSelector(state => state.user)
   const posts = useSelector(state => state.posts)
@@ -107,8 +149,17 @@ const Comment = ({ id, communityId, mainCategory, subCategory }) => {
     
   }
   
-  const handlePostComment = async () => {
-  
+  const handlePostComment = async (event) => {    
+    event.preventDefault()
+
+    if (!newComment) {
+      setShowCommentError(true)
+      setTimeout(() => {
+        setShowCommentError(false)
+      }, 3000)
+      return
+    }
+
     const newCommentToPost = {
       parentComment: null,
       comment: newComment
@@ -124,14 +175,24 @@ const Comment = ({ id, communityId, mainCategory, subCategory }) => {
     setNewComment('')
   }
     
+  const commentErrorStyle = {
+    display: showCommentError ? '' : 'none'
+  }
   console.log('all comments', comments)
+
   return (
-    <div>
+    <div className="commentDiv">
       <textarea value={newComment} onChange={({ target }) => setNewComment(target.value)}></textarea>
-      <button onClick={handlePostComment}>add comment</button>
+      <div>
+        <button type="submit" onClick={handlePostComment} className="loginButton button">add comment</button>
+        {newComment ? <button type="button" onClick={() => setNewComment('')} className="secondaryButton button">cancel</button> : ''}
+      </div>
+      <div style={commentErrorStyle} className="commentErrorDiv">
+        <p>Oops! Please enter your comment first.</p>
+      </div>
       <h3>Comments</h3>
-      {comments.map(comment => 
-        <div key={comment.id}>
+      {[...comments].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).map(comment => 
+        <div key={comment.id} className="eachCommentDiv">
           {<CommentList comment={comment} user={user} fetchComments={() => fetchComments()}/>}
         </div>
       )}

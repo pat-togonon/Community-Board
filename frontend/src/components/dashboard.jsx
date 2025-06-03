@@ -7,7 +7,7 @@ import Announcement from "./Announcement"
 import Events from "./Events"
 import GarageSaleGiveaways from "./GarageSaleGiveaway"
 import ShopsPromo from "./ShopsPromo"
-import { useNavigate, Outlet } from "react-router-dom"
+import { useNavigate, Outlet, useLocation} from "react-router-dom"
 import SubCategoryOptions from "./SubCategory"
 import Confirmation from "./Notifications/Confirmation"
 
@@ -92,7 +92,7 @@ const Dashboard = () => {
       navigate(path)
     }
 
-    return <button onClick={handleNewPost}>Create a new post</button>
+    return <button onClick={handleNewPost} className="newPostButton button">Create a new post</button>
 
   }
 
@@ -100,14 +100,16 @@ const Dashboard = () => {
     <div>
       <header>
         <Confirmation />
-      Navigate to: 
-      <select value={mainCategory} onChange={handleCategory} id='mainCategory' name='mainCategory'>
-        {mainCategories.map((mainCategory) => (
-          <option key={mainCategory.category} value={mainCategory.category}>
-            {mainCategory.name}
-          </option>
-        ))}
-      </select><br />
+      <div className="categoryNav">
+        <h3>Navigate to: </h3>
+        <select value={mainCategory} onChange={handleCategory} id='mainCategory' name='mainCategory'>
+          {mainCategories.map((mainCategory) => (
+            <option key={mainCategory.category} value={mainCategory.category}>
+              {mainCategory.name}
+            </option>
+          ))}
+        </select>
+      </div>
       <SubCategoryOptions />
       {handleCreatePost()}
       </header>

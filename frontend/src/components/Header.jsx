@@ -2,13 +2,14 @@ import { useDispatch } from "react-redux"
 import { useNavigate, Link } from "react-router-dom"
 import { clearMainCategory } from "../reducer/mainCategoryReducer"
 import { resetSubCategory } from "../reducer/subCategoryReducer"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { logoutUser } from "../service/auth"
 import { logout } from "../reducer/userReducer"
 import { clearCommunityId } from "../reducer/communityIdReducer"
 import { clearComments } from "../reducer/commentsReducer";
 import { clearFavoritePosts } from "../reducer/favoriteReducer";
 import { clearPosts } from "../reducer/postReducer";
+import logo from "/logo1.png?url"
 
 
 const Header = () => {
@@ -18,6 +19,17 @@ const Header = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const isLoggedIn = localStorage.getItem('isLoggedIn')
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 992) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleReturnHome = () => {
       setIsMenuOpen(false)
@@ -44,7 +56,7 @@ const Header = () => {
         </Link>
           <li className="nav-item">About</li>
           <li className="nav-item">Features</li>
-          <li className="nav-item nav-link" onClick={handleLogin}>Login/Sign up</li>
+          <li className="nav-item nav-link" onClick={handleLogin}>Login</li>
         </ul>
       </>
 
@@ -104,7 +116,7 @@ const Header = () => {
   return (
     <header className="header">
       <div className="logo-container" onClick={handleReturnHome}>
-        <img src="../logo1.png" alt="Komi website logo" className="logo"/>
+        <img src={logo} alt="Komi website logo" className="logo"/>
         </div>
 
       <button className="hamburger-button" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle navigation menu">

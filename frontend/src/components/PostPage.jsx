@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { setCommunityId } from "../reducer/communityIdReducer"
-import { setMainCategory } from "../reducer/mainCategoryReducer"
+import { clearMainCategory, setMainCategory } from "../reducer/mainCategoryReducer"
 import { resetSubCategory, setSubCategory } from "../reducer/subCategoryReducer"
 import { useEffect } from "react"
 import { getAllPosts, deletePost, editPost, addToFavorites, viewFavorites, removeFromFavorites } from "../service/posts"
@@ -31,6 +31,7 @@ const PostPage = () => {
   const user = useSelector(state => state.user)
   const accessToken = user.accessToken
   const favoritePosts = useSelector(state => state.favorites)
+  const isLoggedIn = localStorage.getItem('isLoggedIn')
 
   const { community, mainCategory, subCategory, id } = useParams()
     //hydrate redux so it persists upon browser refresh
@@ -103,16 +104,17 @@ useEffect(() => {
     post.id === id)
   
   const handleReturn = (event) => {
+    dispatch(clearMainCategory())
     dispatch(resetSubCategory())
-    navigate(`/posts/${community}/${mainCategory}`)
+    navigate('/')
   }
 
   if (!post) {
     //add return home?
     return (
-      <div>
-        <h3>Post not found...</h3>
-        <button onClick={handleReturn}>Go to posts</button>      
+      <div className="postCard">
+        <h3>Loading or post not found...</h3>
+        <button onClick={handleReturn} className="loginButton button returnHomeButton">Return home</button>      
       </div>
     )
   }  
@@ -131,8 +133,8 @@ useEffect(() => {
     }
 
     return (
-      <div>
-        <button onClick={handleEditPost}>Edit description</button>
+      <div className="postButtons">
+        <button onClick={handleEditPost}>Edit</button>
         <button onClick={handleDeleteConfirmation}>Delete</button>
       </div>
     )
@@ -149,8 +151,7 @@ useEffect(() => {
         dispatch(notifyConfirmation('Post is successfully deleted!', 5))
         navigate(`/posts/${community}/${mainCategory}`)
       } catch(error) {
-        console.log('error deleting post', error.response.data.error)
-        dispatch(notifyError(`Oops! Trouble deleting post. Please try again.`, 5))
+        dispatch(notifyError("Oops! Trouble deleting post. Please try again.", 5))
       }
   }
 
@@ -187,9 +188,11 @@ useEffect(() => {
       navigate(path)
       setHide(!hide)
       setShowEditor(!showEditor)
+      dispatch(notifyConfirmation('Post updated successfully!', 4))
 
     } catch (error) {
       console.log('error editing post', error)
+      dispatch(notifyError("Couldn't update your post. Please try again", 5))
     }
   }
   
@@ -227,7 +230,7 @@ useEffect(() => {
     if (isPostAFave) {
       return (
         <div>
-          <button onClick={() => handleRemoveFavorites(id)}>Remove from favorites</button>
+          <img src='/bookmarked.svg' onClick={() => handleRemoveFavorites(id)} alt="Remove from favorites" className="favoriteIcon"/>         
         </div>
       )
     }
@@ -238,43 +241,65 @@ useEffect(() => {
     
     return (
       <div style={style}>
-        <button onClick={() => handleAddToFavorites(id)}>Add to favorites</button>
+        <img onClick={() => handleAddToFavorites(id)} src="/bookmark.svg" className="favoriteIcon" alt="Add to favorites"/>
       </div>
     )
   }
 
-  const contentStyle = {
+  /*const contentStyle = {
     display: clickDelete ? 'none' : ''
-  }
+  }*/
 
   const deleteConfirmStyle = {
     display: clickDelete ? '' : 'none'
   }
 
+  const handleMainCategory = (post) => {
+    dispatch(resetSubCategory())
+    const path = `/posts/${post.community}/${post.mainCategory}`
+    navigate(path)
+  }
+
+  const handleSubCategory = (post) => {
+    dispatch(setSubCategory(post.subCategory))
+    const path = `/posts/${post.community}/${post.mainCategory}/${post.subCategory}`
+    navigate(path)
+  }
+
   return (
-    <div>
-      <button onClick={handleReturn}>Go to posts</button>
-      <p>Posted by: {post.author ? post.author.username : 'deletedAccount'}</p>
-      <h2>{post.title}</h2>
+    <div className="postPage">
       <Error />
       <Confirmation />
-      {fave(post.id)}
+      <div className="postTitle">
+        <h2>{post.title}</h2>
+        {fave(post.id)}
+      </div>
+      <p>Posted by: {post.author ? post.author.username : 'deletedAccount'}</p>
       <ShowStatus post={post} />
       <div style={descriptionStyle}>
       <p>{post.description}</p>
       </div>
-      
-        <div style={editorStyle}>
+        <div style={editorStyle} className="postEditor">
           <textarea value={updateDescription} name='updatedDescription' onChange={({ target }) => setUpdateDescription(target.value)}></textarea>
-          <button onClick={handlePostUpdate}>update description</button>
-          <button onClick={handleCancelEdit}>cancel</button>
-      
+          <div>
+            <button onClick={handlePostUpdate} className="loginButton button">update</button>
+            <button onClick={handleCancelEdit} className="cancelEdit secondaryButton">cancel</button>
+          </div>
         </div>      
-        tags: {post.mainCategory} {post.subCategory}
-        <div style={deleteConfirmStyle}>
+        <div className="postCardContent tagContainer">
+          <div className={`tags ${post.mainCategory}`} onClick={() => handleMainCategory(post)}>
+            {post.mainCategory}
+          </div> 
+          <div className={`tags ${post.subCategory}`} onClick={() => handleSubCategory(post)}>
+            {post.subCategory}
+          </div>  
+        </div>
+        <div style={deleteConfirmStyle} className="deletePostDiv">
           <h3>Are you sure you want to delete this post?</h3>
-          <button onClick={() => handleDelete()}>Yes</button>
-          <button onClick={() => setClickDelete(!clickDelete)}>Cancel</button>
+          <div className="deletePostButtons">
+            <button onClick={() => handleDelete()} className="loginButton button">Yes</button>
+            <button onClick={() => setClickDelete(!clickDelete)} className="secondaryButton button">cancel</button>
+          </div>
         </div>
       {clickDelete ? '' : <div style={descriptionStyle}>
         {post.author ? 

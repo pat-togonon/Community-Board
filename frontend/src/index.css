@@ -3,8 +3,8 @@
 }
 
 :root {
-  --header-height: 100px;
-  --header-large-height: 110px;
+  --header-height: 70px;
+  --header-large-height: 90px;
 }
 .header {
   display: flex;
@@ -12,7 +12,8 @@
   align-items: center;  
   background-color: #203333;
   color: white;
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 1000;
   height: var(--header-height);
 }
@@ -30,7 +31,12 @@ body {
 h1, h2, h3, h4 {
   font-family: 'DM Serif Text', serif;
   font-weight: 600;
-  margin: 30px 10px 30px 10px;
+  margin: 30px 10px;
+}
+
+h3, h4 {
+  font-weight: 400;
+  margin: 15px 10px;
 }
 
 .login {
@@ -68,17 +74,19 @@ h1, h2, h3, h4 {
   background-color: #203333;
   overflow: hidden;
   transition: height 0.3s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   opacity: 0;
   pointer-events: none; 
+  display: none;
+  
 }
 
 .main-nav.open {
   height: calc(100vh - var(--header-height));
   opacity: 1;
   pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-list {
@@ -137,7 +145,7 @@ h1, h2, h3, h4 {
   
 }
 
-.loginContainerChild input, .loginContainerChild select{
+.loginContainerChild input, .loginContainerChild select, .newPostPage select, .newPostDateButtons input {
   padding: 5px 2px;
   color: grey;
 }
@@ -194,13 +202,16 @@ h1, h2, h3, h4 {
   
 }
 
+.loginButton:hover {
+  background-color: #355E3B;
+}
+
 .button {
   padding: 7px;
 }
 
 .textLink {
   cursor: pointer;
-  text-decoration: none;
   font-weight: 500;
   color: #4F7942;
   text-decoration: underline;
@@ -217,12 +228,41 @@ h1, h2, h3, h4 {
   color: white;
   position: relative;
   left: 10px;
-  
+  cursor: pointer;
 
 }
 /*
 #332920 - CTA hero section
 */
+
+.categoryNav {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+   
+}
+
+.categoryNav select {
+  height: 20%;
+  border-color: #808000;
+  border-radius: 3px;
+  font-weight: 300;
+  font-size: 0.95rem;
+}
+
+.categoryNav h3, .categoryNav select {
+  margin: 0px 10px;
+  
+}
+
+.newPostButton {
+  background-color: #355E3B;
+  color: white;
+  border: none;
+  margin: 10px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
 .postCard {
   display: flex;
@@ -231,7 +271,8 @@ h1, h2, h3, h4 {
   padding: 1px 20px;
   background-color: #F8F8F8;  
   border-radius: 10px;
-
+  cursor: pointer;
+  max-width: 700px;
 }
 
 .postCardContent {
@@ -240,36 +281,488 @@ h1, h2, h3, h4 {
   margin-bottom: 10px;
 }
 
-.ongoing {
-  color: green;
-  font-weight: 500;
+.postCard > a, .postCard > a:visited {
+  text-decoration: none;
+  color: inherit;
 }
 
-.starts {
-  color: #E97451;
-  font-weight: 500;
+.postCard h3 {
+  color: #023020;
 }
 
-.ended {
-  color: red;
-  font-weight: 500;
+.status {
+  color: #454B1B;
+  font-weight: 300;
+  font-size: 0.95rem;
+  
+}
+
+.status img {
+  height: 13px;
+  align-self: top;
+  
 }
 
 .tagContainer {
   display: flex;
   gap: 10px;
+  
 }
 
 .tags {
-  background-color: pink;
-  padding: 1px 2px;
+  background-color: #E8E8E8;
+  color: #505050;
+  font-size: 0.9rem;
+  font-weight: 300;
+  padding: 3px 5px;
   border-radius: 3px;
+  cursor: pointer;
+  text-align: center;
+  
 }
 
+.tags:hover {
+  background-color: #FFF8DC;
+}
+
+.profileNav {
+  display: flex;
+  justify-items: center;
+  align-items: center;
+}
+
+.profileNav a, .profileNav a:visited {
+  cursor: pointer;
+  color: #454B1B;
+  text-align: center;
+  text-decoration: none;
+}
+
+.profileNav h3 {
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+}
+
+.profileNav a:hover {
+  color: #5F8575;
+}
+
+.profileDivider {
+  max-width: 670px;
+  height: 2px;
+  background-color: #454B1B;
+  border-radius: 5px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.postCardContent .title {
+  font-weight: 500;
+}
+
+
+.fieldEdit button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.settings {
+  cursor: auto;
+  background-color: #F8F8F8;
+  margin: 10px 10px;
+  padding: 1px 20px;
+  border-radius: 10px;
+  max-width: 800px;
+  
+}
+
+.settingsFieldLabel {
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.settingsUpdateName button, .settingsUpdatePasswordDiv button {
+  margin-left: 1px;
+  border: 1px solid transparent;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-weight: 300;
+  cursor: pointer;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+.settingsUpdateName .saveButton, .settingsUpdatePasswordDiv .updateButton, .saveName {
+  background-color: black;
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.settingsUpdateName input {
+  margin-left: 2px;
+}
+
+.settingsNameSaveCancelButtonDiv, .settingsSaveNameButtonDiv {
+  margin-top: 5px;
+  margin-left: 10px;
+}
+
+.settingsUpdatePasswordDiv, .deletePostDiv {
+  display: flex;
+  flex-direction: column;
+  background-color: #FFF5EE;
+  padding: 10px;
+  border-radius: 10px;
+  align-items: center;
+  justify-items: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.saveName {
+  margin-left: 1px;
+}
+
+.settingsUpdatePasswordDiv .updateButton {
+  padding: 7px;
+}
+
+.settingsUpdatePasswordDiv p, .settingsUpdatePasswordDiv span {
+  padding: 10px 10px;
+}
+
+.settingsEnterNewPassword {
+  display: block;
+  margin-top: -10px;
+  
+}
+
+.settingsUpdatePasswordDiv button {
+  display: flex;
+  margin: 5px auto;
+  
+}
+
+.deleteAccount {
+  margin-top: 15px;
+  margin-bottom: 15px; 
+}
+
+.settingsUpdatePasswordDiv {
+  padding: 2px 10px;
+}
+
+.settingsUpdatePasswordDiv input {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.settingsUpdatePasswordDiv h3, .settingsUpdatePasswordDiv p, .settingsUpdatePasswordDiv span {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.deleteAccount span {
+  cursor: pointer;
+}
+.deleteAccount span:hover, .updatePassword:hover {
+  color: #97BB47;
+}
+
+.settingsDeleteDiv {
+  display: flex;
+  flex-direction: column;
+  width: 170px;
+  align-items: center;
+  justify-items: center;
+}
+
+.settingsDeleteDiv button {
+  margin-top: 5px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.settingsUpdatePasswordDiv .deleteInputUsername {
+  display: block;
+  margin-top: 3px;
+}
+
+.updatePassword {
+  cursor: pointer;  
+}
+
+.postPage, .commentDiv, .newPostPage, .profileNav {
+  max-width: 700px;
+  position: relative;
+}
+
+.postTitle {
+  display: flex;
+  align-items: flex-start;
+  margin-right: 10px;
+  margin-bottom: -20px;
+  margin-top: -15px;
+}
+
+.favoriteIcon {
+  width: 30px;
+  margin-top: 30px;
+  cursor: pointer;
+  
+}
+
+.postPage p {
+  margin: 10px 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.postButtons {
+  margin: 10px 10px;
+}
+
+.postButtons button, .newPostDateButtons button {
+  margin-right: 10px;
+  background-color: #F8F8F8;
+  padding: 5px;
+  border-color: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.postButtons button:hover {
+  background-color: black;
+  color: white;
+}
+
+.returnHomeButton {
+  margin-bottom: 10px;
+  width: 30%;
+}
+
+.postEditor {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 10px;
+  max-width: 600px;
+}
+
+.postEditor textarea, .commentDiv textarea, .newPostPage textarea {
+  height: 150px;
+  border-color: #E5E4E2;
+  padding: 10px 10px;
+  border-radius: 5px;
+  font-weight: 300;
+}
+
+.postEditor button {
+  margin-bottom: 5px;
+  margin-top: 5px;
+  width: 40%;  
+  margin-right: 10px;
+}
+
+.postEditor .cancelEdit, .secondaryButton {
+  background-color: transparent;
+  border: none;
+  text-decoration: underline;
+  font-weight: 300;
+  cursor: pointer;
+}
+
+.secondaryButton:hover {
+  cursor: pointer;
+  color: #808000;
+  font-weight: 500;
+}
+
+.deletePostDiv {
+  margin: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+}
+
+.deletePostButtons button, .commentDiv button {
+  width: 80px;
+}
+
+.commentDiv, .newPostPage {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 10px;
+}
+
+.commentDiv textarea, .editCommentDiv textarea {
+  height: 50px;
+}
+
+.commentDiv button {
+  width: 150px;
+}
+
+.eachCommentDiv {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  background-color: #F8F8F8;
+  padding: 10px 10px;
+  border-radius: 5px;
+  
+}
+
+.editDeleteCommentButtons div {
+  display: inline;
+  margin-right: 10px;
+  background-color: transparent;
+  border: 0;
+  width: 50px;
+  color: #808000;
+  cursor: pointer;
+  
+}
+
+.commentContent {
+  display: block;
+  padding-bottom: 5px;
+}
+
+.eachCommentDiv span {
+  font-weight: 300;
+  
+}
+
+.editCommentDiv textarea {
+  width: 100%;
+}
+
+.commentErrorDiv {
+  background-color: maroon;
+  color: white;
+  border-radius: 5px;
+  width: max-content;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+}
+
+.deleteCommentError {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.deleteCommentError p {
+  text-align: center;
+}
+
+.newPostPage input, .newPostPage textarea {
+  display: block;
+  /*border-color: #E5E4E2;*/
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-weight: 300;
+  width: 100%;
+  border: 1px solid grey;
+}
+
+.newPostPage button {
+  display: block;
+}
+
+.newPostDateButtons button {
+  margin: 10px 10px;
+  font-weight: 300;
+}
+
+.newPostDateButtons button:hover {
+  background-color: #FFF8DC;
+}
+
+.newPostDateButtons input {
+  display: block;
+  width: max-content;
+  margin-left: 10px;
+}
+
+.postButton {
+  width: 100%;
+  align-self: center;
+  justify-self: center;
+}
+
+.newPostSubCategories {
+  display: block;
+}
+
+.newPostSubCategories h3 {
+  padding-bottom: 10px;
+}
+
+.newPostSubCategories select {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.errorStyle, .confirmStyle {
+  margin: 10px 10px;
+  color: white;
+  padding: 10px 10px;
+  border-radius: 5px;
+  font-weight: 500;
+  max-width: max-content;
+}
+
+.errorStyle {
+  background-color: maroon;
+}
+
+.confirmStyle {
+  background-color: #008000;
+  
+}
+
+.communityDiv {
+  cursor: default;
+}
+
+.sidebar-left, .sidebar-right {
+  display: none;
+}
+
+.noSidebar {
+  display: none;
+}
+
+.select {
+  width: max-content;
+}
+
+.greetings {
+  background-color: #FFF8DC;
+  padding: 10px 10px;
+  margin: 10px 10px;
+  border-radius: 10px;
+}
 /* Media Queries for responsiveness */
 
 /* for desktop and larger screens */
 @media (min-width: 992px) {
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    
+  }
+
+  .noSidebar {
+    display: none;
+  }
 
   .hamburger-button {
     display: none;
@@ -279,6 +772,9 @@ h1, h2, h3, h4 {
   }
 
   .main-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: static;
     height: auto;
     width: auto;
@@ -289,10 +785,16 @@ h1, h2, h3, h4 {
     
   }
 
+  .main-nav.open {
+    height: auto;
+  }
+
+
   .nav-list {
     display: flex;
     flex-direction: row;
     gap: 30px;
+    margin-right: 20px;
 
   }
   
@@ -346,9 +848,24 @@ h1, h2, h3, h4 {
     margin-bottom: 5px;
   }
 
-  .postCard {
-    max-width: 50%;
+  .main {
+    display: block;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    
   }
-
+  
+  .sidebar-right {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: calc(((100vw - 700px)/2) - 20px);
+    height: 100vh;
+    color: white;
+    padding: 1rem;
+    overflow-y: auto;
+  }
 
 }

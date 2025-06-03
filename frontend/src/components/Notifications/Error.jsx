@@ -8,13 +8,8 @@ const Error = () => {
     return null
   }
 
-  const errorStyle = {
-    color: 'red',
-    fontSize: '1.2rem'
-  }
-
   return (
-    <div style={errorStyle}>
+    <div className="errorStyle">
       {errorMessage}
     </div>
   )

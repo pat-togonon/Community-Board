@@ -71,6 +71,7 @@ const Settings = () => {
         const savedName = await updateSavedName(user.id, name)
         dispatch(setName(savedName))
         dispatch(notifyConfirmation('Updated your name successfully!', 3))
+        setUserName('')
       } catch (error) {
         console.log('error saving name', error)
         dispatch(notifyError("Oops! Can't update your name right now. Please try again later.", 7))
@@ -86,13 +87,15 @@ const Settings = () => {
     if (user.name) {
       return (
         <div>
-          <div style={nameStyle}>
-            <p>Name: {user.name} <button onClick={handleForm}>🖋️</button></p> 
+          <div style={nameStyle} className="fieldEdit">
+            <p><span className="settingsFieldLabel">Name:</span> {user.name} <button onClick={handleForm}>🖋️</button></p> 
           </div>
-          <div style={userNameStyle}>
-            Name: <input value={userName} autoComplete="name" type="text" onChange={({ target }) => setUserName(target.value)} /><br />
-            <button onClick={handleUpdateName}>save</button>
-            <button onClick={handleForm}>cancel</button>
+          <div style={userNameStyle} className="settingsUpdateName">
+          <span className="settingsFieldLabel">Name: </span><input name="name" value={userName} autoComplete="name" type="text" onChange={({ target }) => setUserName(target.value)} />
+          <div className="settingsNameSaveCancelButtonDiv">
+            <button type="button" onClick={handleUpdateName} className="saveButton saveName">save</button>
+            <button type="button" onClick={handleForm}>cancel</button>
+          </div>
           </div>
           
         </div>
@@ -101,18 +104,19 @@ const Settings = () => {
 
     return (
       <div>
-        Add your name: <input value={userName} autoComplete="name" type="text" onChange={({ target }) => setUserName(target.value)} />
-        <button onClick={handleUpdateName}>Save</button>
+        <span className="settingsFieldLabel">Add your name: </span><input value={userName} autoComplete="name" type="text" onChange={({ target }) => setUserName(target.value)} name="name" />
+        <div className="settingsSaveNameButtonDiv">
+          <button type="button" onClick={handleUpdateName} className="saveButton saveName">Save</button>
+        </div>
       </div>
     )
   }
 
-  const handleDeleteAccount = async () => {
-
-    console.log('username', user.username, 'user input', deleteUsername)
+  const handleDeleteAccount = async (event) => {
+    event.preventDefault()
 
     if (user.username !== deleteUsername) {
-      dispatch(notifyError('Wrong username. Please try again.', 5)) // add a notification for this
+      dispatch(notifyError('Please enter your correct username.', 3)) // add a notification for this
       setDeleteUsername('')
       return
     }
@@ -149,7 +153,7 @@ const Settings = () => {
     event.preventDefault()
 
     if (!oldPassword || !newPassword) {
-      dispatch(notifyError('Please enter your passwords.', 5))
+      dispatch(notifyError('Please enter your passwords.', 2))
       return
     }
 
@@ -175,32 +179,44 @@ const Settings = () => {
   
   }
 
+  const handleCancelPasswordUpdate = () => {
+    setShowPasswordForm(!showPasswordForm)
+    setOldPassword('')
+    setNewPassword('')
+  }
+
   return (
-    <div>
+    <div className="settings">
       <h2>Your information</h2>
       <Error />
       <Confirmation />
       {updateName()}
-      <p>Username: {user.username}</p>
-      <div style={passwordUpdateStyle}>Update password <button onClick={() => setShowPasswordForm(!showPasswordForm)}>🖋️</button></div>
-      <div style={passwordFormStyle}>
+      <p><span className="settingsFieldLabel">Username: </span>{user.username}</p>
+      <div style={passwordUpdateStyle}>
+      <span onClick={() => setShowPasswordForm(!showPasswordForm)}className="settingsFieldLabel updatePassword">Update password</span>
+      </div>
+      <div style={passwordFormStyle} className="settingsUpdatePasswordDiv">
         <form onSubmit={handleUpdatePassword}>
           <h3>Enter your old password and new password to proceed: </h3>
           <p>Take note: You'll be logged out right after updating your password. Please log in again.</p>
-          Enter your old password: <input value={oldPassword} type="password" name="oldPassword" autoComplete="current-password" onChange={({ target }) => setOldPassword(target.value)} /><br />
-          Enter your new password: <input value={newPassword} type="password" autoComplete="newPassword" name="new-password" onChange={({ target }) => setNewPassword(target.value)} /><br />
-          <button type="submit">update password</button>
+          <span className="settingsEnterNewPassword">Enter your old password: <input value={oldPassword} type="password" name="oldPassword" autoComplete="current-password" onChange={({ target }) => setOldPassword(target.value)} />
+          </span>
+          <span className="settingsEnterNewPassword">Enter your new password: <input value={newPassword} type="password" autoComplete="newPassword" name="new-password" onChange={({ target }) => setNewPassword(target.value)} />
+          </span>
+          <button type="submit" className="updateButton">update password</button>
+          <button type="button" onClick={handleCancelPasswordUpdate}>cancel</button>
         </form>
-        <button onClick={() => setShowPasswordForm(!showPasswordForm)}>cancel</button>
-      </div><br />
-      <div style={deleteStyle} onClick={() => setShowDelete(!showDelete)}>Delete account</div>
+      </div>
+      <div style={deleteStyle} onClick={() => setShowDelete(!showDelete)} className="settingsFieldLabel deleteAccount"><span>Delete account</span></div>
       <div>
-        <div style={deleteFormStyle}>
+        <div style={deleteFormStyle} className="settingsUpdatePasswordDiv">
           <h3>Type in your username to confirm and delete your account:</h3>
           <p>Take note: You'll be logged out automatically upon deleting your account.</p>
-          <input type="text" value={deleteUsername} autoComplete="username" onChange={({ target }) => setDeleteUsername(target.value)} />
-          <button onClick={handleDeleteAccount}>Delete account</button>
-          <button onClick={() => setShowDelete(!showDelete)}>Cancel</button>
+          <input type="text" name="username" value={deleteUsername} autoComplete="username" onChange={({ target }) => setDeleteUsername(target.value)} className="deleteInputUsername"/>
+          <div className="settingsDeleteDiv">
+            <button type="submit" onClick={handleDeleteAccount} className="updateButton">Delete account</button>
+            <button type="button" onClick={() => setShowDelete(!showDelete)}>cancel</button>
+          </div>
 
         </div>
       </div>

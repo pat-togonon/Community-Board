@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
-import { Link, NavLink, Routes, Route, useLocation } from "react-router-dom"
+import { Link, NavLink, Routes, Route, useLocation, useNavigate } from "react-router-dom"
 import { clearMainCategory } from "../reducer/mainCategoryReducer"
-import { resetSubCategory } from "../reducer/subCategoryReducer"
+import { setSubCategory, resetSubCategory } from "../reducer/subCategoryReducer"
 import { useEffect } from "react"
 import { getAllPosts, viewFavorites } from "../service/posts"
 import { setPosts } from "../reducer/postReducer"
@@ -11,17 +11,38 @@ import { setComments } from "../reducer/commentsReducer"
 import { notifyError } from "../reducer/errorReducer"
 
 
-const UserPosts = ({ postsByUser }) => {
+const UserPosts = ({ postsByUser, dispatch, navigate }) => {
   
+  const handleMainCategory = (post) => {
+      dispatch(resetSubCategory())
+      const path = `/posts/${post.community}/${post.mainCategory}/${post.subCategory}`
+      navigate(path)
+    }
+  
+    const handleSubCategory = (post) => {
+      dispatch(setSubCategory(post.subCategory))
+      const path = `/posts/${post.community}/${post.mainCategory}/${post.subCategory}`
+      navigate(path)
+    }
+
   return (
     <div>
+      <h3>Your posts</h3>
+      <div className="profileDivider"></div>
       {postsByUser.map(post => 
-      <div key={post.id}>
+      <div key={post.id} className="postCard">
         <Link to={`/posts/${post.community}/${post.mainCategory}/${post.subCategory}/${post.id}`}>
          <h3>{post.title.slice(0, 60)}</h3>
-       </Link>
-          <p>{post.description.slice(0, 200)}...</p>
-         <p>Tags: {post.mainCategory} {post.subCategory}</p>  
+          <p className="postCardContent">{post.description.slice(0, 200)}...</p>
+        </Link>
+        <div className="postCardContent tagContainer">
+          <div className={`tags ${post.mainCategory}`} onClick={() => handleMainCategory(post)}>
+            {post.mainCategory}
+          </div> 
+         <div className={`tags ${post.subCategory}`} onClick={() => handleSubCategory(post)}>
+          {post.subCategory}
+          </div>  
+        </div> 
       </div>
       )}
     </div>
@@ -41,12 +62,14 @@ const UserComments = ({ comments, communityId, accessToken }) => {
   
   return (
     <div>
+      <h3>Your comments</h3>
+      <div className="profileDivider"></div>
       {commentsInExistingPosts.map(comment => 
-      <div key={comment.id}>
+      <div key={comment.id} className="postCard">
       <Link to={`/posts/${communityId}/${comment.post.mainCategory}/${comment.post.subCategory}/${comment.post.id}`}>
-      <h4>{comment.comment.slice(0, 60)}...</h4>
+      <h3>{comment.comment.slice(0, 60)}...</h3>
+      <p className="postCardContent"><span className="title">{comment.post.title}</span> | {comment.post.description?.slice(0, 50)}</p>
       </Link>
-      <p><strong>{comment.post.title}</strong> | {comment.post.description?.slice(0, 50)}</p>
       </div>
       )}
     </div>
@@ -57,12 +80,14 @@ const UserFavorites = ({ favorites, communityId }) => {
  
   return  (
     <div>
+      <h3>Your favorite posts</h3>
+      <div className="profileDivider"></div>
       {favorites.map(fave => 
-        <div key={fave.id}>
+        <div key={fave.id} className="postCard communityTab">
           <Link to={`/posts/${communityId}/${fave.mainCategory}/${fave.subCategory}/${fave.id}`}>
-            <h3>{fave.title.slice(0,60)}...</h3>
+          <h3>{fave.title.slice(0,60)}...</h3>
+          <p className="postCardContent">{fave.description.slice(0,100)}...</p>
           </Link>
-          <p>{fave.description.slice(0,100)}...</p>
         </div>
       )}
     </div>
@@ -80,14 +105,15 @@ const AdminSection = ({ communityId, user}) => {
 
   return (
     <div>
+      <h3>Your communities</h3>
+      <div className="profileDivider"></div>
       {user.managedCommunity.map(community => 
-        <div key={community.id}> 
-          <h3>{community.name}</h3>
-          <p>{community.description}</p>
-          <p>Total users: {community.communityUsers.length}</p>
-          <p>Total community admins: {community.additionalAdmins.length}</p>        
-        </div>
-        
+        <div key={community.id} className="postCard communityDiv"> 
+          <h2>{community.name}</h2>
+          <h3 className="postCardContent">{community.description}</h3>
+          <p className="postCardContent">Community users: {community.communityUsers.length}</p>
+          <p className="postCardContent">Community admins: {community.additionalAdmins.length}</p>        
+        </div>        
       )}
     </div>
   )
@@ -97,6 +123,7 @@ const Profile = () => {
   
   const dispatch = useDispatch()
   const location = useLocation()
+  const navigate = useNavigate()
   const user = useSelector(state => state.user)
   const userId = user.id
   const accessToken = user.accessToken
@@ -187,24 +214,19 @@ const Profile = () => {
     dispatch(resetSubCategory())
   }
 
-  const menuStyle = {
-    paddingRight: 20,
-    fontSize: 20
-  }
-
   return (
     <div>
-      <div>
+      <div className="greetings">
         <h3>Hi {user.name ? user.name : user.username}!</h3>
       </div>
-      <nav>
-        <NavLink style={menuStyle} to="/user/profile">Your Posts</NavLink>
-        <NavLink style={menuStyle} to="/user/profile/comments">Your Comments</NavLink>
-        <NavLink style={menuStyle} to="/user/profile/favorites">Your Favorites</NavLink>
-        {isUserAnAdmin ? <NavLink style={menuStyle} to="/user/profile/communities">Your Communities</NavLink> : '' }
+      <nav className="profileNav">
+        <h3><NavLink to="/user/profile">Posts</NavLink></h3>
+        <h3><NavLink to="/user/profile/comments">Comments</NavLink></h3>
+        <h3><NavLink to="/user/profile/favorites">Favorites</NavLink></h3>
+        <h3>{isUserAnAdmin ? <NavLink to="/user/profile/communities">Communities</NavLink> : '' }</h3>
       </nav>
       <Routes>
-        <Route index element={<UserPosts postsByUser={postsByUser} />} />     
+        <Route index element={<UserPosts postsByUser={postsByUser} dispatch={dispatch} navigate={navigate}/>} />     
         <Route path="/comments" element={<UserComments comments={comments} communityId={communityId} accessToken={accessToken} />} />
         <Route path="/favorites" element={<UserFavorites favorites={favoritePosts} communityId={communityId} />} />
         <Route path="/communities" element={<AdminSection communityId={communityId} user={user} />} />

@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { setUser, setNewAccessToken, logout } from './reducer/userReducer'
 import api from './service/api'
 import { setCommunityId } from './reducer/communityIdReducer'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Homepage from './components/Homepage'
 import SignUp from './components/Signup'
 import MainCategoryRouter from './components/MainCategoryRouter'
@@ -17,17 +17,29 @@ import Settings from './components/Settings'
 import PasswordReset from './components/PasswordReset'
 import Header from './components/Header'
 import ErrorRoutes from './components/ErrorRoutes'
+import { clearMainCategory } from './reducer/mainCategoryReducer'
+import { resetSubCategory } from './reducer/subCategoryReducer'
+import { logoutUser } from './service/auth'
+import Posts from './components/Posts'
 
 const App = () => {
   console.log('Good morning Pat!')
 
-  
   const dispatch = useDispatch()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const userToken = useSelector(state => state.user.accessToken)
   const loggedInUser = useSelector(state => state.user)
   const isLoggedIn = localStorage.getItem('isLoggedIn')
   console.log('is logged in?', isLoggedIn)
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      dispatch(clearMainCategory())
+      dispatch(resetSubCategory())
+    }
+  }, [location.pathname, dispatch])
 
   // brings in new access token so user stays logged in even when they refresh the browser
   
@@ -43,8 +55,11 @@ const App = () => {
           dispatch(setCommunityId(response.data.userFrontend.community))
         } 
       } catch (error) {
-        console.log('error refreshing token', error.response.data.error)
+        console.log('error refreshing token')
+        await logoutUser()
         dispatch(logout())
+        localStorage.removeItem('isLoggedIn')
+        navigate('/login')
 
       }
     }
@@ -72,27 +87,35 @@ const App = () => {
   return (
     <>
       <Header />
-      {communityHeader()}
-      <div>
-      <Routes>
-        <Route path='/' element={userToken ? <Dashboard /> : <Homepage />} >
-          <Route index element={<HomeFeed />} />
-          <Route path='posts/:community/:mainCategory' element={<MainCategoryRouter />} />
-          <Route path='posts/:community/:mainCategory/:subCategory' element={<MainCategoryRouter />} />
-          
-        </Route>
-        
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<SignUp />} />      
-        <Route path='/posts/:community/:mainCategory/new-post' element={<PostForm />} />
-        <Route path='/posts/:community/:mainCategory/:subCategory/:id' element={<PostPage />} />
-        <Route path='/user/profile/*' element={<Profile />} />
-        <Route path='/user/settings' element={<Settings />} />
-        <Route path='/password-reset' element={<PasswordReset />} />
-        <Route path='*' element={<ErrorRoutes />} />       
-        
-        
-      </Routes>
+      <div className="container">     
+        <div className='layout'>
+          {/* Left Sidebar for large screens */}
+          <aside className={isLoggedIn ? 'sidebar-left' : 'noSidebar'}>Left Sidebar</aside>
+          {/* Main Content */}
+          <main className={isLoggedIn ? 'main' : ''}>
+          <div>
+          {communityHeader()}
+          <Routes>
+            <Route path='/' element={isLoggedIn ? <Dashboard /> : <Homepage />} >
+              <Route index element={<HomeFeed />} />
+              <Route path='posts/:community/:mainCategory' element={<MainCategoryRouter />} />
+              {/*<Route path='posts/:community/:mainCategory/:subCategory' element={<MainCategoryRouter />} /> */}  
+              <Route path='posts/:community/:mainCategory/:subCategory' element={<Posts />} />           
+            </Route>            
+            <Route path='/login' element={<Login />} />
+            <Route path='/signup' element={<SignUp />} />      
+            <Route path='/posts/:community/:mainCategory/new-post' element={<PostForm />} />
+            <Route path='/posts/:community/:mainCategory/:subCategory/:id' element={<PostPage />} />
+            <Route path='/user/profile/*' element={<Profile />} />
+            <Route path='/user/settings' element={<Settings />} />
+            <Route path='/password-reset' element={<PasswordReset />} />
+            <Route path='*' element={<ErrorRoutes />} />       
+          </Routes>
+          </div>
+          </main>
+          {/* Right Sidebar for large screens */}
+          <aside className={isLoggedIn ? 'sidebar-right' : 'noSidebar'}>Right Sidebar</aside>
+        </div>
       </div>
     </>
   )

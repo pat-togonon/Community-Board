@@ -8,14 +8,8 @@ const Confirmation = () => {
     return null
   }
 
-  const confirmStyle = {
-    color: 'green',
-    fontSize: '1.2rem',
-    padding: '15px'
-  }
-
   return (
-    <div style={confirmStyle}>
+    <div className="confirmStyle">
       {confirmationMessage}
     </div>
   )
