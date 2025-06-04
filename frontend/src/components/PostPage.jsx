@@ -3,10 +3,9 @@ import { useDispatch, useSelector } from "react-redux"
 import { setCommunityId } from "../reducer/communityIdReducer"
 import { clearMainCategory, setMainCategory } from "../reducer/mainCategoryReducer"
 import { resetSubCategory, setSubCategory } from "../reducer/subCategoryReducer"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { getAllPosts, deletePost, editPost, addToFavorites, viewFavorites, removeFromFavorites } from "../service/posts"
 import { setPosts } from "../reducer/postReducer"
-import { useState } from "react"
 import Comment from "./Comments"
 import { setFavoritePosts } from "../reducer/favoriteReducer"
 import { ShowStatus } from "./PostFeed"
@@ -15,6 +14,44 @@ import { notifyConfirmation } from "../reducer/confirmationReducer"
 import Confirmation from "./Notifications/Confirmation"
 import Error from "./Notifications/Error"
 
+const IsFound = ({ post, user, mainCategory, communityId, subCategory, id, fetchPosts, dispatch }) => {
+
+  if (mainCategory.mainCategory !== 'lost-and-found') {
+    return null
+  }
+
+  if (post.author.id !== user.id) {
+    return null
+  }
+
+  if (post.isFound) {
+    return null
+  }
+
+  const handleIsFound = async () => {
+  
+    const editedPost = {
+      isFound: true
+    }
+
+    try {
+      await editPost(communityId, mainCategory, subCategory, id, editedPost)
+      fetchPosts()
+    } catch (error) {
+      console.log('error updating isFound', error.response.data.error)
+      dispatch(notifyError("Can't update your post right now. Please try again later.", 7))
+    }
+    // to reset 
+
+  }
+
+  return (
+      <p role="button" onClick={handleIsFound}>
+        Already found the item or owner? Click here.
+      </p>
+    
+  )
+}
 
 const PostPage = () => {
   const [hide, setHide] = useState(false)
@@ -31,7 +68,6 @@ const PostPage = () => {
   const user = useSelector(state => state.user)
   const accessToken = user.accessToken
   const favoritePosts = useSelector(state => state.favorites)
-  const isLoggedIn = localStorage.getItem('isLoggedIn')
 
   const { community, mainCategory, subCategory, id } = useParams()
     //hydrate redux so it persists upon browser refresh
@@ -41,19 +77,18 @@ const PostPage = () => {
     if (!accessToken) {
       return
     }
-
     
-      if (community) {
-        dispatch(setCommunityId(community))
-      }
+    if (community) {
+      dispatch(setCommunityId(community))
+    }
 
-      if (mainCategory) {
-        dispatch(setMainCategory(mainCategory))
-      }
+    if (mainCategory) {
+      dispatch(setMainCategory(mainCategory))
+    }
 
-      if (subCategory) {
-        dispatch(setSubCategory(subCategory))
-      }
+    if (subCategory) {
+      dispatch(setSubCategory(subCategory))
+    }
 
 }, [accessToken, community, mainCategory, subCategory])
 
@@ -74,17 +109,17 @@ useEffect(() => {
       const allPosts = await getAllPosts(community, mainCategory)
       dispatch(setPosts(allPosts))
     } catch(error) {
-      console.log('posts showing error', error.response.data.error)
-    } // ADD notifyErrors!!
+      dispatch(notifyError("Can't load posts right now. Please try again later.", 7))
+    } 
   }
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!accessToken && !posts) {
       return
-    }
+    }    
 
     fetchFavorites()
-  }, [dispatch, accessToken])
+  }, [dispatch, accessToken, id, community, posts])
 
   const fetchFavorites = async () => {
       try {
@@ -93,8 +128,8 @@ useEffect(() => {
         const favoritePosts = posts.filter(post => allfavoritesInString.includes(post.id.toString()))
         dispatch(setFavoritePosts(favoritePosts))
       } catch (error) {
-        console.log('error showing favorites', error.response.data.error)
-      } // ADD notifyErrors!!
+        dispatch(notifyError("Can't load favorites right now. Please try again later.", 7))
+      } 
     }
 
   const post = posts.find(post => 
@@ -110,7 +145,7 @@ useEffect(() => {
   }
 
   if (!post) {
-    //add return home?
+  
     return (
       <div className="postCard">
         <h3>Loading or post not found...</h3>
@@ -143,18 +178,17 @@ useEffect(() => {
 
   const handleDelete = async (event) => {
 
-      try {
-        await deletePost(community, mainCategory, subCategory, id)
-        fetchPosts()
-        fetchFavorites()
-        dispatch(resetSubCategory())
-        dispatch(notifyConfirmation('Post is successfully deleted!', 5))
-        navigate(`/posts/${community}/${mainCategory}`)
-      } catch(error) {
-        dispatch(notifyError("Oops! Trouble deleting post. Please try again.", 5))
-      }
+    try {
+      await deletePost(community, mainCategory, subCategory, id)
+      fetchPosts()
+      fetchFavorites()
+      dispatch(resetSubCategory())
+      dispatch(notifyConfirmation('Post is successfully deleted!', 5))
+      navigate(`/posts/${community}/${mainCategory}`)
+    } catch(error) {
+      dispatch(notifyError("Oops! Trouble deleting post. Please try again.", 5))
+    }
   }
-
 
   const descriptionStyle = {
     display: hide ? 'none' : ''
@@ -163,8 +197,7 @@ useEffect(() => {
   const editorStyle = {
     display: showEditor ? '' : 'none'
   }
-  console.log('show editor', showEditor, 'clicked delete', clickDelete)
-
+  
   const handleCancelEdit = (event) => {
     const path = `/posts/${community}/${mainCategory}/${subCategory}/${id}`
     navigate(path)
@@ -179,8 +212,6 @@ useEffect(() => {
       description: updateDescription
     }
 
-    console.log('edited post is', editedPost)
-
     try {
       await editPost(community, mainCategory, subCategory, id, editedPost)
       fetchPosts()
@@ -189,23 +220,19 @@ useEffect(() => {
       setHide(!hide)
       setShowEditor(!showEditor)
       dispatch(notifyConfirmation('Post updated successfully!', 4))
-
     } catch (error) {
-      console.log('error editing post', error)
-      dispatch(notifyError("Couldn't update your post. Please try again", 5))
+      dispatch(notifyError("Couldn't update your post. Please try again later.", 5))
     }
   }
   
   const handleAddToFavorites = async (id) => {
 
-    console.log('favorited id', id)
     try {
       await addToFavorites(id)
       setFavorited(!favorited)
       fetchFavorites()
       dispatch(notifyConfirmation('Added to your favorites!', 3))
     } catch (error) {
-      console.log('error adding to favorites', error.response.data.error)
       dispatch(notifyError("Oops! Can't add to your favorites right now. Try again later.", 6))
     }
   }
@@ -216,10 +243,8 @@ useEffect(() => {
       dispatch(notifyConfirmation('Removed from your favorites!', 3))
       setFavorited(false)
       fetchFavorites()
-      dispatch(notifyConfirmation('Removed from your favorites!', 3))
-      
+      dispatch(notifyConfirmation('Removed from your favorites!', 3))      
     } catch (error) {
-      console.log('error removing from favorites', error.response.data.error)
       dispatch(notifyError("Oops! Can't remove from your favorites right now. Try again later.", 6))
     }
   }
@@ -246,10 +271,6 @@ useEffect(() => {
     )
   }
 
-  /*const contentStyle = {
-    display: clickDelete ? 'none' : ''
-  }*/
-
   const deleteConfirmStyle = {
     display: clickDelete ? '' : 'none'
   }
@@ -266,6 +287,8 @@ useEffect(() => {
     navigate(path)
   }
 
+  const datePosted = new Date(post.createdAt).toLocaleString()
+
   return (
     <div className="postPage">
       <Error />
@@ -274,8 +297,11 @@ useEffect(() => {
         <h2>{post.title}</h2>
         {fave(post.id)}
       </div>
-      <p>Posted by: {post.author ? post.author.username : 'deletedAccount'}</p>
+      <p className="authorAndDate">Posted by: {post.author ? post.author.username : 'deletedAccount'} on {datePosted}</p>
       <ShowStatus post={post} />
+      <div className="isFoundDiv">
+        <IsFound post={post} user={user} mainCategory={{mainCategory}} communityId={community} subCategory={subCategory} id={id} fetchPosts={fetchPosts} dispatch={dispatch} /> 
+      </div>
       <div style={descriptionStyle}>
       <p>{post.description}</p>
       </div>
@@ -292,7 +318,7 @@ useEffect(() => {
           </div> 
           <div className={`tags ${post.subCategory}`} onClick={() => handleSubCategory(post)}>
             {post.subCategory}
-          </div>  
+          </div> 
         </div>
         <div style={deleteConfirmStyle} className="deletePostDiv">
           <h3>Are you sure you want to delete this post?</h3>
@@ -308,9 +334,7 @@ useEffect(() => {
       </div>}
       <Comment communityId={community} mainCategory={mainCategory} subCategory={subCategory} id={id} />
     </div>
-  )
-
-    
+  )    
 }
 
 export default PostPage

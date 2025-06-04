@@ -127,3 +127,30 @@ export const validSubcategories = {
       subCat: 'giveaway' 
     }]
 }
+
+export const mainCategories = [
+  {
+    name: 'Home',
+    category: 'home'
+  },
+  { 
+    name: 'Announcement',
+    category: 'announcement'
+  }, 
+  {
+    name: 'Events',
+    category: 'upcoming-event'
+  }, 
+  {
+    name: 'Garage Sale & Giveaways',
+    category: 'garage-sale-and-giveaways'
+  }, 
+  { 
+    name: 'Shops Promo',
+    category: 'shops-promotion'
+  },
+  {
+    name: 'Lost and Found',
+    category: 'lost-and-found'
+  }
+]

@@ -87,10 +87,14 @@ const CommentList = ({ comment, user, fetchComments }) => {
     display: notEdited ? '' : 'none'
   }
   console.log('comment', comment)
+  const dateCommented = new Date(comment.createdAt).toLocaleString()
+
   return (
     <div>
       <div style={commentStyle}>
-        <span className="commentContent">{comment.comment} - {comment.commenter ? comment.commenter.username : 'deletedAccount'}</span>
+        <span className="commentContent">{comment.comment}
+        <p className="commentContent commenterAndDate">{comment.commenter ? comment.commenter.username : 'deletedAccount'} {dateCommented}</p>
+        </span>
         {isUserTheCommenter
           ? <div className="editDeleteCommentButtons" style={editDeleteStyle}>
               <div role="button" onClick={() => handleEdit(comment)}>Edit</div>
@@ -191,7 +195,7 @@ const Comment = ({ id, communityId, mainCategory, subCategory }) => {
         <p>Oops! Please enter your comment first.</p>
       </div>
       <h3>Comments</h3>
-      {[...comments].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).map(comment => 
+      {[...comments].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(comment => 
         <div key={comment.id} className="eachCommentDiv">
           {<CommentList comment={comment} user={user} fetchComments={() => fetchComments()}/>}
         </div>

@@ -35,6 +35,12 @@ const Login = () => {
     console.log('community id after submit login', communityId)
     const username = event.target.loginUsername.value
     const password = event.target.loginPassword.value
+
+    if (!username || !password) {
+      dispatch(notifyError("Please enter your login details.", 4))
+      return
+    }  
+
     const userLogin = {
       username,
       password
@@ -71,7 +77,6 @@ const Login = () => {
   return (
       <div className="loginContainer">
         <h2 className="loginContainerChild loginHeader">Log in to connect with your local community</h2>
-        <Error />
         <Confirmation />        
         <CommunityOption />
         <form onSubmit={handleLogin} className="loginContainerChild">
@@ -89,6 +94,7 @@ const Login = () => {
           </div>
           <button type="submit" className="loginContainerChild loginButton">log in</button>
         </form>
+        <Error />
         <Link to='/password-reset' className="textLink forgotPassword"><p>Forgot password</p></Link>
 
         <p className="loginContainerChild forSignUp">Don't have an account yet? <span onClick={handleSignUp} className="textLink">Sign up</span></p>

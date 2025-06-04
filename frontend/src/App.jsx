@@ -8,7 +8,6 @@ import { setCommunityId } from './reducer/communityIdReducer'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Homepage from './components/Homepage'
 import SignUp from './components/Signup'
-import MainCategoryRouter from './components/MainCategoryRouter'
 import HomeFeed from './components/HomeFeed'
 import PostPage from './components/PostPage'
 import PostForm from './components/PostForm'
@@ -21,6 +20,7 @@ import { clearMainCategory } from './reducer/mainCategoryReducer'
 import { resetSubCategory } from './reducer/subCategoryReducer'
 import { logoutUser } from './service/auth'
 import Posts from './components/Posts'
+import RegisterCommunity from './components/RegisterCommunity'
 
 const App = () => {
   console.log('Good morning Pat!')
@@ -98,12 +98,12 @@ const App = () => {
           <Routes>
             <Route path='/' element={isLoggedIn ? <Dashboard /> : <Homepage />} >
               <Route index element={<HomeFeed />} />
-              <Route path='posts/:community/:mainCategory' element={<MainCategoryRouter />} />
-              {/*<Route path='posts/:community/:mainCategory/:subCategory' element={<MainCategoryRouter />} /> */}  
+              <Route path='posts/:community/:mainCategory' element={<Posts />} /> 
               <Route path='posts/:community/:mainCategory/:subCategory' element={<Posts />} />           
             </Route>            
             <Route path='/login' element={<Login />} />
-            <Route path='/signup' element={<SignUp />} />      
+            <Route path='/signup' element={<SignUp />} />   
+            <Route path='/register-a-community' element={<RegisterCommunity />} />
             <Route path='/posts/:community/:mainCategory/new-post' element={<PostForm />} />
             <Route path='/posts/:community/:mainCategory/:subCategory/:id' element={<PostPage />} />
             <Route path='/user/profile/*' element={<Profile />} />

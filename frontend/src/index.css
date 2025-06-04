@@ -142,10 +142,37 @@ h3, h4 {
   margin-top: 5px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
   
 }
 
-.loginContainerChild input, .loginContainerChild select, .newPostPage select, .newPostDateButtons input {
+.communityOptionDiv {
+  padding-bottom: 15px;
+}
+
+.registerCommunity {
+  width: max-content;
+  font-size: 0.9rem;
+  margin-left: 30px;
+  position: absolute;
+  top: 65px;
+  right: 40px;
+  cursor: pointer;
+}
+
+.registerCommunity a {
+  text-decoration: none;
+  font-weight: 300;
+  color: #4F7942;
+}
+
+.registerCommunity a:hover {
+  color: #4F7942;
+  font-weight: 500;
+}
+
+
+.loginContainerChild input, .loginContainerChild textarea, .loginContainerChild select, .newPostPage select, .newPostDateButtons input {
   padding: 5px 2px;
   color: grey;
 }
@@ -215,6 +242,10 @@ h3, h4 {
   font-weight: 500;
   color: #4F7942;
   text-decoration: underline;
+}
+
+.textLink:hover {
+  color: #8A9A5B;
 }
 
 .ageNote {
@@ -496,7 +527,7 @@ h3, h4 {
   cursor: pointer;  
 }
 
-.postPage, .commentDiv, .newPostPage, .profileNav {
+.postPage, .commentDiv, .newPostPage, .profileNav, .isFoundDiv {
   max-width: 700px;
   position: relative;
 }
@@ -522,6 +553,10 @@ h3, h4 {
   padding-bottom: 5px;
 }
 
+.authorAndDate {
+  font-weight: 300;
+  color: #203333;
+}
 .postButtons {
   margin: 10px 10px;
 }
@@ -641,6 +676,14 @@ h3, h4 {
   width: 100%;
 }
 
+.commenterAndDate {
+  font-weight: 200;
+  width: 100%;
+  display: inline;
+  font-size: 0.9rem;
+  
+}
+
 .commentErrorDiv {
   background-color: maroon;
   color: white;
@@ -748,6 +791,20 @@ h3, h4 {
   padding: 10px 10px;
   margin: 10px 10px;
   border-radius: 10px;
+}
+
+.isFoundDiv {
+  background-color: #FFF8DC;
+  width: max-content;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.isFoundDiv p {
+  font-weight: 300;
+  color: #454B1B;
+  font-size: 0.9rem;
 }
 /* Media Queries for responsiveness */
 

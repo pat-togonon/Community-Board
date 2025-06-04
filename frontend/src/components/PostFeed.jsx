@@ -10,15 +10,18 @@ import { resetSubCategory, setSubCategory } from "../reducer/subCategoryReducer"
 
 
 export const ShowStatus = ({ post }) => {
-   
+
+  if (post.mainCategory === 'lost-and-found' && post.isFound == false) {
+    return <div className="postCardContent status"><img src='/circle-red.svg' /> Still looking...</div>
+  }  
+     
   if (!post.startDate && !post.endDate && !post.isFound) {
     return null
   }
 
   if (post.isFound) {
-    return <div className="postCardContent status">Found</div>
-  } // create a button for this on lost and found page please. 
-  
+    return <div className="postCardContent status"><img src='/circle-fill.svg' /> Already found</div>
+  }  
 
   if (post.startDate && !post.endDate) {
     return <div className="postCardContent status"><img src='/circle-fill.svg' /> Ongoing</div>

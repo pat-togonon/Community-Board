@@ -26,6 +26,11 @@ const PasswordReset = () => {
   const handlePasswordReset = async (event) => {
     event.preventDefault()
 
+    if (!username || !password || !securityAnswer || !securityQ) {
+      dispatch(notifyError("Please fill in all fields.", 5))
+      return
+    }    
+
     const forPasswordReset = {
       username,
       newPassword: password,
@@ -61,7 +66,6 @@ const PasswordReset = () => {
   return (
     <div className="loginContainer">
       <h2 className="loginContainerChild loginHeader">Password reset</h2>
-      <Error />
       <form onSubmit={handlePasswordReset} className="loginContainerChild">
       <label htmlFor="username" className="loginContainerChild">
         username: <span className='required'>*</span></label>
@@ -88,10 +92,9 @@ const PasswordReset = () => {
         <input type="text" name="securityAnswer" value={securityAnswer} onChange={({ target }) => setSecurityAnswer(target.value)} className="loginContainerChild" id="securityAnswer" placeholder="enter your answer" />
 
         <button type="submit" className="loginContainerChild loginButton">reset password</button>
-        <p role="button" onClick={handleCancel} className="loginContainerChild forSignUp textLink">cancel</p>
       </form>     
-      
-      
+      <Error />
+      <p role="button" onClick={handleCancel} className="loginContainerChild forSignUp textLink">cancel</p>
     </div>
   )
 

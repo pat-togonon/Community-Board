@@ -59,6 +59,12 @@ const Settings = () => {
     }
 
     const handleUpdateName = async () => {
+
+      if (!userName) {
+        dispatch(notifyError("Please enter your name.", 3))
+        return
+      }
+      
       if (user.name) {
         setHideName(!hideName)
         setShowForm(!showForm)
@@ -74,14 +80,14 @@ const Settings = () => {
         setUserName('')
       } catch (error) {
         console.log('error saving name', error)
-        dispatch(notifyError("Oops! Can't update your name right now. Please try again later.", 7))
+        dispatch(notifyError(`Oops! Can't update your name right now. ${error.response.data.error}`, 7))
       }
     }
 
     const handleForm = () => {
       setHideName(!hideName)
       setShowForm(!showForm)
-
+      setUserName(user.name)
     }
     
     if (user.name) {

@@ -10,6 +10,9 @@ export const getCommunities = async () => {
 export const getCurrentCommunity = async (communityId) => {
   const response = await api.get(`/communities/${communityId}`)
   return response.data
-
 }
 
+export const registerCommunity = async (newCommunity) => {
+  const response = await api.post('/communities', newCommunity)
+  return response.data
+}

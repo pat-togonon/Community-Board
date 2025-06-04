@@ -1,52 +1,16 @@
 import { setMainCategory } from "../reducer/mainCategoryReducer"
 import { useDispatch, useSelector } from "react-redux"
 import { resetSubCategory } from "../reducer/subCategoryReducer"
-import HomeFeed from "./HomeFeed"
-import LostAndFound from "./LostAndFound"
-import Announcement from "./Announcement"
-import Events from "./Events"
-import GarageSaleGiveaways from "./GarageSaleGiveaway"
-import ShopsPromo from "./ShopsPromo"
 import { useNavigate, Outlet, useLocation} from "react-router-dom"
 import SubCategoryOptions from "./SubCategory"
 import Confirmation from "./Notifications/Confirmation"
+import { mainCategories } from "../helper/helpers"
 
 
 // Just shows the first 10 posts in all categories and subcategories - sorted by date posted
 
 // Check all incompatible exports Pat
-export const mainCategories = [
-  {
-    name: 'Home',
-    category: 'home',
-    renderComponent: <HomeFeed /> 
-  },
-  { 
-    name: 'Announcement',
-    category: 'announcement',
-    renderComponent: <Announcement />
-  }, 
-  {
-    name: 'Events',
-    category: 'upcoming-event',
-    renderComponent: <Events />
-  }, 
-  {
-    name: 'Garage Sale & Giveaways',
-    category: 'garage-sale-and-giveaways',
-    renderComponent: <GarageSaleGiveaways />
-  }, 
-  { 
-    name: 'Shops Promo',
-    category: 'shops-promotion',
-    renderComponent: <ShopsPromo />
-  },
-  {
-    name: 'Lost and Found',
-    category: 'lost-and-found',
-    renderComponent: <LostAndFound />
-  }
-]
+
 
 const Dashboard = () => {
   const dispatch = useDispatch()

@@ -1,4 +1,4 @@
-import CommunityOption from "./CommunityOption"
+
 import { createAccountWith } from "../service/auth"
 import { useSelector, useDispatch } from "react-redux"
 import { setUser } from "../reducer/userReducer"
@@ -9,8 +9,9 @@ import { clearCommunityId } from "../reducer/communityIdReducer"
 import { notifyError } from "../reducer/errorReducer"
 import Error from './Notifications/Error'
 import { notifyConfirmation } from "../reducer/confirmationReducer"
+import { registerCommunity } from "../service/community"
 
-const SignUp = () => {
+const RegisterCommunity = () => {
 
   const [securityQ, setSecurityQ] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -19,7 +20,7 @@ const SignUp = () => {
   const communityId = useSelector(state => state.communityId)
   const navigate = useNavigate()
   
-  const handleSignUp = async (event) => {
+  const handleRegistration = async (event) => {
     event.preventDefault()
     const username = event.target.username.value
     const email = event.target.email.value
@@ -27,35 +28,34 @@ const SignUp = () => {
     const birthYear = event.target.birthYear.value
     const chosenSecurityQuestion = securityQ
     const securityAnswer = event.target.securityAnswer.value
+    const communityName = event.target.communityName.value
+    const communityDescription = event.target.communityDescription.value
 
-    if (!username || !password || !email || !birthYear || !securityAnswer || !chosenSecurityQuestion) {
+    if (!username || !password || !email || !birthYear || !securityAnswer || !chosenSecurityQuestion || !communityName || !communityDescription) {
       dispatch(notifyError("Please fill in all fields.", 3))
       return
     }  
     
-    const newUser = {
+    const newCommunity = {
       username,
       password,
       email,
       communityId,
       birthYear,
       chosenSecurityQuestion,
-      securityAnswer
+      securityAnswer,
+      communityName,
+      communityDescription
     }
 
     try {
-      const createdUser = await createAccountWith(newUser)
-      dispatch(setUser(createdUser))
-      console.log('succesful', createdUser)
-      dispatch(notifyConfirmation("You've signed up successfully. Log in to continue.", 6))
+      await registerCommunity(newCommunity)
+      dispatch(notifyConfirmation(`${communityName} is registered. Please log in to access your community.`, 7))
       reset(event)
       navigate('/login')
-    
-      // Add notification. Maybe modals too to confirm successful sign up. Example: Sign up succesful! Log in now to access your community - isSignUpSuccess = true
-
     } catch (error) {
       console.log('error', error.response.data.error)
-      dispatch(notifyError('Please fill out all fields.', 3))
+      dispatch(notifyError(`Oops! ${error.response.data.error}`, 5))
       reset(event)
     }
   }
@@ -66,8 +66,9 @@ const SignUp = () => {
     event.target.email.value = ''
     event.target.birthYear.value = ''
     event.target.securityAnswer.value = ''
-    dispatch(clearCommunityId())
     setSecurityQ('')
+    event.target.communityDescription.value = ''
+    event.target.communityName.value = ''
   }
 
   const showLogin = () => {
@@ -76,16 +77,23 @@ const SignUp = () => {
 
   const handleSecurityQuestion = (event) => {
     const selectedQ = event.target.value
-    setSecurityQ(selectedQ)
-  
+    setSecurityQ(selectedQ)  
   }
 
   return (
     <div className="loginContainer">
-      <h2 className="loginContainerChild loginHeader">Create your account to connect with your local community</h2>
-      <p className="loginContainerChild ageNote">You should be at least 13 years old to join in.</p>
-      <CommunityOption />
-      <form onSubmit={handleSignUp} className="loginContainerChild">
+      <h2 className="loginContainerChild loginHeader">Register a local community</h2>
+      <p className="loginContainerChild ageNote">You should be at least 18 years old to register a community.</p>
+          
+      <form onSubmit={handleRegistration} className="loginContainerChild">
+        
+        <label htmlFor="communityName" className="loginContainerChild">
+        community name:<span className='required'>*</span></label>
+        <input name="communityName" type="text" className="loginContainerChild" id="communityName" placeholder="enter the community name" />
+
+        <label htmlFor="communityDescription" className="loginContainerChild">
+        community description:<span className='required'>*</span></label>
+        <textarea name="communityDescription" type="text" className="loginContainerChild" id="communityDescription" placeholder="Community for..." />
 
         <label htmlFor="username" className="loginContainerChild">
         username:<span className='required'>*</span></label>
@@ -119,17 +127,18 @@ const SignUp = () => {
         <label htmlFor="security-answer" className="loginContainerChild">
         Your answer to security question:<span className='required'>*</span></label>
         <input type="text" name="securityAnswer" className="loginContainerChild" id="security-answer" placeholder="enter your answer" />    
-        <button type="submit" className="loginContainerChild loginButton">Sign up</button>
+
+        <button type="submit" className="loginContainerChild loginButton">Register your community</button>
       </form>
       <Error />
         <div className="loginContainerChild">
-          <p className="loginContainerChild forSignUp">Already have an account? <span onClick={showLogin} className="textLink">Log in</span></p>          
+          <p className="loginContainerChild forSignUp">Already part of a community? <span onClick={showLogin} className="textLink">Log in</span></p>          
         </div>
     </div>
   )
 }
 
-export default SignUp
+export default RegisterCommunity
 
 /*
 Notes:
