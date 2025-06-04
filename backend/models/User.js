@@ -11,7 +11,8 @@ const userSchema = mongoose.Schema({
   },
   name: {
     type: String,
-    trim: true
+    trim: true,
+    minLength: [3, 'names must have at least 3 characters']
   },
   passwordHash: String,
   birthYear: {
@@ -19,18 +20,16 @@ const userSchema = mongoose.Schema({
     require: [true, 'Birth year is required'],
     validate: {
       validator: function (v) {
-      console.log('birth year', v, "Type:", typeof v)
+      
       const currentYear = new Date().getFullYear()
-      console.log('current year', currentYear)
       const minAge = 13
       const earliestAllowedYear = currentYear - minAge
       const maxAge = 120
       const userAge = currentYear - v
-      console.log('user age', userAge)
+      
       const meetsAgeLimit = v <= earliestAllowedYear && userAge <= maxAge
       const notFutureYear = v <= currentYear
-      console.log('meets age limit', meetsAgeLimit, 'Year is okay', notFutureYear)
-
+      
       return meetsAgeLimit && notFutureYear
     },
     message: 'You must be at least 13 years old or birth year is invalid'
@@ -41,10 +40,9 @@ const userSchema = mongoose.Schema({
     require: [true, 'Please enter your email'],
     unique: [true, 'email is already in use'],
     trim: true,
-   // match: [/^[a-zA-Z0-9._%+-]+@?(?:[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/, 'invalid email'] //recheck regex ah
-   validate: {
-    validator: emailValidator.isEmail,
-    message: 'Invalid email address'
+    validate: {
+      validator: emailValidator.isEmail,
+      message: 'Invalid email address'
    }
   },
   community: [
@@ -68,10 +66,6 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     default: false
   },
-  /*isCommunityAdmin: {
-    type: Boolean,
-    default: false
-  },*/
   managedCommunity: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Community'

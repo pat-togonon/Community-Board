@@ -11,20 +11,11 @@ communityRouter.get('/', async (request, response) => {
 })
 
 communityRouter.get('/:id', tokenExtractor, userExtractor, async (request, response) => {
-  //const currentCommunity = await Community.findById(request.params.id)
 
   const currentCommunity = await Community.findOne({
     _id: request.params.id,
     communityUsers: { $in: [request.user._id] }
   })
-
-/*
-  const isUserValid = await User.findById(request.user._id)
-
-  if (!isUserValid) {
-    return response.status(401).json({ error: "Please log in to view communities" })
-  }
-    */
 
   if (!currentCommunity) {
     return response.status(404).json({ error: "Community not found or you are not a member of this community." })
@@ -37,6 +28,9 @@ communityRouter.post('/', async (request, response) => {
 
   const receivedData = request.body
 
+  const yearToday = new Date().getFullYear()
+  console.log('year today', yearToday)
+
   const dataToParse = {
     username: receivedData.username,
     password: receivedData.password,
@@ -46,6 +40,10 @@ communityRouter.post('/', async (request, response) => {
     birthYear: Number(receivedData.birthYear.trim()),
     chosenSecurityQuestion: receivedData.chosenSecurityQuestion,
     securityAnswer: receivedData.securityAnswer.toLowerCase()  
+  }
+
+  if (yearToday - dataToParse.birthYear < 18) {
+    return response.status(403).json({ error: "You must be at least 18 years old to register a local community." })
   }
   
   const parsedData = communityRegistrationSchema.parse(dataToParse)
@@ -95,7 +93,7 @@ communityRouter.post('/', async (request, response) => {
     admin: savedUser._id,
     additionalAdmins: [savedUser._id],
     communityUsers: [savedUser._id],
-    isApproved: false
+    isApproved: true
   })
   // isApproved - manual after interview. Can add in a PUT method here
 
@@ -103,9 +101,7 @@ communityRouter.post('/', async (request, response) => {
 
   savedUser.managedCommunity = savedUser.managedCommunity.concat(savedCommunity._id)
   savedUser.community = savedUser.community.concat(savedCommunity._id)
-  await savedUser.save() //note: need to test - if the admin is tied to community upon registration
-
-  // need to email verification first to verify user - not the community ah
+  await savedUser.save()
 
   response.status(201).json({ user: savedUser, community: savedCommunity, message: 'Community and admin user created successfully' })
   

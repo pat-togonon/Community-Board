@@ -9,11 +9,10 @@ const newPostSchema = z.object({
   mainCategory: z.string().trim().min(1, 'The main category for the post is required'),
   subCategory: z.string().trim().min(1, 'The sub category for the post is required'),
   title: z.string().trim().min(1, 'Title is required'),
-  description: z.string().trim().min(1, 'Description is required'),
+  description: z.string().trim().min(15, 'Description is required'),
   author: z.string().trim().min(1, 'Author is required'),
   startDate: z.coerce.date().optional(),
-  endDate: z.coerce.date().optional(),
-  isFound: z.boolean().optional()
+  endDate: z.coerce.date().optional()
 }).strict()
 .refine(data => {
   if (!data.startDate || !data.endDate) {
@@ -25,6 +24,12 @@ const newPostSchema = z.object({
   path: ['endDate']
 })
 
+const editedPostSchema = z.object({
+  description: z.string().trim().optional(),
+  isFound: z.boolean().optional()
+})
+
 module.exports = {
-  newPostSchema
+  newPostSchema,
+  editedPostSchema
 }

@@ -11,18 +11,7 @@ const { userRegistrationSchema, loginSchema, updatePasswordSchema, passwordReset
 const RefreshToken = require('../models/RefreshToken')
 const PasswordResetAttempt = require('../models/PasswordResetAttempt')
 
-// User registration
-
-// DO NOT SHOW cos contains list of users - privacy 
-//Show list of community users to community admins only
-
-const usersList = async (request, response) => {
-  const users = await User.find({})
-  return response.json(users.map(user => user.toJSON()))
-}
-
-
-//create new users
+//user sign up
 const createAccount = async (request, response) => {
 
   const receivedData = request.body
@@ -34,16 +23,11 @@ const createAccount = async (request, response) => {
     communityId: receivedData.communityId,
     birthYear: Number(receivedData.birthYear.trim()),
     chosenSecurityQuestion: receivedData.chosenSecurityQuestion,
-    securityAnswer: receivedData.securityAnswer.toLowerCase()  
+    securityAnswer: receivedData.securityAnswer.trim().toLowerCase()  
   }
-
-  console.log('data to parse', dataToParse)
 
   const parsedData = userRegistrationSchema.parse(dataToParse)
   const { username, password, email, communityId, birthYear, chosenSecurityQuestion, securityAnswer } = parsedData
-
-  console.log('parsed', parsedData)
-  console.log('birth year type', typeof birthYear)
 
   if (!password || password.length < 5) {
     return response.status(400).json({ error: 'Password should have at least 5 characters' })
@@ -71,8 +55,6 @@ const createAccount = async (request, response) => {
     })
   }
 
-  //birthYear, chosenSecurityQuestion, securityAnswer
-
   const isSecurityQuestionValid = User.schema.path('securityQuestion').enumValues.includes(chosenSecurityQuestion)
 
   if (!isSecurityQuestionValid) {
@@ -95,8 +77,6 @@ const createAccount = async (request, response) => {
     securityQuestion: chosenSecurityQuestion
   })
 
-  //the way to link each other is through ID
-
   const savedUser = await user.save()
   
   communityExists.communityUsers = communityExists.communityUsers.concat(savedUser._id)
@@ -108,7 +88,7 @@ const createAccount = async (request, response) => {
 //for user page / profile
 
 // get individual user - but needs validation - community exists and user is part of that community
-
+/*
 const viewOneUser = async (request, response) => {
   const user = await User
     .findById(request.params.id)
@@ -142,7 +122,7 @@ const viewOneUser = async (request, response) => {
     response.json(user)
 
 }
-
+*/
 // profile update - adding in name, birth year, etc - put request
 // delete profile - delete request
 
@@ -173,26 +153,20 @@ const login = async (request, response) => {
   const parsedData = loginSchema.parse(request.body)
   const { username, password, communityId } = parsedData
   
-  const communityExists = await Community.findById(communityId)
-  
-  const user = await User.findOne({ username })
+  const user = await User.findOne({ 
+    username,
+    community: { $in: [communityId] }
+     })
     .populate('community', { _id: 1, name: 1 })
     .populate('managedCommunity', { _id: 1, name: 1, communityUsers: 1, description: 1, additionalAdmins: 1 })
 
+  
   if (!user) {
     return response.status(401).json({
-      error: 'User not found. Please sign up.'
+      error: "User is not found or not a member of this community."
       })
   }
 
-  const userIsInCommunity = communityExists.communityUsers.find(commUser => commUser.toString() === user._id.toString())
-
-  if (!communityId || !communityExists || !userIsInCommunity) {
-    return response.status(401).json({
-    error: 'Please provide or select your correct community'
-    })
-  }
-  
   if (!password) {
     return response.status(401).json({
       error: 'Please input password'
@@ -209,10 +183,12 @@ const login = async (request, response) => {
     })
   }
   
+  const userCommunity = await Community.findById(communityId)
+
   const userForToken = {
     username: user.username,
     id: user._id,
-    community: communityExists._id
+    community: userCommunity._id
   }
   
   const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '5m' })
@@ -246,8 +222,8 @@ const login = async (request, response) => {
       name: user.name, 
       id: user._id.toString(), 
       communityList: user.community.map(comm => comm._id), 
-      community: communityExists._id,
-      communityName: communityExists.name,
+      community: userCommunity._id,
+      communityName: userCommunity.name,
       managedCommunity: user.managedCommunity
     })  
     
@@ -290,15 +266,7 @@ const getRefreshToken = async (request, response) => {
   }
   // delete existing and generate new one for better security
 
-  console.log('matchedRefreshToken instanceof mongoose.Document:', matchedRefreshToken instanceof mongoose.Document)
-
-  console.log('matched refreshed token', matchedRefreshToken)
-
-  try {
-    await matchedRefreshToken.deleteOne()
-  } catch (error) {
-    console.log('error deleting old refresh tokens', error)
-  }
+  await matchedRefreshToken.deleteOne()
     
   const userForToken = {
     username: decoded.username,
@@ -346,14 +314,9 @@ const getRefreshToken = async (request, response) => {
     managedCommunity: decodedUser.managedCommunity
   }
 
-  console.log('user frontend is', userFrontend)
-
   return response.status(200).json({ accessToken, userFrontend })
 
 }
-
-// remove error handler (but include in middleware)
-
 
 // User log out
 
@@ -364,14 +327,12 @@ const logout = async (request, response) => {
     sameSite: 'Lax'
   })
 
-  console.log('log out request user', request.user)
-
   await RefreshToken.deleteMany({ user: request.user._id })
 
   return response.status(204).end()
 }
-// while logged in - need extractor middlewares
 
+// while logged in - need extractor middlewares
 
 const updatePassword = async (request, response) => {
 
@@ -485,9 +446,8 @@ const passwordReset = async (request, response) => {
 
 module.exports = {
     createAccount,
-    usersList,
     login,
-    viewOneUser,
+    //viewOneUser,
     getRefreshToken,
     logout,
     updatePassword,

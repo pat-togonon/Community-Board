@@ -34,7 +34,7 @@ const postSchema = mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    minlength: [60, 'Description is too short']
+    minlength: [15, 'Description is too short']
   },
   author: {
       type: mongoose.Schema.Types.ObjectId,

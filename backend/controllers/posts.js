@@ -1,21 +1,13 @@
-// view all posts OKs
-// view one post Oks
-// view all post in a subcategory OK
-// edit or delete YOUR post ==> update need validators: true OK except validators
-// create posts OK
 const Post = require('../models/Post')
-const User = require('../models/User')
 const Comment = require('../models/Comment')
 const Community = require('../models/Community')
 const { validSubcategories } = require('../utils/helper')
-const { newPostSchema } = require('../validators/content')
+const { newPostSchema, editedPostSchema } = require('../validators/content')
 
 const viewAll = async (request, response) => {
   const { communityId, mainCategory } = request.params
 
   const isCommunityIdValid = await Community.findById(communityId)
-
-  //console.log('request user is', request.user)
 
   const isCommunityUser = isCommunityIdValid.communityUsers.find(user => user.toString() === request.user._id.toString())
 
@@ -27,8 +19,7 @@ const viewAll = async (request, response) => {
   
   if (mainCategory === 'home') {
     const homeAllPosts = await Post.find({ community: communityId })
-    console.log('home', mainCategory)
-    return response.json(homeAllPosts)
+    return response.json(homeAllPosts.map(post => post.toJSON()))
   }
 
   const isMainCategoryValid = Post.schema.path('mainCategory').enumValues.includes(mainCategory)
@@ -46,34 +37,6 @@ const viewAll = async (request, response) => {
 
 }
 
-/*
-
-const viewAllInSubCategory = async (request, response) => {
-  const { communityId, mainCategory, subCategory } = request.params
-
-  const isCommunityIdValid = await Community.findById(communityId)
-  
-  const isMainCategoryValid = Post.schema.path('mainCategory').enumValues.includes(mainCategory)
-  
-  if (subCategory === 'All') {
-    const posts = await Post.find({ mainCategory })
-    return response.json(posts)
-  }
-  
-  const isSubCategoryValid = validSubcategories[mainCategory].includes(subCategory)
-
-  if (!isCommunityIdValid || !isMainCategoryValid || !isSubCategoryValid) {
-    return response.status(404).json({ error: 'Yaa! Invalid url' })
-  }
-
-  const allPostsInCategory = await Post.find({
-    mainCategory,
-    subCategory
-  })
-
-  return response.json(allPostsInCategory)
-}
-*/
 const viewOnePost = async (request, response) => {
   const { communityId, mainCategory, subCategory, postId } = request.params
 
@@ -83,14 +46,10 @@ const viewOnePost = async (request, response) => {
 
   const isSubCategoryValid = validSubcategories[mainCategory].includes(subCategory)
 
-  const list = validSubcategories[mainCategory]
-
-  console.log('subcategory valid?', isSubCategoryValid, 'list', list)
-
   const post = await Post.findById(postId)
 
   if (!isCommunityIdValid || !isMainCategoryValid || !isSubCategoryValid || !post) {
-    return response.status(404).json({ error: 'Yaa! Invalid url' })
+    return response.status(404).json({ error: 'Invalid post or url.' })
   }
 
   return response.json(post)
@@ -100,14 +59,12 @@ const viewOnePost = async (request, response) => {
 const createPost = async (request, response) => {
 
   const parsedData = newPostSchema.parse(request.body)
-  const { communityId, mainCategory, subCategory, title, description, author, startDate, endDate, isFound  } = parsedData
+  const { communityId, mainCategory, subCategory, title, description, author, startDate, endDate } = parsedData
 
   const communityExists = await Community.findById(communityId)
   const isCommunityActive = communityExists.isApproved
 
   const validUser = communityExists.communityUsers.find(user => user.toString() === request.user._id.toString())
-
-  console.log('valid user is', validUser)
 
   if (!communityExists || !isCommunityActive) {
     return response.status(404).json({ error: "Oops! Can't post to an invalid community" })
@@ -117,11 +74,8 @@ const createPost = async (request, response) => {
     return response.status(401).json({ error: "Oops, invalid! Log in to your community first to post" })
   }
 
-  console.log('community', communityId, 'mainCategory', mainCategory, 'sub category', subCategory, 'title', title, 'author', author)
-
   if (mainCategory === 'announcement') {
     const validPoster = communityExists.additionalAdmins.includes(request.user._id)
-    console.log('valid admin poster?', validPoster)
 
     if (!validPoster) {
       return response.status(401).json({ error: 'Only community admins can post announcements'
@@ -138,69 +92,55 @@ const createPost = async (request, response) => {
     author,
     startDate: startDate ? new Date(startDate) : null,
     endDate: endDate ? new Date(endDate) : null,
-    comments: []
+    comments: [],
+    isFound: false
   })
 
   const savedPost = await post.save() 
   request.user.createdPosts = request.user.createdPosts.concat(savedPost._id)
   await request.user.save()
 
-  console.log('saved user', request.user)
-
   return response.status(201).json(savedPost.toJSON())
 }
 
 const deletePost = async (request, response) => {
-  const { communityId, id } = request.params // should I validate via zod?
+  const { communityId, id } = request.params
 
-  const communityValid = await Community.findById(communityId)
-  const postToDelete = await Post.findById(id)
-  const isPostInTheSameCommunity = postToDelete.community.toString() === communityValid._id.toString()
-  const isUserTheAuthor = postToDelete.author.toString() === request.user._id.toString()
-  
-  if (!communityValid) {
-    return response.status(404).json({ error: 'Invalid community' })
-  }
+  const postToDelete = await Post.findOne({
+    _id: id,
+    community: communityId,
+    author: request.user._id
+  })  
 
   if (!postToDelete) {
-    return response.status(204).end()
-  }
-
-  if (!isPostInTheSameCommunity || !isUserTheAuthor) {
-    return response.status(400).json({ error: "Cannot delete post. Please check if you're the post author or in the correct community" })
+    return response.status(410).json({ error: 'Post not found or already deleted.' })
   }
 
   await Comment.deleteMany({ post: postToDelete._id })
 
   await postToDelete.deleteOne()
+
   request.user.createdPosts = request.user.createdPosts.filter(post => post.toString() !== postToDelete._id.toString())
 
   await request.user.save()
-  response.status(204).end()
 
+  response.status(204).end()
 }
 
 const editPost = async (request, response) => {
-  const { communityId, id } = request.params // should I validate via zod?
-  const editedPost = request.body // validate via zod
+  const { communityId, id } = request.params
+  const editedPost = editedPostSchema.parse(request.body)
 
-  const communityValid = await Community.findById(communityId)
-  const postToEdit = await Post.findById(id)
-  const isPostInTheSameCommunity = postToEdit.community.toString() === communityValid._id.toString()
-  const isUserTheAuthor = postToEdit.author.toString() === request.user._id.toString()
-  
-  if (!communityValid) {
-    return response.status(404).json({ error: 'Invalid community' })
-  }
+  const postToEdit = await Post.findOne({
+    _id: id,
+    community: communityId,
+    author: request.user._id
+  })
 
   if (!postToEdit) {
-    return response.status(400).json({ error: 'Invalid post' })
+    return response.status(410).json({ error: "Post not found or invalid author or community." })
   }
-
-  if (!isPostInTheSameCommunity || !isUserTheAuthor) {
-    return response.status(400).json({ error: "Cannot edit post. Please check if you're the post author or in the correct community" })
-  }
-
+  
   const postForUpdate = {
     isFound: editedPost.isFound ? editedPost.isFound : false,
     description: editedPost.description ? editedPost.description : postToEdit.description
@@ -209,5 +149,6 @@ const editPost = async (request, response) => {
 
   response.status(200).json(updatedPost)
   
-}
+  }
+
 module.exports = { viewAll, createPost, viewOnePost, deletePost, editPost }
