@@ -95,8 +95,7 @@ communityRouter.post('/', async (request, response) => {
     communityUsers: [savedUser._id],
     isApproved: true
   })
-  // isApproved - manual after interview. Can add in a PUT method here
-
+  
   const savedCommunity = await community.save()
 
   savedUser.managedCommunity = savedUser.managedCommunity.concat(savedCommunity._id)
