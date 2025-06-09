@@ -28,8 +28,8 @@ const CommunityOption = () => {
   return (
     <div className="loginContainerChild communityOptionDiv">
       <label htmlFor="localCommunity" className="loginContainerChild localCommHeader">local community:<span className='required'>*</span> </label>      
-      <select value={communityId} onChange={handleSelected} id="localCommunity" name="community" className="loginContainerChild">
-        <option value="">Select your local community</option>
+      <select value={communityId} onChange={handleSelected} id="localCommunity" name="community" className="loginContainerChild" required>
+      <option value="" disabled>Select your local community</option>        
         {communityList.map((community) => (
           <option key={community.id} value={community.id}>
             {community.name}

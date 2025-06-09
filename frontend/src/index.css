@@ -39,6 +39,10 @@ h3, h4 {
   margin: 15px 10px;
 }
 
+input::placeholder, textarea::placeholder {
+  color: grey;
+}
+
 .login {
   background-color: #F0A078;
   color: white;
@@ -172,10 +176,22 @@ h3, h4 {
 }
 
 
-.loginContainerChild input, .loginContainerChild textarea, .loginContainerChild select, .newPostPage select, .newPostDateButtons input {
+/* HERE 
+*/
+.loginContainerChild input, .loginContainerChild textarea, .newPostDateButtons input {
   padding: 5px 2px;
+  color: black;
+}
+
+select {
   color: grey;
 }
+
+select:valid {
+  color: black;
+}
+
+
 .localCommHeader {
   margin-top: 5px;
 }
@@ -791,6 +807,7 @@ h3, h4 {
   padding: 10px 10px;
   margin: 10px 10px;
   border-radius: 10px;
+  max-width: 700px;
 }
 
 .isFoundDiv {

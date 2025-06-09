@@ -80,8 +80,8 @@ const PasswordReset = () => {
 
         <label htmlFor="securityQuestion" className="loginContainerChild">
           account security question:<span className='required'>*</span></label>
-          <select name="securityQuestion" value={securityQ} onChange={handleSecurityQuestion} className="loginContainerChild" id="securityQuestion">
-          <option value=''>Select a security question</option>
+          <select name="securityQuestion" value={securityQ} onChange={handleSecurityQuestion} className="loginContainerChild" id="securityQuestion" required>
+          <option value='' disabled>Select a security question</option>
           {securityQuestions.map(q => 
           <option key={q.question} value={q.question}>{q.name}</option>
           )}
