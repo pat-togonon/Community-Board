@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const mongoose = require('mongoose')
+//const mongoose = require('mongoose')
 const User = require('../models/User')
-const Post = require('../models/Post')
+//const Post = require('../models/Post')
 const Community = require('../models/Community')
-const Comment = require('../models/Comment')
+//const Comment = require('../models/Comment')
 require('dotenv').config()
 const cookieParser = require('cookie-parser')
 const { userRegistrationSchema, loginSchema, updatePasswordSchema, passwordResetSchema } = require('../validators/auth')
@@ -34,7 +34,7 @@ const createAccount = async (request, response) => {
   }
   
   const communityExists = await Community.findById(communityId)
-  
+    
   if (!communityId) {
     return response.status(400).json({ error: 'Please select a community' })
   }
@@ -160,7 +160,6 @@ const login = async (request, response) => {
     .populate('community', { _id: 1, name: 1 })
     .populate('managedCommunity', { _id: 1, name: 1, communityUsers: 1, description: 1, additionalAdmins: 1 })
 
-  
   if (!user) {
     return response.status(401).json({
       error: "User is not found or not a member of this community."

@@ -9,10 +9,9 @@ const authRouter = require('./routes/auth')
 const postRouter = require('./routes/posts')
 const commentRouter = require('./routes/comments')
 const userRouter = require('./routes/user')
+const { url } = require('./utils/config')
 
 mongoose.set('strictQuery', false)
-
-const url = process.env.MONGODB_URI
 
 console.log('connecting to MONGODB...')
 

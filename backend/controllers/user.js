@@ -3,6 +3,27 @@ const Post = require('../models/Post')
 const Community = require('../models/Community')
 const { addToFavoritesSchema, updateNameSchema } = require('../validators/user')
 
+//view all users
+
+const viewAllUsers = async (request, response) => {
+  const { communityId } = request.params
+
+  const isCommunityIdValid = await Community.findById(communityId)
+
+  const isCommunityUser = isCommunityIdValid.communityUsers.find(user => user.toString() === request.user._id.toString())
+
+  // need to validate if community includes that user
+
+  if (!isCommunityUser) {
+    return response.status(401).json({ error: "Can't view users outside of your community" })
+  }
+  
+  const allUsers = await User.find({ 
+    community: communityId})
+
+  return response.json(allUsers)
+
+}
 
 const addToFavorites = async (request, response) => {
   
@@ -81,7 +102,7 @@ const updateName = async (request, response) => {
   const isUserTheRequester = request.user._id.toString() === userId
 
   if (!isUserTheRequester) {
-    return request.status(403).json({ error: "Forbidden: Can't update account you don't own" })
+    return response.status(403).json({ error: "Forbidden: Can't update account you don't own" })
   }
 
   const updatedUser = await User.findOneAndUpdate(request.user._id, { name }, { new: true }, { runValidators: true })
@@ -128,6 +149,7 @@ const deleteAccount = async (request, response) => {
 
 
 module.exports = {
+  viewAllUsers,
   addToFavorites,
   viewAllFavoritePosts,
   removeFromFavorites,

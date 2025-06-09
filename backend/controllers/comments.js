@@ -2,24 +2,13 @@ const Post = require('../models/Post')
 const Community = require('../models/Community')
 const Comment = require('../models/Comment')
 const User = require('../models/User')
-
-/*
-POST comment
-
-user should be in that community
-post the user comments to should be in that community
-user should be logged in - so request.user presence which is OK cos of the middleware
-
-*/
+const { newCommentSchema, editCommentSchema } = require('../validators/comment')
 
 const viewAll = async (request, response) => {
   const { communityId } = request.params
 
-  console.log('request user', request.user)
-
   const communityValid = await Community.findById(communityId)
-  console.log('comm valid?', communityValid)
-
+  
   const isUserPartOfCommunity = communityValid.communityUsers.includes(request.user._id)
 
   if (!communityValid) {
@@ -36,13 +25,13 @@ const viewAll = async (request, response) => {
     .populate('commenter', { id: 1, username: 1 })
 
   return response.json(comments)
-  
 
 }
 
-
 const postComment = async (request, response) => {
-  const { parentComment, comment } = request.body // Zod validate please
+  
+  const parsedData = newCommentSchema.parse(request.body)
+  const { parentComment, comment } = parsedData
   const { communityId, postId } = request.params
 
   const communityValid = await Community.findById(communityId)
@@ -119,10 +108,10 @@ const viewAllPostComments = async (request, response) => {
 
 const editComment = async (request, response) => {
   const { commentId } = request.params
-  console.log('request body', request.body)
-  const { comment } = request.body // zod validation
 
-  //REFACTOR all routes applicable so just a single or less checks like this:
+  const parsedData = editCommentSchema.parse(request.body)
+  const { comment } = parsedData
+
   const commentToUpdate = await Comment.findOne({
     _id: commentId,
     commenter: request.user._id, // is user the commenter
@@ -149,7 +138,7 @@ const deleteComment = async (request, response) => {
   })
 
   if (!commentToDelete) {
-    return response.status(204).end()
+    return response.status(410).json({ error: "Comment not found, already deleted or you're forbidden to delete this comment." })
   }
 
   await Comment.findByIdAndDelete(commentToDelete._id)

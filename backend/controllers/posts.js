@@ -62,6 +62,7 @@ const createPost = async (request, response) => {
   const { communityId, mainCategory, subCategory, title, description, author, startDate, endDate } = parsedData
 
   const communityExists = await Community.findById(communityId)
+
   const isCommunityActive = communityExists.isApproved
 
   const validUser = communityExists.communityUsers.find(user => user.toString() === request.user._id.toString())
@@ -113,7 +114,7 @@ const deletePost = async (request, response) => {
   })  
 
   if (!postToDelete) {
-    return response.status(410).json({ error: 'Post not found or already deleted.' })
+    return response.status(410).json({ error: "Post not found, already deleted or you're forbidden to delete this post." })
   }
 
   await Comment.deleteMany({ post: postToDelete._id })

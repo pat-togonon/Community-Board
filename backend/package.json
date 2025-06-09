@@ -4,10 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest --coverage --passWithNoTests",
     "test:watch": "jest --watchAll",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "cross-env =production node index.js",
+    "dev": "cross-env NODE_ENV=development node --watch index.js",
+    "test:unit": "cross-env NODE_ENV=test jest --testPathPattern=unit --coverage",
+    "test:unit:watch": "cross-env NODE_ENV=test jest tests/unit --coverage --watchAll",
+    "test:integration": "cross-env NODE_ENV=test jest --testPathPattern=integration --runInBand",
+    "test:integration:watch": "cross-env NODE_ENV=test jest --testPathPattern=integration --runInBand --detectOpenHandles --watchAll",
+    "test:all": "npm run test:unit && npm run test:integration"
   },
   "keywords": [],
   "author": "Patricia Togonon",
@@ -16,12 +21,14 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "mongodb-memory-server": "^10.1.4",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.1"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",

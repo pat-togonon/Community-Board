@@ -28,6 +28,7 @@ const userExtractor = async (request, response, next) => {
 }
 
 const unknownEndpoint = (request, response) => {
+  console.log('unknown', error)
   response.status(404).send({ error: 'Oops! Invalid URL. Please go back home' })
 }
 

@@ -2,6 +2,7 @@ const { userRegistrationSchema, loginSchema, updatePasswordSchema, passwordReset
 const { communityRegistrationSchema } = require('../../validators/community')
 const { newPostSchema, editedPostSchema} = require('../../validators/content')
 const { addToFavoritesSchema, updateNameSchema } = require('../../validators/user')
+const { newCommentSchema, editCommentSchema } = require('../../validators/comment')
 
 describe ('User registration schema zod validation', () => {
   it('should pass with valid user registration inputs', () => {
@@ -444,5 +445,63 @@ describe('Updating the names of users', () => {
     const result2 = updateNameSchema.safeParse(input2)
     expect(result2.success).toBe(false)
     expect(result2.error.issues[0].keys).toContain('color')
+  })
+})
+
+describe('Comments on posts', () => {
+  it('users can comment on posts with valid inputs', () => {
+    const input = {
+      comment: "Hiiiiii!!",
+      parentComment: null
+    }
+
+    const result = newCommentSchema.safeParse(input)
+    expect(result.success).toBe(true)
+  })
+
+  it("users can't comment on posts with invalid inputs", () => {
+    const input = {
+      comment: "Hi",
+      parentComment: null
+    }
+
+    const result = newCommentSchema.safeParse(input)
+    expect(result.success).toBe(false)
+    expect(result.error.issues[0].path).toContain('comment')
+    expect(result.error.issues[0].message).toBe('Comments must have at least 3 characters')
+  })
+
+  it("users can't comment on posts with additional inputs", () => {
+    const input = {
+      comment: "Hi!",
+      parentComment: null,
+      color: 'red'
+    }
+
+    const result = newCommentSchema.safeParse(input)
+    expect(result.success).toBe(false)
+    expect(result.error.issues[0].keys).toContain('color')
+  })
+
+  it('users can edit comment on posts with valid inputs', () => {
+    const input = {
+      comment: "Hi! Edited version"
+    }
+
+    const result = editCommentSchema.safeParse(input)
+    expect(result.success).toBe(true)
+    
+  })
+
+  it("users can't edit comment on posts with additional inputs", () => {
+    const input = {
+      comment: "Hi! Edited version",
+      color: 'red'
+    }
+
+    const result = editCommentSchema.safeParse(input)
+    expect(result.success).toBe(false)
+    expect(result.error.issues[0].keys).toContain('color')
+    
   })
 })

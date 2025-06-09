@@ -13,7 +13,9 @@ const commentSchema = mongoose.Schema({
   },
   comment: {
     type: String,
-    required: true
+    required: true,
+    trim: true,
+    minLength: [3, "Comments must have at least 3 characters"]
   },
   commenter: {
     type: mongoose.Schema.Types.ObjectId,
