@@ -89,17 +89,17 @@ const SignUp = () => {
 
         <label htmlFor="username" className="loginContainerChild">
         username:<span className='required'>*</span></label>
-        <input name="username" type="text" autoComplete="new-username" className="loginContainerChild" id="username" placeholder="enter your username" />
+        <input name="username" type="text" autoComplete="new-username" className="loginContainerChild" id="username-for-signup" placeholder="enter your username" />
 
         <label htmlFor="email" className="loginContainerChild">
         email:<span className='required'>*</span></label>
-        <input name="email" type="email" autoComplete="email" className="loginContainerChild" id="email" placeholder="enter your email address"/>
+        <input name="email" type="email" autoComplete="email" className="loginContainerChild" id="email-for-signup" placeholder="enter your email address"/>
 
         <label htmlFor="password" className="loginContainerChild passwordLabel">
         password: <span className='required'>*</span></label>
 
         <div className="loginContainerChild password">
-            <input name="password" type={showPassword ? "text" : "password"} autoComplete="new-password" className="loginContainerChild passwordField" placeholder="enter your password" id="password" />
+            <input name="password" type={showPassword ? "text" : "password"} autoComplete="new-password" className="loginContainerChild passwordField" placeholder="enter your password" id="password-for-signup" />
             <img role="show and hide password button" src={showPassword ? './eye.svg' : './eye-off.svg'} onClick={() => setShowPassword(!showPassword)} className="eye"/>
         </div>
         
@@ -119,7 +119,7 @@ const SignUp = () => {
         <label htmlFor="security-answer" className="loginContainerChild">
         Your answer to security question:<span className='required'>*</span></label>
         <input type="text" name="securityAnswer" className="loginContainerChild" id="security-answer" placeholder="enter your answer" />    
-        <button type="submit" className="loginContainerChild loginButton">Sign up</button>
+        <button type="submit" className="loginContainerChild loginButton" id="signup-button">Sign up</button>
       </form>
       <Error />
         <div className="loginContainerChild">

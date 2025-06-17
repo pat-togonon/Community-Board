@@ -3,6 +3,9 @@ require('dotenv').config()
 const User = require('../models/User')
 
 const tokenExtractor = (request, response, next) => {
+  
+  console.log('token', request.token)
+  
   const authorization = request.get('authorization')
   
   if (authorization && authorization.startsWith('Bearer ')) {

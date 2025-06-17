@@ -106,7 +106,7 @@ const ShowAllPosts = () => {
           
           <div key={post.id} className="postCard">
           <Link to={`/posts/${post.community}/${post.mainCategory}/${post.subCategory}/${post.id}`}>
-              <h3 className="linked">{post.title.slice(0, 60)}</h3>           
+              <h3 className="linked" id="post-card-title">{post.title.slice(0, 60)}</h3>           
               {ShowStatus({post})}
               <p className="postCardContent">{post.description.slice(0, 200)}...</p>
             </Link>

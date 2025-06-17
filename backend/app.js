@@ -10,6 +10,7 @@ const postRouter = require('./routes/posts')
 const commentRouter = require('./routes/comments')
 const userRouter = require('./routes/user')
 const { url } = require('./utils/config')
+const clearDbTestRouter = require('./routes/cleardBforTest')
 
 mongoose.set('strictQuery', false)
 
@@ -35,10 +36,14 @@ app.use(cors(corsOption))
 app.use(express.json())
 app.use(cookieParser())
 
+if (process.env.NODE_ENV === 'test') {
+  app.use('/api/tests/', clearDbTestRouter)
+}
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello Pat!</h1')
 })
+
 app.use('/api/auth', authRouter)
 app.use('/api/communities/', communityRouter)
 app.use('/api/posts/', middleware.tokenExtractor, middleware.userExtractor, postRouter)

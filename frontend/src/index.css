@@ -176,9 +176,9 @@ input::placeholder, textarea::placeholder {
 }
 
 
-/* HERE 
+/* HERE - Updated as of 17 June. select only
 */
-.loginContainerChild input, .loginContainerChild textarea, .newPostDateButtons input {
+.loginContainerChild input, .loginContainerChild textarea, .newPostDateButtons input, select {
   padding: 5px 2px;
   color: black;
 }

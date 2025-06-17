@@ -169,8 +169,8 @@ useEffect(() => {
 
     return (
       <div className="postButtons">
-        <button onClick={handleEditPost}>Edit</button>
-        <button onClick={handleDeleteConfirmation}>Delete</button>
+        <button onClick={handleEditPost} id="edit-post-button">Edit</button>
+        <button onClick={handleDeleteConfirmation} id="delete-post-button">Delete</button>
       </div>
     )
 
@@ -208,7 +208,6 @@ useEffect(() => {
   const handlePostUpdate = async (event) => {
 
     const editedPost = {
-      ...post,
       description: updateDescription
     }
 
@@ -255,7 +254,7 @@ useEffect(() => {
     if (isPostAFave) {
       return (
         <div>
-          <img src='/bookmarked.svg' onClick={() => handleRemoveFavorites(id)} alt="Remove from favorites" className="favoriteIcon"/>         
+          <img src='/bookmarked.svg' onClick={() => handleRemoveFavorites(id)} alt="Remove from favorites" className="favoriteIcon" id="remove-favorite-icon"/>         
         </div>
       )
     }
@@ -266,7 +265,7 @@ useEffect(() => {
     
     return (
       <div style={style}>
-        <img onClick={() => handleAddToFavorites(id)} src="/bookmark.svg" className="favoriteIcon" alt="Add to favorites"/>
+        <img onClick={() => handleAddToFavorites(id)} src="/bookmark.svg" className="favoriteIcon" alt="Add to favorites" id="add-favorite-icon"/>
       </div>
     )
   }
@@ -306,9 +305,9 @@ useEffect(() => {
       <p>{post.description}</p>
       </div>
         <div style={editorStyle} className="postEditor">
-          <textarea value={updateDescription} name='updatedDescription' onChange={({ target }) => setUpdateDescription(target.value)}></textarea>
+          <textarea value={updateDescription} name='updatedDescription' onChange={({ target }) => setUpdateDescription(target.value)} id="post-edit-textarea"></textarea>
           <div>
-            <button onClick={handlePostUpdate} className="loginButton button">update</button>
+            <button onClick={handlePostUpdate} className="loginButton button" id="post-update-submit">update</button>
             <button onClick={handleCancelEdit} className="cancelEdit secondaryButton">cancel</button>
           </div>
         </div>      
@@ -323,7 +322,7 @@ useEffect(() => {
         <div style={deleteConfirmStyle} className="deletePostDiv">
           <h3>Are you sure you want to delete this post?</h3>
           <div className="deletePostButtons">
-            <button onClick={() => handleDelete()} className="loginButton button">Yes</button>
+            <button onClick={() => handleDelete()} className="loginButton button" id="delete-post-submit-button">Yes</button>
             <button onClick={() => setClickDelete(!clickDelete)} className="secondaryButton button">cancel</button>
           </div>
         </div>

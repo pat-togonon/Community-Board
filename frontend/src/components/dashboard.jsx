@@ -56,7 +56,7 @@ const Dashboard = () => {
       navigate(path)
     }
 
-    return <button onClick={handleNewPost} className="newPostButton button">Create a new post</button>
+    return <button onClick={handleNewPost} className="newPostButton button" id="new-post-button">Create a new post</button>
 
   }
 

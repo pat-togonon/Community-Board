@@ -27,7 +27,6 @@ communityRouter.get('/:id', tokenExtractor, userExtractor, async (request, respo
 communityRouter.post('/', async (request, response) => {
 
   const receivedData = request.body
-  
   const yearToday = new Date().getFullYear()
   
   const dataToParse = {

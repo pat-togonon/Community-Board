@@ -164,9 +164,9 @@ const PostForm = () => {
         <form onSubmit={handlePostCreation}>
           <SubCategoryDropDown subCategoryOptions={subCategoryOptions} subCategory={subCategory} />
           <h3>Title<span className='required'>*</span></h3>
-          <input type='text' value={title} onChange={({ target }) => setTitle(target.value)} />
+          <input type='text' value={title} onChange={({ target }) => setTitle(target.value)} id="new-post-title"/>
           <h3>Description<span className='required'>*</span></h3>
-          <textarea value={description} onChange={({ target }) => setDescription(target.value)}></textarea>
+          <textarea value={description} onChange={({ target }) => setDescription(target.value)} id="new-post-description"></textarea>
           <div className="newPostDateButtons">
             <button type='button' onClick={() => setShowAddDate(!showAddDate)}>Add start date</button>
             <div style={addDateButtonStyle}>
@@ -177,7 +177,7 @@ const PostForm = () => {
               <input type='date' value={endDate} onChange={({ target }) => setEndDate(target.value)}></input>
             </div>
           </div>
-          <button type='submit' className="loginButton button postButton">Post</button>
+          <button type='submit' className="loginButton button postButton" id="new-post-submit-button">Post</button>
         </form>
         <button type='button' onClick={handleCancel} className="secondaryButton button">cancel</button>        
     </div>

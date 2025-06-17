@@ -15,10 +15,12 @@ export default [
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
       },
+      'cypress/globals': true
     },
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      'cypress': cypress
     },
     rules: {
       ...js.configs.recommended.rules,

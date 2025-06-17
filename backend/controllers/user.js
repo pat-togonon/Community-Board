@@ -94,10 +94,16 @@ const removeFromFavorites = async (request, response) => {
 }
 
 const updateName = async (request, response) => {
+
+  console.log('request user', request.user)
+  console.log('received', request.body)
+
   const parsedData = updateNameSchema.parse(request.body)
   const { name } = parsedData
   
   const { userId } = request.params
+  console.log('request params', request.params)
+  console.log('user id to update', userId)
 
   const isUserTheRequester = request.user._id.toString() === userId
 

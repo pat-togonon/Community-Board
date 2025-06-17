@@ -24,4 +24,8 @@ const store = configureStore({
   }
 })
 
+if (import.meta.env.MODE === 'test') {
+  window.store = store
+}
+
 export default store

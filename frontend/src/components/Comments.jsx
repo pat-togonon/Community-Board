@@ -56,8 +56,6 @@ const CommentList = ({ comment, user, fetchComments }) => {
   }
 
   const handleDelete = async (comment) => {
-
-    //notification = are you use you want to delete?
     
     try {
       await deleteComment(comment.id)
@@ -97,22 +95,22 @@ const CommentList = ({ comment, user, fetchComments }) => {
         </span>
         {isUserTheCommenter
           ? <div className="editDeleteCommentButtons" style={editDeleteStyle}>
-              <div role="button" onClick={() => handleEdit(comment)}>Edit</div>
-              <div role="button" onClick={() => setHideButtons(!hideButtons)}>Delete</div>
+              <div role="button" onClick={() => handleEdit(comment)} id="edit-comment-button">Edit</div>
+              <div role="button" onClick={() => setHideButtons(!hideButtons)} id="delete-comment-button">Delete</div>
             </div>
           : ''}
       </div>
       <div style={editStyle} className="editCommentDiv">
-          <textarea value={editComment} onChange={({ target }) => setEditComment(target.value)} />
+          <textarea value={editComment} onChange={({ target }) => setEditComment(target.value)} id="edit-comment-textarea"/>
           <div>
-            <button onClick={() => handleSaveUpdate(comment)} className="loginButton button">save</button>
+            <button onClick={() => handleSaveUpdate(comment)} className="loginButton button" id="save-edited-comment-button">save</button>
             <button onClick={handleCancel} className="secondaryButton button">cancel</button>
           </div>
       </div>     
         <div className="deletePostDiv" style={deleteConfirmationStyle}>
           <h3>Are you sure you want to delete this comment?</h3>
           <div className="deletePostButtons">
-            <button className="loginButton button" onClick={() => handleDelete(comment)}>Yes</button>
+            <button className="loginButton button" onClick={() => handleDelete(comment)} id="confirm-comment-delete-button">Yes</button>
             <button className="secondaryButton button" onClick={() => setHideButtons(!hideButtons)}>cancel</button>
           </div>
       </div>
@@ -186,9 +184,9 @@ const Comment = ({ id, communityId, mainCategory, subCategory }) => {
 
   return (
     <div className="commentDiv">
-      <textarea value={newComment} onChange={({ target }) => setNewComment(target.value)}></textarea>
+      <textarea value={newComment} onChange={({ target }) => setNewComment(target.value)} id="comment-textarea"></textarea>
       <div>
-        <button type="submit" onClick={handlePostComment} className="loginButton button">add comment</button>
+        <button type="submit" onClick={handlePostComment} className="loginButton button" id="add-comment-button">add comment</button>
         {newComment ? <button type="button" onClick={() => setNewComment('')} className="secondaryButton button">cancel</button> : ''}
       </div>
       <div style={commentErrorStyle} className="commentErrorDiv">

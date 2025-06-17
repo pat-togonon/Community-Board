@@ -65,16 +65,16 @@ const PasswordReset = () => {
 
   return (
     <div className="loginContainer">
-      <h2 className="loginContainerChild loginHeader">Password reset</h2>
+      <h2 className="loginContainerChild loginHeader">Reset your password</h2>
       <form onSubmit={handlePasswordReset} className="loginContainerChild">
       <label htmlFor="username" className="loginContainerChild">
         username: <span className='required'>*</span></label>
-        <input type="text" name="username" autoComplete="username" value={username} onChange={({ target }) => setUsername(target.value)} className="loginContainerChild" id="username" placeholder="enter your username" />
+        <input type="text" name="username" autoComplete="username" value={username} onChange={({ target }) => setUsername(target.value)} className="loginContainerChild" id="username-pw-reset" placeholder="enter your username" />
 
         <label htmlFor="password" className="loginContainerChild passwordLabel">
         new password: <span className='required'>*</span></label>        
         <div className="loginContainerChild password">
-          <input name="password" type={showPassword ? "text" : "password"} autoComplete="new-password" id="password" className="loginContainerChild passwordField" placeholder="enter your password" value={password} onChange={({ target }) => setPassword(target.value)} />
+          <input name="password" type={showPassword ? "text" : "password"} autoComplete="new-password" id="password-pw-reset" className="loginContainerChild passwordField" placeholder="enter your password" value={password} onChange={({ target }) => setPassword(target.value)} />
           <img role="show and hide password button" src={showPassword ? './eye.svg' : './eye-off.svg'} onClick={() => setShowPassword(!showPassword)} className="eye"/>
         </div>
 
@@ -91,7 +91,7 @@ const PasswordReset = () => {
         Your answer to security question:<span className='required'>*</span></label>
         <input type="text" name="securityAnswer" value={securityAnswer} onChange={({ target }) => setSecurityAnswer(target.value)} className="loginContainerChild" id="securityAnswer" placeholder="enter your answer" />
 
-        <button type="submit" className="loginContainerChild loginButton">reset password</button>
+        <button type="submit" className="loginContainerChild loginButton" id='pw-reset-button'>reset password</button>
       </form>     
       <Error />
       <p role="button" onClick={handleCancel} className="loginContainerChild forSignUp textLink">cancel</p>

@@ -128,7 +128,7 @@ const RegisterCommunity = () => {
         Your answer to security question:<span className='required'>*</span></label>
         <input type="text" name="securityAnswer" className="loginContainerChild" id="security-answer" placeholder="enter your answer" />    
 
-        <button type="submit" className="loginContainerChild loginButton">Register your community</button>
+        <button type="submit" className="loginContainerChild loginButton" id="register-community-button">Register your community</button>
       </form>
       <Error />
         <div className="loginContainerChild">

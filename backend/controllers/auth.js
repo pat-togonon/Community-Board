@@ -190,7 +190,7 @@ const login = async (request, response) => {
     community: userCommunity._id
   }
   
-  const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '5m' })
+  const accessToken = jwt.sign(userForToken, process.env.ACCESS_SECRET, { expiresIn: '15m' })
   
   const refreshToken = jwt.sign(userForToken, process.env.REFRESH_SECRET, { expiresIn: '30d'})
   

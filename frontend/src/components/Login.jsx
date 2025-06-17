@@ -92,7 +92,7 @@ const Login = () => {
             <input name="loginPassword" type={showPassword ? "text" : "password"} autoComplete="current-password" id="loginPassword" className="loginContainerChild passwordField" placeholder="enter your password" />
             <img role="show and hide password button" src={showPassword ? './eye.svg' : './eye-off.svg'} onClick={() => setShowPassword(!showPassword)} className="eye"/>
           </div>
-          <button type="submit" className="loginContainerChild loginButton">log in</button>
+          <button type="submit" className="loginContainerChild loginButton" id="login-button">log in</button>
         </form>
         <Error />
         <Link to='/password-reset' className="textLink forgotPassword"><p>Forgot password</p></Link>

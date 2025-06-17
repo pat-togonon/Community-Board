@@ -13,7 +13,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = store.getState().user.accessToken
 
-  const isPublicUrl = ['/login', '/users', '/refresh', '/password-reset'].some(path => config.url.includes(path))
+  const isPublicUrl = ['/login', '/refresh', '/password-reset'].some(path => config.url.includes(path))
 
   if (token && !isPublicUrl) {
     config.headers.Authorization = `Bearer ${token}`
