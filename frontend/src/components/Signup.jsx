@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { setUser } from "../reducer/userReducer"
 import { useNavigate } from "react-router-dom"
 import { securityQuestions } from "../helper/helpers"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { clearCommunityId } from "../reducer/communityIdReducer"
 import { notifyError } from "../reducer/errorReducer"
 import Error from './Notifications/Error'
@@ -18,6 +18,10 @@ const SignUp = () => {
   const dispatch = useDispatch()
   const communityId = useSelector(state => state.communityId)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    dispatch(clearCommunityId())
+  }, [navigate])
   
   const handleSignUp = async (event) => {
     event.preventDefault()
