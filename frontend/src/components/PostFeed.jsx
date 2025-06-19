@@ -65,6 +65,13 @@ const ShowAllPosts = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const accessToken = useSelector(state => state.user).accessToken
+  const isLoggedIn = localStorage.getItem("isLoggedIn")
+  
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/')
+    }  
+  }, [isLoggedIn])
   
   useEffect(() => {
     if (!accessToken) {

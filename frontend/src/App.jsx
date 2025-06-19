@@ -21,6 +21,7 @@ import { resetSubCategory } from './reducer/subCategoryReducer'
 import { logoutUser } from './service/auth'
 import Posts from './components/Posts'
 import RegisterCommunity from './components/RegisterCommunity'
+import Footer from './components/Footer'
 
 const App = () => {
   console.log('Good morning Pat!')
@@ -77,7 +78,7 @@ const App = () => {
 
   const communityHeader = () => {
 
-    if (!isUserLoggedIn) {
+    if (!isUserLoggedIn || !isLoggedIn) {
       return null
     }
 
@@ -86,6 +87,7 @@ const App = () => {
   
   return (
     <>
+    <div className='page-container'>
       <Header />
       <div className="container">     
         <div className='layout'>
@@ -116,7 +118,9 @@ const App = () => {
           {/* Right Sidebar for large screens */}
           <aside className={isLoggedIn ? 'sidebar-right' : 'noSidebar'}>Right Sidebar</aside>
         </div>
-      </div>
+      </div>     
+    </div>  
+    <Footer /> 
     </>
   )
 }

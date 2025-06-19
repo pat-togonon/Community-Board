@@ -48,6 +48,11 @@ const Header = () => {
       return null
     }
 
+  const handleSignup = () => {
+    setIsMenuOpen(!isMenuOpen)
+    navigate('/signup')
+  }
+
     return (
       <>
         <ul className="nav-list">
@@ -57,6 +62,7 @@ const Header = () => {
           <li className="nav-item">About</li>
           <li className="nav-item">Features</li>
           <li className="nav-item nav-link" onClick={handleLogin}>Login</li>
+          <li className="nav-item nav-link get-started" onClick={handleSignup}>Get Started</li>
         </ul>
       </>
 
@@ -115,6 +121,7 @@ const Header = () => {
   }
   return (
     <header className="header">
+      <div className="header-content">
       <div className="logo-container" onClick={handleReturnHome}>
         <img src={logo} alt="Komi website logo" className="logo"/>
         </div>
@@ -129,6 +136,7 @@ const Header = () => {
         {menuBar()}
         {accountMenu()}
       </nav>
+      </div>
     </header>
   )
 }

@@ -29,6 +29,13 @@ const Settings = () => {
   const user = useSelector(state => state.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const isLoggedIn = localStorage.getItem("isLoggedIn")
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/')
+    }  
+  }, [isLoggedIn])
   
   useEffect(() => {
     if (user && user.name) {

@@ -68,6 +68,13 @@ const PostPage = () => {
   const user = useSelector(state => state.user)
   const accessToken = user.accessToken
   const favoritePosts = useSelector(state => state.favorites)
+  const isLoggedIn = localStorage.getItem("isLoggedIn")
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/')
+    }  
+  }, [isLoggedIn])
 
   const { community, mainCategory, subCategory, id } = useParams()
     //hydrate redux so it persists upon browser refresh

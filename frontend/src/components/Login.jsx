@@ -4,7 +4,7 @@ import { loginWith } from "../service/auth"
 import { setUser } from "../reducer/userReducer"
 import { clearCommunityId } from "../reducer/communityIdReducer"
 import { Link, useNavigate } from "react-router"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { notifyError } from "../reducer/errorReducer"
 import Error from "./Notifications/Error"
 import { notifyConfirmation } from "../reducer/confirmationReducer"
@@ -15,16 +15,14 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false)
   
-  const userLoggedIn = useSelector(state => state.user.accessToken)
-
   const communityId = useSelector(state => state.communityId)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  if (userLoggedIn) {
-    return null
-  }
-  
+  useEffect(() => {
+    dispatch(clearCommunityId())
+  }, [navigate])
+
   const handleSignUp = (event) => {
     dispatch(clearCommunityId())
     navigate('/signup')

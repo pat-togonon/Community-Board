@@ -11,7 +11,7 @@ const ErrorRoutes = () => {
   return (
     <div>
       <h2>Oops! Invalid URL...</h2>
-      <button onClick={handleHome}>Return home →</button>
+      <button onClick={handleHome} className="error-route-button button">Return home →</button>
       
     </div>
   )

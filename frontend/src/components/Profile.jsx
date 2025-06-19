@@ -135,6 +135,13 @@ const Profile = () => {
   const favoritePosts = useSelector(state => state.favorites)
   const comments = useSelector(state => state.comments)
   const subCategory = useSelector(state => state.subCategory)
+  const isLoggedIn = localStorage.getItem("isLoggedIn")
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/')
+    }  
+  }, [!isLoggedIn])
   
   useEffect(() => {
   

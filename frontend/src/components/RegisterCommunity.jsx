@@ -117,8 +117,8 @@ const RegisterCommunity = () => {
 
         <label htmlFor="security-question" className="loginContainerChild">
         Choose one security question:<span className='required'>*</span></label>
-        <select value={securityQ} name="securityQuestion" onChange={handleSecurityQuestion} className="loginContainerChild" id="security-question">
-          <option value=''>Select a security question</option>
+        <select value={securityQ} name="securityQuestion" onChange={handleSecurityQuestion} className="loginContainerChild" id="security-question" required>
+          <option value="" disabled>Select a security question</option>
           {securityQuestions.map(q => 
           <option key={q.question} value={q.question}>{q.name}</option>
           )}

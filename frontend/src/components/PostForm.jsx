@@ -58,7 +58,12 @@ const PostForm = () => {
   const subCategory = useSelector(state => state.subCategory)
   const isLoggedIn = localStorage.getItem('isLoggedIn')
   const user = useSelector(state => state.user)
-  console.log('user id is', user.id)
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/')
+    }  
+  }, [isLoggedIn])
 
   useEffect(() => {
     if (isLoggedIn) {

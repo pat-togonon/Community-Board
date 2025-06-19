@@ -20,7 +20,12 @@ const Dashboard = () => {
   const mainCategory = useSelector(state => state.mainCategory)
   const user = useSelector(state => state.user.accessToken)
   const loggedInUser = useSelector(state => state.user)
+  const isLoggedIn = localStorage.getItem("isLoggedIn")
 
+  if (!isLoggedIn) {
+    navigate('/')
+  }
+  
   if (!user) {
     return null
   }
