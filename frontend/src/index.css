@@ -322,7 +322,6 @@
     padding: 17px; /*Tried*/
     border-color: grey;
     border-radius: 0%;
-    height: fit-content;
   }
 
   select:valid {
