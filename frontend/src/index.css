@@ -33,23 +33,24 @@
   
   body {
     font-family: 'Be Vietnam Pro', sans-serif;
-    font-weight: 300;
+    font-weight: 400;
   }
   
   h1, h2, h3, h4 {
     font-family: 'DM Serif Text', serif;
     font-weight: 600;
     margin: 30px 10px;
-    letter-spacing: 0.025em;
   }
   
   h3, h4 {
     font-weight: 400;
     margin: 15px 10px;
+    font-size: 1.22rem;
   }
 
   p {
     line-height: 1.6;
+    font-size: 1.1rem;
   }
 
   .homepage {
@@ -308,18 +309,12 @@
     margin-left: auto;
     margin-right: auto;
   }
-  
-  
-  
+    
   /* HERE - Updated as of 17 June. select only
   */
   .loginContainerChild input, .loginContainerChild textarea, .newPostDateButtons input, select {
     padding: 5px 2px;
     color: black;
-  }
-  
-  select {
-    color: grey;
   }
   
   select:valid {
@@ -1039,17 +1034,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
   /* Media Queries for responsiveness */
   
   /* for desktop and larger screens */
@@ -1069,6 +1053,23 @@
       
     }
   
+    body {
+      font-weight: 300;
+    }
+
+    h1, h2, h3, h4 {
+      letter-spacing: 0.025em;
+    }
+
+    h3, h4 {
+      font-size: 1.2rem;
+    }
+  
+    p {
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+    
     .noSidebar {
       display: none;
     }

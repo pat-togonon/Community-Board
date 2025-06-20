@@ -80,7 +80,7 @@ const ShowAllPosts = () => {
     }
     fetchPosts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, communityId])
+  }, [accessToken, communityId, mainCategory, subCategory])
     
   const fetchPosts = async () => {
     try {
@@ -105,14 +105,13 @@ const ShowAllPosts = () => {
 
   const allPostFeed = () => {
 
-    if (mainCategory !== 'home' && subCategory !== 'All') {
+    if (mainCategory !== 'home') {
       return null
     }
 
     return (
       <div>
-        {posts.map(post => (
-          
+        {posts.map(post => (          
           <div key={post.id} className="postCard">
           <Link to={`/posts/${post.community}/${post.mainCategory}/${post.subCategory}/${post.id}`}>
               <h3 className="linked" id="post-card-title">{post.title.slice(0, 60)}</h3>           
@@ -139,9 +138,14 @@ const ShowAllPosts = () => {
       return null
     }
 
+    const mainPosts = posts.filter(post => post.mainCategory === mainCategory)
+    const subPosts = posts.filter(post => post.mainCategory === mainCategory).filter(post => post.subCategory === subCategory)
+
+    const postsToShow = subCategory === 'All' ? mainPosts : subPosts
+
     return (
       <div>
-        {posts.filter(post => post.mainCategory === mainCategory).filter(post => post.subCategory === subCategory).map(post => (
+        {postsToShow.map(post => (
           <div key={post.id} className="postCard">
           <Link to={`/posts/${post.community}/${post.mainCategory}/${post.subCategory}/${post.id}`}>
             <h3>{post.title.slice(0, 60)}</h3>

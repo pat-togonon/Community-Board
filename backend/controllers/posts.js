@@ -137,13 +137,14 @@ const editPost = async (request, response) => {
     community: communityId,
     author: request.user._id
   })
+  
 
   if (!postToEdit) {
     return response.status(410).json({ error: "Post not found or invalid author or community." })
   }
   
   const postForUpdate = {
-    isFound: editedPost.isFound ? editedPost.isFound : false,
+    isFound: editedPost.isFound ? editedPost.isFound : postToEdit.isFound,
     description: editedPost.description ? editedPost.description : postToEdit.description
   }
   const updatedPost = await Post.findByIdAndUpdate(id, postForUpdate, { new: true })

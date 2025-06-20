@@ -46,7 +46,7 @@ const Settings = () => {
 
   const reset = ()  => {
     dispatch(logout())
-    dispatch(clearMainCategory)
+    dispatch(clearMainCategory())
     dispatch(resetSubCategory())
     dispatch(clearCommunityId())
     dispatch(clearPosts())

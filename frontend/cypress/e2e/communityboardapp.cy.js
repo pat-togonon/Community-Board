@@ -43,6 +43,9 @@ describe('Community Board App', function() {
   })
 
   describe('when user is logged in', function() {
+    let communityId
+    let accessToken 
+
     beforeEach(function() {
       cy.contains('Login').click()
       cy.get('#localCommunity').select('Test Community')
@@ -52,8 +55,11 @@ describe('Community Board App', function() {
       cy.contains('Welcome back').should('exist')
       cy.window().its('store').invoke('getState').then((state) => {
         expect(state.user.accessToken).to.exist
+        accessToken = state.user.accessToken
       })
       cy.window().its('store').invoke('getState').then((state) => {
+        expect(state.communityId).to.exist
+        communityId = state.communityId
         expect(state.user.id).to.exist
       })
     })
@@ -109,21 +115,39 @@ describe('Community Board App', function() {
           cy.contains("Hi everyone! We'll conduct a free dental cleaning for all")
         })
 
-        it('user can edit their own comments', function() {
+        it('user can edit and delete their own comments', function() {
           cy.visit(baseUrl)
-          cy.contains('Free dental cleaning on 22 June').click()
-          cy.contains("First comment yay!")
-          cy.get('#edit-comment-button').click()
-          cy.get('#edit-comment-textarea').type(' EDIT COMMENT VER')
-          cy.get('#save-edited-comment-button').click()
-          cy.contains('EDIT COMMENT VER').should('exist')
-        })
 
-        it('user can delete their own comments', function() {
-          cy.get('#delete-comment-button').click()
-          cy.get('#confirm-comment-delete-button').click()
-          cy.contains('First comment yay!').should('not.exist')
-        })
+          // check for ids
+          let firstCommentId
+
+          cy.request({
+            method: 'GET', 
+            url: `${backendUrl}/comments/${communityId}/all`,
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+              }
+            })
+            .then((response) => {
+              expect(response.status).to.eq(200)
+              expect(response.body).to.be.an('array').and.not.empty
+              firstCommentId = response.body[0].id
+              
+              // EDIT
+              cy.contains('Free dental cleaning on 22 June').click()
+              cy.contains("First comment yay!")
+              cy.get(`#edit-comment-button-${firstCommentId}`).click()
+              cy.get(`#edit-comment-textarea-${firstCommentId}`).type(' EDIT COMMENT VER')
+              cy.get(`#save-edited-comment-button-${firstCommentId}`).click()
+              cy.contains('EDIT COMMENT VER').should('exist')
+
+              // DELETE
+              cy.get(`#delete-comment-button-${firstCommentId}`).click()
+              cy.get(`#confirm-comment-delete-button-${firstCommentId}`).click()
+              cy.contains('First comment yay!').should('not.exist')
+
+            })
+       })
 
         it('user can remove their favorite post', function() {
           cy.get('#remove-favorite-icon').click()

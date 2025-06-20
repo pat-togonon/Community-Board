@@ -85,6 +85,7 @@ const CommentList = ({ comment, user, fetchComments }) => {
 
   const dateCommented = new Date(comment.createdAt).toLocaleString()
 
+  //wait ah
   return (
     <div>
       <div style={commentStyle}>
@@ -93,22 +94,22 @@ const CommentList = ({ comment, user, fetchComments }) => {
         </span>
         {isUserTheCommenter
           ? <div className="editDeleteCommentButtons" style={editDeleteStyle}>
-              <div role="button" onClick={() => handleEdit(comment)} id="edit-comment-button">Edit</div>
-              <div role="button" onClick={() => setHideButtons(!hideButtons)} id="delete-comment-button">Delete</div>
+              <div role="button" onClick={() => handleEdit(comment)} id={`edit-comment-button-${comment.id}`}>Edit</div>
+              <div role="button" onClick={() => setHideButtons(!hideButtons)} id={`delete-comment-button-${comment.id}`}>Delete</div>
             </div>
           : ''}
       </div>
       <div style={editStyle} className="editCommentDiv">
-          <textarea value={editComment} onChange={({ target }) => setEditComment(target.value)} id="edit-comment-textarea"/>
+          <textarea value={editComment} onChange={({ target }) => setEditComment(target.value)} id={`edit-comment-textarea-${comment.id}`}/>
           <div>
-            <button onClick={() => handleSaveUpdate(comment)} className="loginButton button" id="save-edited-comment-button">save</button>
+            <button onClick={() => handleSaveUpdate(comment)} className="loginButton button" id={`save-edited-comment-button-${comment.id}`}>save</button>
             <button onClick={handleCancel} className="secondaryButton button">cancel</button>
           </div>
       </div>     
         <div className="deletePostDiv" style={deleteConfirmationStyle}>
           <h3>Are you sure you want to delete this comment?</h3>
           <div className="deletePostButtons">
-            <button className="loginButton button" onClick={() => handleDelete(comment)} id="confirm-comment-delete-button">Yes</button>
+            <button className="loginButton button" onClick={() => handleDelete(comment)} id={`confirm-comment-delete-button-${comment.id}`}>Yes</button>
             <button className="secondaryButton button" onClick={() => setHideButtons(!hideButtons)}>cancel</button>
           </div>
       </div>
