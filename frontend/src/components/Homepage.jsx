@@ -34,7 +34,7 @@ const Homepage = () => {
             <span className="textLink cta2" onClick={() => navigate('/register-a-community')}>{homepageCopy.hero.cta2}</span>
           </div>
         </div>
-        <img src="/Hero-desktop.jpg" alt="Komi hero image" className="hero-image desktop-hero"/>
+        <img src="/hero-desktop.jpg" alt="Komi hero image" className="hero-image desktop-hero"/>
         <img src="/Hero-landscape.jpg" alt="Komi hero image" className="hero-image mobile-hero"/>
       </div>
       <section className="section1">
