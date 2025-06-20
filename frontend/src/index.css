@@ -190,17 +190,13 @@
     
   }
   
-  .communityOptionDiv {
-    padding-bottom: 15px;
-  }
   
   .registerCommunity {
+    display: block;
     width: max-content;
     font-size: 1rem;
-    margin-left: 30px;
-    position: absolute;
-    top: 75px;
-    right: 40px;
+    margin-left: 5%;
+    margin-top: 5px;
     cursor: pointer;
   }
   
@@ -323,6 +319,9 @@
   select, .security-question {
     background-color: white;
     color: grey;
+    padding: 10px;
+    border-color: grey;
+    border-radius: 0%;
   }
 
   select:valid {
@@ -1223,8 +1222,11 @@
       color: black;
     }
 
-    .registerCommunity {
-      top: 68px;
+    select, .security-question {
+      background-color: white;
+      color: grey;
+      border-color: grey;
+      border-radius: 0%;
     }
   
     .eye {
