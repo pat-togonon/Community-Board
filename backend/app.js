@@ -34,7 +34,7 @@ mongoose.connect(url)
 const app = express()
 
 const corsOption = {
-  origin: process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : true, // my frontend subdomain when deployed
+  origin: true,
   credentials: true
 }
 
