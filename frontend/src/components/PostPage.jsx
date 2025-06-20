@@ -37,12 +37,9 @@ const IsFound = ({ post, user, mainCategory, communityId, subCategory, id, fetch
     try {
       await editPost(communityId, mainCategory, subCategory, id, editedPost)
       fetchPosts()
-    } catch (error) {
-      console.log('error updating isFound', error.response.data.error)
+    } catch (_error) {
       dispatch(notifyError("Can't update your post right now. Please try again later.", 7))
     }
-    // to reset 
-
   }
 
   return (
@@ -74,6 +71,7 @@ const PostPage = () => {
     if (!isLoggedIn) {
       navigate('/')
     }  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn])
 
   const { community, mainCategory, subCategory, id } = useParams()
@@ -97,6 +95,7 @@ const PostPage = () => {
       dispatch(setSubCategory(subCategory))
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [accessToken, community, mainCategory, subCategory])
 
 useEffect(() => {
@@ -109,13 +108,14 @@ useEffect(() => {
     fetchPosts()
   }
   
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, community, mainCategory, subCategory, id])
 
   const fetchPosts = async () => {
     try {
       const allPosts = await getAllPosts(community, mainCategory)
       dispatch(setPosts(allPosts))
-    } catch(error) {
+    } catch(_error) {
       dispatch(notifyError("Can't load posts right now. Please try again later.", 7))
     } 
   }
@@ -126,6 +126,7 @@ useEffect(() => {
     }    
 
     fetchFavorites()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, accessToken, id, community, posts])
 
   const fetchFavorites = async () => {
@@ -134,7 +135,7 @@ useEffect(() => {
         const allfavoritesInString = allfavorites.map(fave => fave.toString())
         const favoritePosts = posts.filter(post => allfavoritesInString.includes(post.id.toString()))
         dispatch(setFavoritePosts(favoritePosts))
-      } catch (error) {
+      } catch (_error) {
         dispatch(notifyError("Can't load favorites right now. Please try again later.", 7))
       } 
     }
@@ -145,7 +146,7 @@ useEffect(() => {
     post.subCategory === subCategory &&
     post.id === id)
   
-  const handleReturn = (event) => {
+  const handleReturn = (_event) => {
     dispatch(clearMainCategory())
     dispatch(resetSubCategory())
     navigate('/')
@@ -161,15 +162,15 @@ useEffect(() => {
     )
   }  
 
-  const editDelete = (event) => {
+  const editDelete = (_event) => {
 
-    const handleEditPost = async (event) => {
+    const handleEditPost = async (_event) => {
       setUpdateDescription(post.description)
       setHide(!hide)
       setShowEditor(!showEditor)
     }
 
-    const handleDeleteConfirmation = (event) => {
+    const handleDeleteConfirmation = (_event) => {
       setClickDelete(!clickDelete)
       
     }
@@ -183,7 +184,7 @@ useEffect(() => {
 
   }
 
-  const handleDelete = async (event) => {
+  const handleDelete = async (_event) => {
 
     try {
       await deletePost(community, mainCategory, subCategory, id)
@@ -192,7 +193,7 @@ useEffect(() => {
       dispatch(resetSubCategory())
       dispatch(notifyConfirmation('Post is successfully deleted!', 5))
       navigate(`/posts/${community}/${mainCategory}`)
-    } catch(error) {
+    } catch(_error) {
       dispatch(notifyError("Oops! Trouble deleting post. Please try again.", 5))
     }
   }
@@ -205,14 +206,14 @@ useEffect(() => {
     display: showEditor ? '' : 'none'
   }
   
-  const handleCancelEdit = (event) => {
+  const handleCancelEdit = (_event) => {
     const path = `/posts/${community}/${mainCategory}/${subCategory}/${id}`
     navigate(path)
     setHide(!hide)
     setShowEditor(!showEditor)
   }
 
-  const handlePostUpdate = async (event) => {
+  const handlePostUpdate = async (_event) => {
 
     const editedPost = {
       description: updateDescription
@@ -226,7 +227,7 @@ useEffect(() => {
       setHide(!hide)
       setShowEditor(!showEditor)
       dispatch(notifyConfirmation('Post updated successfully!', 4))
-    } catch (error) {
+    } catch (_error) {
       dispatch(notifyError("Couldn't update your post. Please try again later.", 5))
     }
   }
@@ -238,7 +239,7 @@ useEffect(() => {
       setFavorited(!favorited)
       fetchFavorites()
       dispatch(notifyConfirmation('Added to your favorites!', 3))
-    } catch (error) {
+    } catch (_error) {
       dispatch(notifyError("Oops! Can't add to your favorites right now. Try again later.", 6))
     }
   }
@@ -250,7 +251,7 @@ useEffect(() => {
       setFavorited(false)
       fetchFavorites()
       dispatch(notifyConfirmation('Removed from your favorites!', 3))      
-    } catch (error) {
+    } catch (_error) {
       dispatch(notifyError("Oops! Can't remove from your favorites right now. Try again later.", 6))
     }
   }

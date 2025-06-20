@@ -4,10 +4,10 @@ const favoriteSlice = createSlice({
   name: 'favorites',
   initialState: [],
   reducers: {
-    setFavoritePosts(state, action) {
+    setFavoritePosts(_state, action) {
       return action.payload
     },
-    clearFavoritePosts(state, action) {
+    clearFavoritePosts(_state, _action) {
       return []
     }
   }

@@ -1,9 +1,27 @@
 import homepageCopy from "../helper/homepageCopy"
 import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 const Homepage = () => {
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+
+    const hash = window.location.hash
+
+    if (hash === '#about') {
+      const section = document.getElementById('about')
+
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' })
+      }
+    } else if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })          
+    }
+  }, [])
+
+  
 
   return (
     <div className="homepage">
@@ -16,11 +34,11 @@ const Homepage = () => {
             <span className="textLink cta2" onClick={() => navigate('/register-a-community')}>{homepageCopy.hero.cta2}</span>
           </div>
         </div>
-        <img src="/Hero-desktop.jpg" alt="Komi hero image" className="hero-image desktop-hero"/>
+        <img src="/public/Hero-desktop.jpg" alt="Komi hero image" className="hero-image desktop-hero"/>
         <img src="/Hero-landscape.jpg" alt="Komi hero image" className="hero-image mobile-hero"/>
       </div>
       <section className="section1">
-        <h2>{homepageCopy.section1.title}</h2>
+        <h2 id="about">{homepageCopy.section1.title}</h2>
         <img src="/demo-png.png" className="demo-image"/>
         <img src="/demo-image-mobile.png" className="demo-image-mobile"/>
         <p>{homepageCopy.section1.sub1}</p>

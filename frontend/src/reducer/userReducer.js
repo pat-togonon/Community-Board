@@ -15,10 +15,10 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUser(state, action) {
+    setUser(_state, action) {
       return action.payload
     },
-    logout(state, action) {
+    logout(_state, _action) {
       return {}
     },
     setNewAccessToken(state, action) {
@@ -27,7 +27,7 @@ const userSlice = createSlice({
     setName(state, action) {
       return { ... state, name: action.payload}
     },
-    isLoggedIn(state, action) {
+    isLoggedIn(_state, action) {
       return action.payload
     }
   }

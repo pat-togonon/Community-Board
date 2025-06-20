@@ -1,16 +1,11 @@
 import { setMainCategory } from "../reducer/mainCategoryReducer"
 import { useDispatch, useSelector } from "react-redux"
 import { resetSubCategory } from "../reducer/subCategoryReducer"
-import { useNavigate, Outlet, useLocation} from "react-router-dom"
+import { useNavigate, Outlet} from "react-router-dom"
 import SubCategoryOptions from "./SubCategory"
 import Confirmation from "./Notifications/Confirmation"
 import { mainCategories } from "../helper/helpers"
-
-
-// Just shows the first 10 posts in all categories and subcategories - sorted by date posted
-
-// Check all incompatible exports Pat
-
+import { useEffect } from "react"
 
 const Dashboard = () => {
   const dispatch = useDispatch()
@@ -22,9 +17,12 @@ const Dashboard = () => {
   const loggedInUser = useSelector(state => state.user)
   const isLoggedIn = localStorage.getItem("isLoggedIn")
 
-  if (!isLoggedIn) {
-    navigate('/')
-  }
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/')
+    }  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn])
   
   if (!user) {
     return null
@@ -50,8 +48,6 @@ const Dashboard = () => {
     }
   
     const isUserAnAdmin = loggedInUser.managedCommunity.map(c => c.id).includes(communityId)
-  
-    console.log('user an admin?', isUserAnAdmin)    
 
     if (!isUserAnAdmin && mainCategory === 'announcement') {
       return null
@@ -85,14 +81,8 @@ const Dashboard = () => {
       <main>
         <Outlet />
       </main>
-      
-
     </div>
   )
-
-
-
-
 }
 
 export default Dashboard

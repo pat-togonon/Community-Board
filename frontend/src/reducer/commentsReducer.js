@@ -4,10 +4,10 @@ const commentSlice = createSlice({
   name: 'comments',
   initialState: [],
   reducers: {
-    setComments(state, action) {
+    setComments(_state, action) {
       return action.payload
     },
-    clearComments(state, action) {
+    clearComments(_state, _action) {
       return []
     }
   }

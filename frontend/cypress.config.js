@@ -1,4 +1,6 @@
-import { defineConfig } from "cypress";
+/* eslint-disable no-unused-vars */
+
+import { defineConfig } from "cypress"
 
 export default defineConfig({
   e2e: {

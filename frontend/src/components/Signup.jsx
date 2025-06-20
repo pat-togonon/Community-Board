@@ -21,6 +21,7 @@ const SignUp = () => {
 
   useEffect(() => {
     dispatch(clearCommunityId())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate])
   
   const handleSignUp = async (event) => {
@@ -50,15 +51,11 @@ const SignUp = () => {
     try {
       const createdUser = await createAccountWith(newUser)
       dispatch(setUser(createdUser))
-      console.log('succesful', createdUser)
       dispatch(notifyConfirmation("You've signed up successfully. Log in to continue.", 6))
       reset(event)
       navigate('/login')
-    
-      // Add notification. Maybe modals too to confirm successful sign up. Example: Sign up succesful! Log in now to access your community - isSignUpSuccess = true
 
-    } catch (error) {
-      console.log('error', error.response.data.error)
+    } catch (_error) {
       dispatch(notifyError('Please fill out all fields.', 3))
       reset(event)
     }
@@ -134,11 +131,3 @@ const SignUp = () => {
 }
 
 export default SignUp
-
-/*
-Notes:
-
-1. Instead of <br />, use CSS to make the label and input a block element
-2. onChange on input fields and onSubmit for the form
-
-*/

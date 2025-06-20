@@ -21,16 +21,17 @@ const Login = () => {
 
   useEffect(() => {
     dispatch(clearCommunityId())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate])
 
-  const handleSignUp = (event) => {
+  const handleSignUp = () => {
     dispatch(clearCommunityId())
     navigate('/signup')
   }
   
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('community id after submit login', communityId)
+
     const username = event.target.loginUsername.value
     const password = event.target.loginPassword.value
 
@@ -43,7 +44,7 @@ const Login = () => {
       username,
       password
     }
-    console.log('user login', userLogin)
+    
     const userForLogin = {
       ...userLogin,
       communityId
@@ -51,7 +52,7 @@ const Login = () => {
    
     try {
      const loggedUser = await loginWith(userForLogin)
-     console.log('logged in user', loggedUser)
+     
      dispatch(setUser(loggedUser))
      localStorage.setItem('isLoggedIn', 'true')
      dispatch(notifyConfirmation(`Welcome back ${loggedUser.name ? loggedUser.name : loggedUser.username}!`, 5))
@@ -59,7 +60,6 @@ const Login = () => {
      navigate('/')
 
    } catch (error) {
-      console.log('invalid login', error.response.data.error)
       dispatch(notifyError(error.response.data.error, 5))
       reset(event)
       dispatch(clearCommunityId())
@@ -103,5 +103,3 @@ const Login = () => {
 }
 
 export default Login
-
-// Add in a show pasword feature

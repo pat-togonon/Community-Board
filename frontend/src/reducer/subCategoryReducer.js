@@ -4,10 +4,10 @@ const subCategorySlice = createSlice({
   name: 'subCategory',
   initialState: 'All',
   reducers: {
-    setSubCategory(state, action) {
+    setSubCategory(_state, action) {
       return action.payload
     },
-    resetSubCategory(state, action) {
+    resetSubCategory(_state, _action) {
       return 'All'
     }
   }

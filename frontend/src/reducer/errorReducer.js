@@ -4,10 +4,10 @@ const errorSlice = createSlice({
   name: 'error',
   initialState: null,
   reducers: {
-    setErrorMessage(state, action) {
+    setErrorMessage(_state, action) {
       return action.payload
     },
-    resetErrorMessage(state, action) {
+    resetErrorMessage(_state, _action) {
       return null
     }
   }

@@ -23,7 +23,6 @@ const SubCategoryDropDown = ({ subCategoryOptions, subCategory }) => {
     const subCategorySelected = event.target.value
     dispatch(setSubCategory(subCategorySelected))
   }
-  console.log(subCategory, subCategoryOptions)
 
   return (
     <div className="categoryNav newPostSubCategories">
@@ -63,6 +62,7 @@ const PostForm = () => {
     if (!isLoggedIn) {
       navigate('/')
     }  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn])
 
   useEffect(() => {
@@ -74,12 +74,14 @@ const PostForm = () => {
         dispatch(setMainCategory(mainCategory))
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, community, mainCategory])
 
   useEffect(() => {
     if (user) {
       fetchCurrentCommunity()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const fetchCurrentCommunity = async () => {
@@ -91,7 +93,7 @@ const PostForm = () => {
         return setUserRole(null)
       }
       setUserRole('admin')
-    } catch(error) {
+    } catch(_error) {
       dispatch(notifyError('Loading...'), 5)
     }
   }
@@ -124,7 +126,6 @@ const PostForm = () => {
       startDate: startDate ? new Date(startDate).toISOString() : undefined,
       endDate: endDate ? new Date(endDate).toISOString() : undefined,
     }
-    console.log('new post is', newPost)
     
     try {
       const createdPost = await createPost(newPost, communityId, mainCategoryStored, subCategory)
@@ -158,8 +159,7 @@ const PostForm = () => {
   }
 
   const subCategoryOptions = validSubcategories[mainCategoryStored]
-  console.log('sub cat options', subCategoryOptions, 'sub cat is', subCategory)
-
+  
   const categoryName = mainCategories.find(cat => cat.category === mainCategoryStored).name
   
   return (
@@ -191,5 +191,3 @@ const PostForm = () => {
 }
 
 export default PostForm
-
-// not br, but css please

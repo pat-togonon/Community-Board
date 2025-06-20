@@ -24,6 +24,7 @@ const store = configureStore({
   }
 })
 
+// For cypress E2E Tests
 if (import.meta.env.MODE === 'test') {
   window.store = store
 }

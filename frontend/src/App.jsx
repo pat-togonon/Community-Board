@@ -24,7 +24,6 @@ import RegisterCommunity from './components/RegisterCommunity'
 import Footer from './components/Footer'
 
 const App = () => {
-  console.log('Good morning Pat!')
 
   const dispatch = useDispatch()
   const location = useLocation()
@@ -33,8 +32,7 @@ const App = () => {
   const userToken = useSelector(state => state.user.accessToken)
   const loggedInUser = useSelector(state => state.user)
   const isLoggedIn = localStorage.getItem('isLoggedIn')
-  console.log('is logged in?', isLoggedIn)
-
+  
   useEffect(() => {
     if (location.pathname === '/') {
       dispatch(clearMainCategory())
@@ -50,13 +48,11 @@ const App = () => {
         const response = await api.post('/auth/refresh')
 
         if (response.status === 200 && response.data.accessToken) {
-          console.log('refresh user is', response.data.userFrontend)
           dispatch(setUser({ ...response.data.userFrontend }))
           dispatch(setNewAccessToken(response.data.accessToken))
           dispatch(setCommunityId(response.data.userFrontend.community))
         } 
-      } catch (error) {
-        console.log('error refreshing token')
+      } catch (_error) {
         await logoutUser()
         dispatch(logout())
         localStorage.removeItem('isLoggedIn')
@@ -64,16 +60,16 @@ const App = () => {
 
       }
     }
-    console.log('is logged in?', isLoggedIn)
+
     if (!userToken && isLoggedIn) {
         silentRefresh()
     } 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userToken, isLoggedIn])
 
   // !userToken || !isLoggedIn
   const isUserLoggedIn = userToken ? true : false
-  console.log(isUserLoggedIn)
-
+  
   // fetch the posts so they stay even when browser is refreshed
 
   const communityHeader = () => {

@@ -29,10 +29,8 @@ api.interceptors.response.use(
 
 
   async (error) => {
-    
-    
+        
     const isLoggedIn = localStorage.getItem('isLoggedIn')
-    console.log('api logged in?', isLoggedIn)
 
     if (!isLoggedIn) {
       return Promise.reject(error)

@@ -71,6 +71,7 @@ const ShowAllPosts = () => {
     if (!isLoggedIn) {
       navigate('/')
     }  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn])
   
   useEffect(() => {
@@ -78,6 +79,7 @@ const ShowAllPosts = () => {
       return
     }
     fetchPosts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, communityId])
     
   const fetchPosts = async () => {
@@ -85,7 +87,7 @@ const ShowAllPosts = () => {
       const allPosts = await getAllPosts(communityId, mainCategory)
       dispatch(setPosts(allPosts))
     } catch(error) {
-      dispatch(notifyError(`Trouble loading posts. ${error.response.data.error}.`))
+      dispatch(notifyError(`Trouble loading posts. ${error.response.data.error}.`, 5))
       }
     }
 
@@ -169,8 +171,4 @@ const ShowAllPosts = () => {
   )
 }
 
-
 export default ShowAllPosts
-
-// show first 10 posts and auto load next 10 when reached the 10th?
-//{subCategory === 'All' ? allPostFeed(): allSubCategoryPosts()}

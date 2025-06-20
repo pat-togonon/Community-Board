@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate, Link, useLocation } from "react-router-dom"
 import { clearMainCategory } from "../reducer/mainCategoryReducer"
 import { resetSubCategory } from "../reducer/subCategoryReducer"
 import { useState, useEffect } from "react"
@@ -10,6 +10,7 @@ import { clearComments } from "../reducer/commentsReducer";
 import { clearFavoritePosts } from "../reducer/favoriteReducer";
 import { clearPosts } from "../reducer/postReducer";
 import logo from "/logo1.png?url"
+import { notifyError } from "../reducer/errorReducer"
 
 
 const Header = () => {
@@ -19,6 +20,7 @@ const Header = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const isLoggedIn = localStorage.getItem('isLoggedIn')
+  const location = useLocation()
 
   useEffect(() => {
     const handleResize = () => {
@@ -31,11 +33,28 @@ const Header = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const handleHome = () => {
+    setIsMenuOpen(!isMenuOpen)
+
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })          
+    } else {
+      navigate('/')
+    }
+  }
+
   const handleReturnHome = () => {
       setIsMenuOpen(false)
       dispatch(clearMainCategory())
       dispatch(resetSubCategory())
-      navigate('/')
+      if (location.pathname === '/') {
+        if (window.location.hash) {
+          history.replaceState(null, '', '/');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' })          
+      } else {
+        navigate('/')
+      }
     }
 
   const handleLogin = () => {
@@ -53,14 +72,28 @@ const Header = () => {
     navigate('/signup')
   }
 
+  const handleAbout = () => {
+    setIsMenuOpen(!isMenuOpen)
+
+    const sectionId = "about"
+    
+    if (location.pathname === '/') {
+      const section = document.getElementById(sectionId)
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' })          
+      }
+    } else {
+      navigate(`/#${sectionId}`)
+    }
+  }
+
     return (
       <>
         <ul className="nav-list">
         <Link to='/' className="nav-link">
-          <li className="nav-item" onClick={() => setIsMenuOpen(!isMenuOpen)}>Home</li>
+          <li className="nav-item" onClick={handleHome}>Home</li>
         </Link>
-          <li className="nav-item">About</li>
-          <li className="nav-item">Features</li>
+          <li className="nav-item nav-link" onClick={handleAbout}>About</li>
           <li className="nav-item nav-link" onClick={handleLogin}>Login</li>
           <li className="nav-item nav-link get-started" onClick={handleSignup}>Get Started</li>
         </ul>
@@ -79,12 +112,11 @@ const Header = () => {
     navigate('/user/settings')
   }
 
-  const handleLogout = async (event) => {   
+  const handleLogout = async (_event) => {   
       setIsMenuOpen(!isMenuOpen)
       try {
       await logoutUser()
       // clear the redux store
-      localStorage.removeItem('isLoggedIn')
       dispatch(logout())
       dispatch(clearCommunityId())
       dispatch(clearMainCategory())
@@ -93,9 +125,9 @@ const Header = () => {
       dispatch(clearFavoritePosts())
       dispatch(clearPosts())
       navigate('/')
-      
-      } catch (error) {
-        console.log('error log out', error.response.data.error)
+      localStorage.removeItem('isLoggedIn')      
+      } catch (_error) {
+        dispatch(notifyError("Oops! Can't log out right now. Please try again later.", 6))
       }
     }
 
@@ -108,7 +140,7 @@ const Header = () => {
       <>
         <ul className="nav-list">
         <Link to='/' className="nav-link">
-          <li className="nav-item" onClick={() => setIsMenuOpen(!isMenuOpen)}>Home</li>
+          <li className="nav-item" onClick={handleHome}>Home</li>
         </Link>
           <li className="nav-item" onClick={handleProfile}>Profile</li>
           <li className="nav-item" onClick={handleSettings}>Account Settings</li>

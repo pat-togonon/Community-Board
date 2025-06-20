@@ -39,12 +39,10 @@ const PasswordReset = () => {
     }
 
     try {
-      const response = await resetPassword(forPasswordReset)
-      console.log('PW reset response', response)
+      const _response = await resetPassword(forPasswordReset)
       dispatch(notifyConfirmation("You've reset your password successfully. Log in again to continue.", 6))
       navigate('/login')
     } catch (error) {
-      console.log('error resetting password', error, error.response.data.error)
       dispatch(notifyError(`${error.response.data.error}.`, 7))
     }
     clearForm()

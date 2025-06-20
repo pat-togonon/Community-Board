@@ -4,13 +4,13 @@ const postSlice = createSlice({
   name: 'posts',
   initialState: [],
   reducers: {
-    setPosts(state, action) {
+    setPosts(_state, action) {
       return action.payload
     },
     addPost(state, action) {
       return state.concat(action.payload)
     },
-    clearPosts(state, action) {
+    clearPosts(_state, _action) {
       return []
     }
   }

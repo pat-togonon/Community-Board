@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { viewAllComments, postComment, updateComment, deleteComment} from "../service/comments"
 import { useSelector, useDispatch } from "react-redux"
 import { setComments } from "../reducer/commentsReducer"
+import { notifyError } from "../reducer/errorReducer"
 
 
 const CommentList = ({ comment, user, fetchComments }) => {
@@ -13,8 +14,6 @@ const CommentList = ({ comment, user, fetchComments }) => {
   const [notEdited, setNotEdited] = useState(false)
 
   const isUserTheCommenter = comment.commenter?.id === user.id
-
-  // Add notifications and errors too please 
 
   const commentStyle = {
     display: hideComment ? 'none' : ''
@@ -37,7 +36,6 @@ const CommentList = ({ comment, user, fetchComments }) => {
   }
 
   const handleSaveUpdate = async (comment) => {
-    console.log('edited', editComment)
     const updatedComment = {
       comment: editComment
     }
@@ -47,7 +45,7 @@ const CommentList = ({ comment, user, fetchComments }) => {
       fetchComments()
       setHideComment(!hideComment)
       setShowEdit(!showEdit)
-    } catch (error) {
+    } catch (_error) {
       setNotEdited(true)
       setTimeout(() => {
         setNotEdited(false)
@@ -60,7 +58,7 @@ const CommentList = ({ comment, user, fetchComments }) => {
     try {
       await deleteComment(comment.id)
       fetchComments()
-    } catch (error) {
+    } catch (_error) {
       setNotDeleted(true)
       setHideButtons(!hideButtons)
       setTimeout(() => {
@@ -84,7 +82,7 @@ const CommentList = ({ comment, user, fetchComments }) => {
   const editCommentErrorStyle = {
     display: notEdited ? '' : 'none'
   }
-  console.log('comment', comment)
+
   const dateCommented = new Date(comment.createdAt).toLocaleString()
 
   return (
@@ -139,14 +137,15 @@ const Comment = ({ id, communityId, mainCategory, subCategory }) => {
     if (user) {
       fetchComments()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, id, updateComment, posts])
 
   const fetchComments = async () => {
     try {
       const allComments = await viewAllComments(communityId, mainCategory, subCategory, id)
       dispatch(setComments([...allComments]))
-    } catch (error) {
-      console.log('error fetching comments', error)
+    } catch (_error) {
+      dispatch(notifyError("Oops! Error loading comments. Please try again later.", 5))
     }
     
   }
@@ -170,8 +169,8 @@ const Comment = ({ id, communityId, mainCategory, subCategory }) => {
       await postComment(communityId, mainCategory, subCategory, id, newCommentToPost)
       fetchComments()
 
-    } catch (error) {
-      console.log('error posting your comment', error)
+    } catch (_error) {
+      dispatch(notifyError("Oops! Couldn't post your comments right now. Please try again later.", 7))
     }
 
     setNewComment('')
@@ -180,7 +179,6 @@ const Comment = ({ id, communityId, mainCategory, subCategory }) => {
   const commentErrorStyle = {
     display: showCommentError ? '' : 'none'
   }
-  console.log('all comments', comments)
 
   return (
     <div className="commentDiv">

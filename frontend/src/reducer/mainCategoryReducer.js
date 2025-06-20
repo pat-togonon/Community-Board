@@ -4,10 +4,10 @@ const mainCategorySlice = createSlice({
   name: 'mainCategory',
   initialState: 'home',
   reducers: {
-    setMainCategory(state, action) {
+    setMainCategory(_state, action) {
       return action.payload
     },
-    clearMainCategory(state, action) {
+    clearMainCategory(_state, _action) {
       return 'home'
     }
   }

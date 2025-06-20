@@ -1,11 +1,8 @@
 
-import { createAccountWith } from "../service/auth"
 import { useSelector, useDispatch } from "react-redux"
-import { setUser } from "../reducer/userReducer"
 import { useNavigate } from "react-router-dom"
 import { securityQuestions } from "../helper/helpers"
 import { useState } from "react"
-import { clearCommunityId } from "../reducer/communityIdReducer"
 import { notifyError } from "../reducer/errorReducer"
 import Error from './Notifications/Error'
 import { notifyConfirmation } from "../reducer/confirmationReducer"
@@ -54,7 +51,6 @@ const RegisterCommunity = () => {
       reset(event)
       navigate('/login')
     } catch (error) {
-      console.log('error', error.response.data.error)
       dispatch(notifyError(`Oops! ${error.response.data.error}`, 5))
       reset(event)
     }
@@ -139,11 +135,3 @@ const RegisterCommunity = () => {
 }
 
 export default RegisterCommunity
-
-/*
-Notes:
-
-1. Instead of <br />, use CSS to make the label and input a block element
-2. onChange on input fields and onSubmit for the form
-
-*/

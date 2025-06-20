@@ -297,7 +297,7 @@
   .section3 {
     background-color: #FFF5EE;
     padding-top: 20px;
-    padding-bottom: 20px;
+    padding-bottom: 40px;
     margin-left: 10px;
     margin-right: 10px;
     border-radius: 20px;
@@ -1033,6 +1033,9 @@
   }
     */
 
+  #about {
+    scroll-margin-top: calc(var(--header-height) + 10px);
+  }
 
 
 

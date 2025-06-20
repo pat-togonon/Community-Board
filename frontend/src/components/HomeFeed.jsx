@@ -14,6 +14,7 @@ const HomeFeed = () => {
       if (!isLoggedIn) {
         navigate('/')
       }  
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
 
   if (mainCategorySelected !== 'home') {

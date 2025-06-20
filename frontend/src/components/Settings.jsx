@@ -35,6 +35,7 @@ const Settings = () => {
     if (!isLoggedIn) {
       navigate('/')
     }  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn])
   
   useEffect(() => {
@@ -45,7 +46,6 @@ const Settings = () => {
 
   const reset = ()  => {
     dispatch(logout())
-    localStorage.removeItem('isLoggedIn')
     dispatch(clearMainCategory)
     dispatch(resetSubCategory())
     dispatch(clearCommunityId())
@@ -81,16 +81,13 @@ const Settings = () => {
       }
 
       const name = userName
-      console.log('userName', userName)
-      console.log('user id', user.id)
-
+    
       try {
         const savedName = await updateSavedName(user.id, name)
         dispatch(setName(savedName))
         dispatch(notifyConfirmation('Updated your name successfully!', 3))
         setUserName('')
       } catch (error) {
-        console.log('error saving name', error)
         dispatch(notifyError(`Oops! Can't update your name right now. ${error.response.data.error}`, 7))
       }
     
@@ -134,7 +131,7 @@ const Settings = () => {
     event.preventDefault()
 
     if (user.username !== deleteUsername) {
-      dispatch(notifyError('Please enter your correct username.', 3)) // add a notification for this
+      dispatch(notifyError('Please enter your correct username.', 3))
       setDeleteUsername('')
       return
     }
@@ -143,7 +140,7 @@ const Settings = () => {
       await deleteAccount(user.id)
       reset()
       navigate('/')
-
+      localStorage.removeItem('isLoggedIn')
     } catch (error) {
       dispatch(notifyError(`Oops! Can't delete your account right now: ${error.response.data.error}.`, 7))
       
@@ -184,12 +181,10 @@ const Settings = () => {
       await updatePassword(user.id, passwords)
       reset()
       setShowPasswordForm(!showPasswordForm)
-      navigate('/login')
-
+     // navigate('/login')
+      localStorage.removeItem('isLoggedIn')
     } catch (error) {
-      dispatch(notifyError(`Oops! Can't update your password right now. ${error.response.data.error}.`, 6))
-
-    
+      dispatch(notifyError(`Oops! Can't update your password right now. ${error.response.data.error}.`, 6))    
     }
 
     setOldPassword('')
@@ -217,6 +212,7 @@ const Settings = () => {
         <form onSubmit={handleUpdatePassword}>
           <h3>Enter your old password and new password to proceed: </h3>
           <p>Take note: You'll be logged out right after updating your password. Please log in again.</p>
+          <input type="text" name="username" autoComplete="username" hidden />
           <span className="settingsEnterNewPassword">Enter your old password: <input value={oldPassword} type="password" name="oldPassword" autoComplete="current-password" onChange={({ target }) => setOldPassword(target.value)} id="update-password-old"/>
           </span>
           <span className="settingsEnterNewPassword">Enter your new password: <input value={newPassword} type="password" autoComplete="newPassword" name="new-password" onChange={({ target }) => setNewPassword(target.value)} id="update-password-new"/>

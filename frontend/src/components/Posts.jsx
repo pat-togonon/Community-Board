@@ -24,6 +24,7 @@ const Posts = () => {
       dispatch(setSubCategory(subCategory))
     }
   }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, community, mainCategory, subCategory])
 
 

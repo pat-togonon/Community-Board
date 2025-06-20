@@ -4,10 +4,10 @@ const communityIdSlice = createSlice({
   name: 'communityId',
   initialState: '',
   reducers: {
-    setCommunityId(state, action) {
+    setCommunityId(_state, action) {
       return action.payload      
     },
-    clearCommunityId(state, action) {
+    clearCommunityId(_state, _action) {
       return ''
     }
   }

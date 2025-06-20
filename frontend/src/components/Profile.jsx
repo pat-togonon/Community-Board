@@ -58,8 +58,6 @@ const UserComments = ({ comments, communityId, accessToken }) => {
 
   const commentsInExistingPosts = comments.filter(comment => comment.post)
   
-  console.log('comment', comments)
-  
   return (
     <div>
       <h3>Your comments</h3>
@@ -141,6 +139,7 @@ const Profile = () => {
     if (!isLoggedIn) {
       navigate('/')
     }  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!isLoggedIn])
   
   useEffect(() => {
@@ -148,6 +147,7 @@ const Profile = () => {
     if (accessToken && (location.pathname === '/user/profile' || location.pathname === '/user/profile/comments' || location.pathname === '/user/profile/favorites' || location.pathname === '/user/profile/communities')) {
       reset()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [communityId, accessToken, location.pathname, dispatch])
 
 
@@ -159,48 +159,37 @@ const Profile = () => {
     if (accessToken && (location.pathname === '/user/profile/comments' || '/user/profile')) {
       fetchComments()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [communityId, accessToken, mainCategory, subCategory, dispatch, location.pathname])
 
   useEffect(() => {
-    console.log('user in fetchFavorites', user)
+
     if (accessToken && posts) {
       if (location.pathname === '/user/profile' || location.pathname === '/user/profile/favorites') {
         fetchFavorites()
       }
     }
-  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [communityId, accessToken, mainCategory, dispatch, posts, location.pathname])
       
   const fetchPosts = async () => {
-
-    console.log('MAIN cate', mainCategory)
     
     try {
       const allPosts = await getAllPosts(communityId, mainCategory)
-      console.log('all posts', allPosts)
-
       dispatch(setPosts(allPosts))
-    } catch(error) {
-        console.log('posts showing error', error.response.data.error)
-        dispatch(notifyError('Loading...'))
+    } catch(_error) {
+        dispatch(notifyError("Can't load posts right now. Please try again later.", 5))
       }
     }
 
   const fetchComments = async () => {
     try {
       const allComments = await viewAllCommunityComments(communityId)
-          
       const comments = allComments.filter(c => c.commenter?.id?.toString() === userId.toString())
-
-      console.log('all comments', allComments)
-      
-      dispatch(setComments(comments))
-      
-    } catch (error) {
-        console.log('error comments', error.response.data.error)
-        dispatch(notifyError('Loading...'))
+      dispatch(setComments(comments))      
+    } catch (_error) {
+        dispatch(notifyError("Can't load comments right now. Please try again later.", 5))
      }
-
   }
   
   const fetchFavorites = async () => {
@@ -208,11 +197,9 @@ const Profile = () => {
      const allfavorites = await viewFavorites(communityId)
       const allfavoritesInString = allfavorites.map(fave => fave.toString())
       const favoritePosts = posts.filter(post => allfavoritesInString.includes(post.id.toString()))
-      dispatch(setFavoritePosts(favoritePosts))
-      dispatch(notifyError('Loading...'))
-            
-   } catch (error) {
-      console.log('error showing favorites', error.response.data.error)
+      dispatch(setFavoritePosts(favoritePosts))            
+   } catch (_error) {
+      dispatch(notifyError("Can't load favorites right now. Please try again later.", 5))
     }  
  }
 
@@ -240,9 +227,6 @@ const Profile = () => {
       </Routes>
     </div>
   )
-
-
-
 }
 
 export default Profile

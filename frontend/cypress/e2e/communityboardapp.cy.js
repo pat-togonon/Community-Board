@@ -1,3 +1,5 @@
+/* global Cypress, cy */
+
 const backendUrl = Cypress.env('BASEURL_BACKEND')
 const baseUrl = Cypress.env('BASEURL_FRONTEND')
 
@@ -161,7 +163,7 @@ describe('Community Board App', function() {
         cy.get('#update-password-old').type('teST1714PW')
         cy.get('#update-password-new').type('NeWpAssWorD')
         cy.get('#update-password-save-button').click()
-        cy.url().should('eq', `${baseUrl}/login`)
+        cy.url().should('eq', `${baseUrl}/`)
       })
 
     })

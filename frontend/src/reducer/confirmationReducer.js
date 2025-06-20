@@ -4,10 +4,10 @@ const confirmationSlice = createSlice({
   name: 'confirmation',
   initialState: null,
   reducers: {
-    setConfirmationMessage(state, action) {
+    setConfirmationMessage(_state, action) {
       return action.payload
     },
-    resetConfirmationMessage(state, action) {
+    resetConfirmationMessage(_state, _action) {
       return null
     }
   }
