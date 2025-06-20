@@ -1,7 +1,6 @@
 const Post = require('../models/Post')
 const Community = require('../models/Community')
 const Comment = require('../models/Comment')
-const User = require('../models/User')
 const { newCommentSchema, editCommentSchema } = require('../validators/comment')
 
 const viewAll = async (request, response) => {

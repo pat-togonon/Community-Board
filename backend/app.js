@@ -14,14 +14,20 @@ const clearDbTestRouter = require('./routes/cleardBforTest')
 
 mongoose.set('strictQuery', false)
 
-console.log('connecting to MONGODB...')
+if (process.env.NODE_ENV !== 'production') {
+  console.log('connecting to MONGODB...')
+}
 
 mongoose.connect(url)
-  .then(result => {
-    console.log('connected to MongoDB')
+  .then(_result => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('connected to MongoDB')
+    }
   })
   .catch(error => {
-    console.log('error connecting to MongoDB', error.message)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('error connecting to MongoDB', error.message)
+    }
   })
 
 const app = express()
@@ -40,7 +46,7 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/api/tests/', clearDbTestRouter)
 }
 
-app.get('/', (request, response) => {
+app.get('/', (_request, response) => {
   response.send('<h1>Hello Pat!</h1')
 })
 

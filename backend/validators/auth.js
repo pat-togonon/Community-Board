@@ -39,5 +39,3 @@ module.exports = {
   updatePasswordSchema,
   passwordResetSchema
 }
-
-// need separate validators for post route for Post?

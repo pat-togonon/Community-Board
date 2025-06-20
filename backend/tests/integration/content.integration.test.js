@@ -266,7 +266,7 @@ beforeEach(async () => {
           communityId: communityId2
         }
 
-        const newUserResponse = await api
+        await api
           .post('/api/auth/users')
           .send(newUser3)
           .expect(201)

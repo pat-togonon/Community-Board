@@ -1,16 +1,9 @@
-// sign up with
-// login with
-// register community with
-// create post with
-// create comment with
-
 const User = require('../models/User')
 const Community = require('../models/Community')
 const RefreshToken = require('../models/RefreshToken')
 const PasswordResetAttempt = require('../models/PasswordResetAttempt')
 const Post = require('../models/Post')
 const Comment = require('../models/Comment')
-
 
 const createCommunityData = {
   communityName: "Test City",
@@ -105,9 +98,6 @@ const newComment2 = {
 const commentsInDb = async () => {
   return await Comment.find({})
 }
-
-
-
 
 
 module.exports = {

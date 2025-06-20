@@ -52,15 +52,6 @@ communityRouter.post('/', async (request, response) => {
   if (communityExists) {
     return response.status(400).json({ error: 'Community already exists' })
   }
- 
-/* REVISIT - flow for existing user creating a new community
-
-  const userExists = await User.findOne({ username })
-  const emailExists = await User.findOne({ email })
-
-  if (userExists || emailExists)
-
-  */
 
   if (!password || password.length < 5) {
     return response.status(400).json({ error: 'Password length should be at least 5 characters'})
@@ -105,16 +96,3 @@ communityRouter.post('/', async (request, response) => {
 })
 
 module.exports = communityRouter
-
-/*
-
-To add on later:
-
-1. PUT request (adding in or removing additional admins)
-2. Each community can only have one communityAdmin (the main one). If need to change to another user, need a route for this also - might need to delete the original community admin with the update
-3. DELETE request for an entire community? - need poll from its userbase/community members - at least 80% agree
-4. Error handling - there's a middleware for this also for overall error handling
-
-
-
-*/

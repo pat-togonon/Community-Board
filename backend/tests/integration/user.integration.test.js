@@ -60,7 +60,7 @@ describe("When users exist in an active community", () => {
       ...signUpData,
       communityId
     }
-    const signupResponse = await api
+    await api
       .post('/api/auth/users')
       .send(user2)
       .expect(201)

@@ -1,5 +1,3 @@
-const globalSetup = require("./tests/globalSetup");
-
 module.exports = {
   testEnvironment: 'node',
   globalSetup: '<rootDir>/tests/globalSetup.js',

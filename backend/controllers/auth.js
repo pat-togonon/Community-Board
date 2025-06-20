@@ -1,12 +1,8 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-//const mongoose = require('mongoose')
 const User = require('../models/User')
-//const Post = require('../models/Post')
 const Community = require('../models/Community')
-//const Comment = require('../models/Comment')
-require('dotenv').config()
-const cookieParser = require('cookie-parser')
+require('dotenv').config() //deleted cookieParser
 const { userRegistrationSchema, loginSchema, updatePasswordSchema, passwordResetSchema } = require('../validators/auth')
 const RefreshToken = require('../models/RefreshToken')
 const PasswordResetAttempt = require('../models/PasswordResetAttempt')
@@ -84,61 +80,6 @@ const createAccount = async (request, response) => {
   await communityExists.save()
   return response.status(201).json(savedUser)
 }
-
-//for user page / profile
-
-// get individual user - but needs validation - community exists and user is part of that community
-/*
-const viewOneUser = async (request, response) => {
-  const user = await User
-    .findById(request.params.id)
-    .populate('community', { name: 1, id: 1})
-    .populate('managedCommunity', { name: 1, description: 1 })
-    .populate('createdPosts', { 
-      mainCategory: 1,
-      subCategory: 1,
-      title: 1,
-      description: 1,
-      createdAt: 1,
-      _id: 1
-    })
-    .populate({
-      path: 'comments',
-      select: 'content createdAt post _id',
-      populate: {
-        path: 'post',
-        select: 'mainCategory subCategory title createdAt _id: 1'
-      }
-    })
-    .populate('favoritePosts', {
-      mainCategory: 1,
-      subCategory: 1,
-      title: 1,
-      description: 1,
-      createdAt: 1,
-      _id: 1
-    })
-
-    response.json(user)
-
-}
-*/
-// profile update - adding in name, birth year, etc - put request
-// delete profile - delete request
-
-/*
-usersRouter.put('/:id', async (request, response) => {
-  const { communityId } = request.body
-  
-  const user = await User.findByIdAndUpdate(request.params.id,
-    { community: communityId },
-    { new: true, runValidators: true }
-  )
-   
-  response.json(user)
-
-})
-*/
 
 // User log in
 
@@ -446,7 +387,6 @@ const passwordReset = async (request, response) => {
 module.exports = {
     createAccount,
     login,
-    //viewOneUser,
     getRefreshToken,
     logout,
     updatePassword,

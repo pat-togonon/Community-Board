@@ -1,6 +1,5 @@
 const supertest = require('supertest')
 const app = require('../../app')
-const mongoose = require('mongoose')
 const User = require('../../models/User')
 const Community = require('../../models/Community')
 const RefreshToken = require('../../models/RefreshToken')
@@ -243,19 +242,20 @@ describe("When there is an existing community in db", () => {
       securityAnswer: "bulacan"
     }
 
-    //TOO LONG daw so refactor - as helper
-    const response1 = await api
+    //First attempt
+    await api
       .put('/api/auth/password-reset')
       .send(user)
       .expect(403)
     
-    const response2 = await api
+    //Second attempt
+    await api
       .put('/api/auth/password-reset')
       .send(user)
       .expect(403)
 
-      //the third attempt.
-    const response3 = await api
+    //Third attempt.
+    await api
       .put('/api/auth/password-reset')
       .send(user)
       .expect(403)

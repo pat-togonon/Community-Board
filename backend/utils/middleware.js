@@ -4,8 +4,6 @@ const User = require('../models/User')
 
 const tokenExtractor = (request, response, next) => {
   
-  console.log('token', request.token)
-  
   const authorization = request.get('authorization')
   
   if (authorization && authorization.startsWith('Bearer ')) {
@@ -31,14 +29,11 @@ const userExtractor = async (request, response, next) => {
 }
 
 const unknownEndpoint = (request, response) => {
-  console.log('unknown', error)
   response.status(404).send({ error: 'Oops! Invalid URL. Please go back home' })
 }
 
 const errorHandler = (error, request, response, next) => {
-  console.log('error is', error.name, ' and message is ', error.message)
-  console.log('error path', error.path)
-
+  
   if (error.name === 'ValidationError') {
     return response.status(400).send({ error: error.message })
   } else if (error.message === 'data and salt arguments required') {
