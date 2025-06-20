@@ -2,11 +2,10 @@ import axios from "axios"
 import store from '../store'
 import { setNewAccessToken, logout, setUser } from "../reducer/userReducer"
 
-
 // interceptor to automatically include the cookie and token to backend every time we make a request
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BASEURL,
+  baseURL: import.meta.env.PROD ? import.meta.env.VITE_API_URL : import.meta.env.VITE_BASEURL,
   withCredentials: true // to send to backend the cookie
 })
 

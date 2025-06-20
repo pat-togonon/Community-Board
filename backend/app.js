@@ -11,6 +11,7 @@ const commentRouter = require('./routes/comments')
 const userRouter = require('./routes/user')
 const { url } = require('./utils/config')
 const clearDbTestRouter = require('./routes/cleardBforTest')
+const path = require('path')
 
 mongoose.set('strictQuery', false)
 
@@ -33,7 +34,7 @@ mongoose.connect(url)
 const app = express()
 
 const corsOption = {
-  origin: true,
+  origin: process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : true, // my frontend subdomain when deployed
   credentials: true
 }
 
@@ -46,15 +47,17 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/api/tests/', clearDbTestRouter)
 }
 
-app.get('/', (_request, response) => {
-  response.send('<h1>Hello Pat!</h1')
-})
-
 app.use('/api/auth', authRouter)
 app.use('/api/communities/', communityRouter)
 app.use('/api/posts/', middleware.tokenExtractor, middleware.userExtractor, postRouter)
 app.use('/api/posts/', middleware.tokenExtractor, middleware.userExtractor, commentRouter)
 app.use('/api/user/',middleware.tokenExtractor, middleware.userExtractor, userRouter)
+
+app.use(express.static(path.join(__dirname, 'dist')))
+
+app.get('*', (_request, response) => {
+  response.sendFile(path.join(__dirname, 'dist', 'index.html'))
+})
 
 app.use(middleware.errorHandler)
 app.use(middleware.unknownEndpoint)

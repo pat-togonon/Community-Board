@@ -137,8 +137,8 @@ const login = async (request, response) => {
   
   response.cookie('jwt', refreshToken, {
     httpOnly: true,
-    sameSite: 'Lax', // set to none upon deployment/production
-    secure: false, // set to true upon deployment / production
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Lax for dev. None for deployment/production
+    secure: process.env.NODE_ENV === 'production', // false for dev. true for deployment / production
     maxAge: 30 * 24 * 60 * 60 * 1000
   })
   
@@ -233,8 +233,8 @@ const getRefreshToken = async (request, response) => {
 
   response.cookie('jwt', refreshToken, {
     httpOnly: true,
-    sameSite: 'Lax', // set to none upon deployment/production
-    secure: false, // set to true upon deployment / production
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Lax for dev. None for deployment/production
+    secure: process.env.NODE_ENV === 'production', // false for dev. true for deployment / production
     maxAge: 30 * 24 * 60 * 60 * 1000
   })
 
@@ -263,8 +263,8 @@ const getRefreshToken = async (request, response) => {
 const logout = async (request, response) => {
   response.clearCookie('jwt', {
     httpOnly: true,
-    secure: false, //set to true on production /deployment
-    sameSite: 'Lax'
+    secure: process.env.NODE_ENV === 'production', // false for dev. true for deployment / production
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax' //Lax for dev
   })
 
   await RefreshToken.deleteMany({ user: request.user._id })
@@ -302,8 +302,8 @@ const updatePassword = async (request, response) => {
   // delete the refresh cookie
   response.clearCookie('jwt', {
     httpOnly: true,
-    secure: false, //set to true on production /deployment
-    sameSite: 'Lax'
+    secure: process.env.NODE_ENV === 'production', // false for dev. true for deployment / production
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax' //Lax for dev
   })
 
   // delete the refreshTokenHash on database
