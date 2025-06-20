@@ -6,7 +6,8 @@ const Post = require('../models/Post')
 const RefreshToken = require('../models/RefreshToken')
 const PasswordResetAttempt = require('../models/PasswordResetAttempt')
 
-clearDbTestRouter.post('/reset', async (request, response) => {
+
+clearDbTestRouter.post('/reset', async (_request, response) => {
   await Community.deleteMany({})
   await User.deleteMany({})
   await Post.deleteMany({})
@@ -16,5 +17,6 @@ clearDbTestRouter.post('/reset', async (request, response) => {
 
   response.status(204).end()
 })
+  
 
 module.exports = clearDbTestRouter

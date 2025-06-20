@@ -21,4 +21,5 @@ authRouter.put('/password-update/:userId', middleware.tokenExtractor, middleware
 //forgot password
 authRouter.put('/password-reset', passwordReset)
 
+
 module.exports = authRouter

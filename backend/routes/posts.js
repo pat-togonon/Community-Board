@@ -7,6 +7,7 @@ postRouter.post('/:communityId/:mainCategory/:subCategory', createPost)
 postRouter.delete('/:communityId/:mainCategory/:subCategory/:id', deletePost)
 postRouter.put('/:communityId/:mainCategory/:subCategory/:id', editPost)
 
+
 module.exports = postRouter
 
 
