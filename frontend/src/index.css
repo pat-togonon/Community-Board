@@ -317,9 +317,12 @@
   }
   
   select, .security-question {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     background-color: white;
     color: grey;
-    padding: 17px; /*Tried*/
+    padding: 10px; /*Tried*/
     border-color: grey;
     border-radius: 0%;
   }
