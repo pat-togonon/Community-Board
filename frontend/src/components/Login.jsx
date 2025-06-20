@@ -20,6 +20,10 @@ const Login = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' }) 
+  }, [])
+  
+  useEffect(() => {
     dispatch(clearCommunityId())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate])

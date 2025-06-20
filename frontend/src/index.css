@@ -196,17 +196,17 @@
   
   .registerCommunity {
     width: max-content;
-    font-size: 0.9rem;
+    font-size: 1rem;
     margin-left: 30px;
     position: absolute;
-    top: 65px;
+    top: 75px;
     right: 40px;
     cursor: pointer;
   }
   
   .registerCommunity a {
     text-decoration: none;
-    font-weight: 300;
+    font-weight: 400;
     color: #4F7942;
   }
   
@@ -236,6 +236,8 @@
   .hero-section, .hero-section button, .hero-section span {
     margin-left: auto;
     margin-right: auto;
+    padding-left: 10px;
+    padding-right: 10px;
   }
   
   .hero-section h1 {
@@ -257,6 +259,7 @@
   .cta2 {
     color: #203333;
     font-weight: 300;
+    margin-top: 7px;
   }
   
   .hero-section button:hover, .get-started:hover, .error-route-button:hover, .connect-button:hover {
@@ -313,10 +316,15 @@
   /* HERE - Updated as of 17 June. select only
   */
   .loginContainerChild input, .loginContainerChild textarea, .newPostDateButtons input, select {
-    padding: 5px 2px;
+    padding: 10px 10px;
     color: black;
   }
   
+  select, .security-question {
+    background-color: white;
+    color: grey;
+  }
+
   select:valid {
     color: black;
   }
@@ -354,7 +362,7 @@
   
   .passwordLabel {
     margin-top: 5px;
-    margin-bottom: -5px; /* May additional 5px from somewhere */
+    margin-bottom: -5px; /*May additional 5px from somewhere */
   }
   
   .passwordField {
@@ -368,7 +376,7 @@
     background-color: black;
     border: none;
     color: white;
-    padding: 7px;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
@@ -380,7 +388,7 @@
   }
   
   .button {
-    padding: 7px;
+    padding: 10px;
   }
   
   .textLink {
@@ -930,6 +938,7 @@
   
   .select {
     width: max-content;
+    color: grey;
   }
   
   .greetings {
@@ -954,11 +963,12 @@
     font-size: 0.9rem;
   }
 
-  .footer-div {
+  footer {
     background-color: #203333;
     height: fit-content;
     margin-top: 30px;
-    width: 100%;    
+    width: 100%;   
+    padding-bottom: 20px; 
   }
 
   .footer-content {
@@ -1205,8 +1215,16 @@
     .loginContainerChild {
       display: block;
       margin-left: auto;
-      margin-right: auto;
-      
+      margin-right: auto; 
+    }
+
+    .loginContainerChild input, .loginContainerChild textarea, .newPostDateButtons input, select {
+      padding: 5px 2px;
+      color: black;
+    }
+
+    .registerCommunity {
+      top: 68px;
     }
   
     .eye {
@@ -1220,7 +1238,6 @@
     }
   
     .passwordLabel {
-      margin-top: 5px;
       margin-bottom: 5px;
     }
   

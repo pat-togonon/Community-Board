@@ -23,6 +23,10 @@ const SignUp = () => {
     dispatch(clearCommunityId())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' }) 
+  }, [])
   
   const handleSignUp = async (event) => {
     event.preventDefault()

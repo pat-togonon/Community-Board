@@ -2,7 +2,7 @@
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { securityQuestions } from "../helper/helpers"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { notifyError } from "../reducer/errorReducer"
 import Error from './Notifications/Error'
 import { notifyConfirmation } from "../reducer/confirmationReducer"
@@ -16,6 +16,10 @@ const RegisterCommunity = () => {
   const dispatch = useDispatch()
   const communityId = useSelector(state => state.communityId)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' }) 
+  }, [])
   
   const handleRegistration = async (event) => {
     event.preventDefault()

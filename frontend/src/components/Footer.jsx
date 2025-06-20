@@ -17,7 +17,7 @@ const Footer = () => {
   }
   
   return (
-    <div className="footer-div">
+    <footer>
       <div className="footer-content">
         <img src="/logo1.png" onClick={handleReturnHome} />
         <div>
@@ -27,7 +27,7 @@ const Footer = () => {
           <p>{footerCopy.mission.sub3}</p>
         </div>      
       </div>
-    </div>
+    </footer>
   )
 }
 

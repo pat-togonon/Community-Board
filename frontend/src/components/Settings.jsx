@@ -44,6 +44,10 @@ const Settings = () => {
     }
   }, [user])
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' }) 
+  }, [])
+  
   const reset = ()  => {
     dispatch(logout())
     dispatch(clearMainCategory())

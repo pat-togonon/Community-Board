@@ -28,6 +28,7 @@ const IsFound = ({ post, user, mainCategory, communityId, subCategory, id, fetch
     return null
   }
 
+
   const handleIsFound = async () => {
   
     const editedPost = {
@@ -110,6 +111,10 @@ useEffect(() => {
   
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, community, mainCategory, subCategory, id])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' }) 
+  }, [])
 
   const fetchPosts = async () => {
     try {
