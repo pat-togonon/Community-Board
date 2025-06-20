@@ -324,7 +324,7 @@
     color: grey;
     padding: 10px; /*Tried*/
     border-color: grey;
-    border-radius: 0%;
+    border-radius: 5px;
   }
 
   select:valid {
@@ -1228,7 +1228,6 @@
       background-color: white;
       color: grey;
       border-color: grey;
-      border-radius: 5px;
     }
   
     .eye {
