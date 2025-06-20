@@ -411,13 +411,8 @@
     background-color: #332920;
     color: white;
     position: relative;
-    left: 10px;
     cursor: pointer;
-  
   }
-  /*
-  #332920 - CTA hero section
-  */
   
   .categoryNav {
     display: flex;
@@ -1220,6 +1215,10 @@
     .loginContainerChild input, .loginContainerChild textarea, .newPostDateButtons input, select {
       padding: 5px 2px;
       color: black;
+    }
+
+    .loginHomepage {
+      left: 10px;
     }
 
     select, .security-question {

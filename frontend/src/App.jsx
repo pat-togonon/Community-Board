@@ -87,7 +87,7 @@ const App = () => {
       <Header />
       <div className="container">     
         <div className='layout'>
-          {/* Left Sidebar for large screens */}
+          {/* Left Sidebar for large screens - content to follow*/}
           <aside className={isLoggedIn ? 'sidebar-left' : 'noSidebar'}>Left Sidebar</aside>
           {/* Main Content */}
           <main className={isLoggedIn ? 'main' : ''}>
