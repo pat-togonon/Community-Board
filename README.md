@@ -35,24 +35,29 @@ Software Tests: Unit (Jest), Integration (SuperTest) and End-To-End (Cypress)
 # Features
 
   # Users can post
-    Users can post and update or delete their own posts. But only admins can post on Announcements category.
+  
+  Users can post and update or delete their own posts. But only admins can post on Announcements category.
 
-    When the author deletes their posts, all of its comments also get deleted.
+  When the author deletes their posts, all of its comments also get deleted.
   
   # Users can comment
-    Users can comment on all posts and update or delete their own comments.
+  
+  Users can comment on all posts and update or delete their own comments.
   
   # Add posts to favorites
-    Users can add and remove posts to their favorites.
+  
+  Users can add and remove posts to their favorites.
   
   # Authentication, password and account settings
-    Users can signup, login, update password, reset password and delete their account.
+  
+  Users can signup, login, update password, reset password and delete their account.
     
   # User profile
-    Users can add or update their name.
+  
+  Users can add or update their name.
     
-    Users can see all their posts, comments and favorites on their profile.
+  Users can see all their posts, comments and favorites on their profile.
   
   # For admins
   
-    If a user is an admin, they can see communities they manage and the number of community members on their profile.
+  If a user is an admin, they can see communities they manage and the number of community members on their profile.
